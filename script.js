@@ -1,1379 +1,215 @@
-var _SYSTEM_PATHS = ["C:/Windows/System32/kernel32.dll", "/var/www/html/cine-os/", "https://cine-os.local/api/v1/auth"];
-var _devBuildVer = "3.0.1";
+var _devBuildVer = "1.0.0";
 
 var APPS = {
-    'cine': {title: 'INTELLECTUAL // HUB', path: 'script/Apps/Cine/index.html', icon: 'https://cdn.worldvectorlogo.com/logos/netflix-logo-icon.svg', pinned: true},
-    'term': {title: 'Spotify', path: 'script/Apps/Spotify/index.html', icon: 'https://cdn.pixabay.com/photo/2016/10/22/00/15/spotify-1759471_1280.jpg', pinned: true},
-    'files': {title: 'PS5 Emu', path: 'script/Apps/Ps5/index.html', icon: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ-OeL_be7RFaoHi3PswkuAR5XcMgBNRDynsg&s', pinned: true},
-    'web': {title: 'Intellectual Web', path: 'script/Apps/Web/index.html', icon: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSeD89ZcX5W1FBtal7RerasT27q-OmZqnBixQ&s', pinned: true},
-    'settings': {title: 'CONFIG', internal: true, icon: 'https://cdn.iconscout.com/icon/free/png-256/free-apple-settings-icon-svg-download-png-493162.png', pinned: true},
-    'discord': {title: 'Discord', path: 'script/Apps/Discord/index.html', icon: 'https://assets-global.website-files.com/6257adef93867e50d84d30e2/636e0a6a49cf127bf92de1e2_icon_clyde_blurple_RGB.png', pinned: false},
-    'roblox': {title: 'Roblox', path: 'script/Apps/Roblox/index.html', icon: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS9KvNyFWMg_bjo_q_1IVLKFWbfCeonn2qDow&s', pinned: false},
-    'android': {title: 'Android', path: 'script/Apps/Android/index.html', icon: 'https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/android-icon.png', pinned: false},
-    'ciniai': {title: 'Intellectual AI', path: 'script/Apps/Cini/index.html', icon: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRkLXhvns5Rrdf-XBNlWcPIRh0hlJfWnEtBWg&s', pinned: false},
-    'VM': {title: 'Windows Virtual-Machine', path: 'script/Apps/VM/index.html', icon: 'https://static1.squarespace.com/static/68e69c83884dc82cc035a923/69454e29c6db7516b2566fca/69454e32c6db7516b256749a/1766149682532/Virtualbox_logo.png?format=original', pinned: false},
-    'crunchyroll': {title: 'CrunchyRoll', path: 'script/Apps/Crunchy/index.html', icon: 'https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/a0a4547a-06c5-4740-b87a-ca9c4fa0171e/dduaesk-2b3e85d2-3116-4eb5-8260-f413d1fc670e.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiIvZi9hMGE0NTQ3YS0wNmM1LTQ3NDAtYjg3YS1jYTljNGZhMDE3MWUvZGR1YWVzay0yYjNlODVkMi0zMTE2LTRlYjUtODI2MC1mNDEzZDFmYzY3MGUucG5nIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.vReffTSSKpde4w8EwFxz_CttxlLay8fXOq0goYh6rsg', pinned: false},
-    'Geforce': {title: 'GEFORCE NOW', path: 'script/Apps/Geforce/index.html', icon: 'https://play-lh.googleusercontent.com/_-b_HQXrVyyhZSHj_BoE9u_-cxkcHDH_yLX5rDjJsFMIfsCNQs9F3QP4JvEFcWaSIz0=w240-h480-rw', pinned: false},
-    'Fortnite': {title: 'Fortnite', path: 'script/Apps/Fortnite/index.html', icon: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcShiXrQ-cvZeDyQNPIZCv_hsaUCAe5j_rXJ7Q&s', pinned: false},
-    'RocketL': {title: 'Rocket League', path: 'script/Apps/RocketL/index.html', icon: 'https://ygo-assets-entities-us.yougov.net/87bb7a16-2b62-11e8-82b1-37bb0d207ced.jpg?zcw=518&zch=518&zct=10&zcl=0', pinned: false},
-    'Xbox': {title: 'Xbox', path: 'script/Apps/Xbox/index.html', icon: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRknRQh-WRK4F75YB3EAlfrsqAk66Xjn45sBg&s', pinned: false},
+    'cine':     {title:'INTELLECTUAL // HUB', internal:true, icon:'https://cdn.worldvectorlogo.com/logos/netflix-logo-icon.svg', pinned:true},
+    'term':     {title:'Music',               internal:true, icon:'https://cdn.pixabay.com/photo/2016/10/22/00/15/spotify-1759471_1280.jpg', pinned:true},
+    'files':    {title:'Games',               internal:true, icon:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ-OeL_be7RFaoHi3PswkuAR5XcMgBNRDynsg&s', pinned:true},
+    'web':      {title:'Browser',             internal:true, icon:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSeD89ZcX5W1FBtal7RerasT27q-OmZqnBixQ&s', pinned:true},
+    'settings': {title:'CONFIG',              internal:true, icon:'https://cdn.iconscout.com/icon/free/png-256/free-apple-settings-icon-svg-download-png-493162.png', pinned:true},
+    'discord':  {title:'Discord',             internal:true, icon:'https://assets-global.website-files.com/6257adef93867e50d84d30e2/636e0a6a49cf127bf92de1e2_icon_clyde_blurple_RGB.png', pinned:false},
+    'roblox':   {title:'Roblox',              internal:true, icon:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS9KvNyFWMg_bjo_q_1IVLKFWbfCeonn2qDow&s', pinned:false},
+    'youtube':  {title:'YouTube',             internal:true, icon:'https://upload.wikimedia.org/wikipedia/commons/0/09/YouTube_full-color_icon_%282017%29.svg', pinned:false},
+    'ciniai':   {title:'Intellectual AI',     internal:true, icon:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRkLXhvns5Rrdf-XBNlWcPIRh0hlJfWnEtBWg&s', pinned:false},
+    'Geforce':  {title:'GeForce NOW',         internal:true, icon:'https://play-lh.googleusercontent.com/_-b_HQXrVyyhZSHj_BoE9u_-cxkcHDH_yLX5rDjJsFMIfsCNQs9F3QP4JvEFcWaSIz0=w240-h480-rw', pinned:false},
 };
 
 var savedPins = localStorage.getItem('intel_pins_v2');
-if(savedPins) {
-    let p = JSON.parse(savedPins);
-    for(let k in p) {
-        if(APPS[k]) APPS[k].pinned = p[k];
-    }
-}
-
-function syncPins() {
-    let obj = {};
-    for(let k in APPS) obj[k] = APPS[k].pinned;
-    localStorage.setItem('intel_pins_v2', JSON.stringify(obj));
-}
+if(savedPins){var p=JSON.parse(savedPins);for(var k in p){if(APPS[k])APPS[k].pinned=p[k];}}
+function syncPins(){var obj={};for(var k in APPS)obj[k]=APPS[k].pinned;localStorage.setItem('intel_pins_v2',JSON.stringify(obj));}
 
 var wallpaperRegistry = {
-    "Default": {id: "Default", name: "Snake Skeleton", url: "Videos/default.mp4", locked: false},
-    "green": {id: "green", name: "Green Anime", url: "Videos/green.mp4", locked: false},
-    "33A56": {id: "hunt_trait", name: "Hunt Showdown", url: "Videos/33A56.mp4", locked: true},
-    "45E33": {id: "45E33", name: "45E33", url: "Videos/45E33.mp4", locked: false},
-    "55Cine": {id: "55Cine", name: "Intel 55", url: "Videos/55Cine.PNG", locked: false},
-    "99Med": {id: "99Med", name: "99 Med", url: "Videos/99Med.mp4", locked: false},
-    "Brother": {id: "Brother", name: "Brother", url: "Videos/Brother.mp4", locked: false},
-    "F-1": {id: "F-1", name: "F-1 Formula", url: "Videos/F-1.mp4", locked: false},
-    "Gojo-Sukuna": {id: "Gojo-Sukuna", name: "Gojo vs Sukuna", url: "Videos/Gojo-Sukuna.mp4", locked: false},
-    "Hunt": {id: "Hunt", name: "Hunt Showdown 2", url: "Videos/Hunt.mp4", locked: false},
-    "Minecraft01": {id: "Minecraft01", name: "Minecraft 01", url: "Videos/Minecraft01.mp4", locked: false},
-    "Minecraft02": {id: "Minecraft02", name: "Minecraft 02", url: "Videos/Minecraft02.mp4", locked: false},
-    "Minecraft03": {id: "Minecraft03", name: "Minecraft 03", url: "Videos/Minecraft03.mp4", locked: false},
-    "Monkey": {id: "Monkey", name: "Monkey", url: "Videos/Monkey.mp4", locked: false},
-    "Skello": {id: "Skello", name: "Skello", url: "Videos/Skello.MP4", locked: false},
-    "SnowFox": {id: "SnowFox", name: "Snow Fox", url: "Videos/SnowFox.mp4", locked: false},
-    "Supra": {id: "Supra", name: "Supra Drift", url: "Videos/Supra.PNG", locked: false},
-    "Yuji52": {id: "Yuji52", name: "Yuji 52", url: "Videos/Yuji52.mp4", locked: false},
-    "sukuna-fire": {id: "sukuna-fire", name: "Sukuna Fire", url: "Videos/sukuna-fire.mp4", locked: false},
-    "CozyFox": {id: "CozyFox", name: "Cozy Fox", url: "Videos/CozyFox.mp4", locked: false},
-    "RainyCity": {id: "RainyCity", name: "Rainy City", url: "Videos/RainyCity.mp4", locked: false},
-    "Gojo": {id: "Gojo", name: "Gojo", url: "Videos/Gojo.mp4", locked: false},
-    "BlackHole": {id: "BlackHole", name: "Black Hole", url: "Videos/BlackHole.mp4", locked: false},
-    "Yuta": {id: "Yuta", name: "Yuta", url: "Videos/Yuta.mp4", locked: false},
-    "Desktop": {id: "Desktop", name: "Desktop Lines", url: "Videos/Desktop.mp4", locked: false}
+    "css-space":  {id:"css-space",  name:"Deep Space",  url:"__css__", css:"radial-gradient(ellipse at 20% 50%, #0d0d2b 0%, #000 70%)",  locked:false},
+    "css-forest": {id:"css-forest", name:"Dark Forest",  url:"__css__", css:"radial-gradient(ellipse at bottom, #0a1a0a 0%, #000 70%)",   locked:false},
+    "css-ocean":  {id:"css-ocean",  name:"Deep Ocean",   url:"__css__", css:"radial-gradient(ellipse at top, #001a2e 0%, #000 70%)",      locked:false},
+    "css-fire":   {id:"css-fire",   name:"Ember",        url:"__css__", css:"radial-gradient(ellipse at bottom right, #1a0500 0%, #000 70%)", locked:false},
+    "css-purple": {id:"css-purple", name:"Nebula",       url:"__css__", css:"radial-gradient(ellipse at center, #0d001a 0%, #000 70%)",   locked:false},
+    "css-ice":    {id:"css-ice",    name:"Frost",        url:"__css__", css:"radial-gradient(ellipse at top left, #001020 0%, #000 70%)", locked:false},
 };
 
-var sysConfig = JSON.parse(localStorage.getItem('intel_sys_config')) || {};
-if(sysConfig.optBg === undefined) sysConfig.optBg = false;
-if(sysConfig.shortBoot === undefined) sysConfig.shortBoot = false;
-if(sysConfig.wpLoop === undefined) sysConfig.wpLoop = false;
-if(sysConfig.idleLock === undefined) sysConfig.idleLock = false; 
-if(sysConfig.redirectConfirm === undefined) sysConfig.redirectConfirm = false; 
-if(!sysConfig.panicKey) sysConfig.panicKey = '`';
-if(!sysConfig.homeWallpaper) sysConfig.homeWallpaper = 'Default';
-if(!sysConfig.lockWallpaper) sysConfig.lockWallpaper = 'green';
-if(!sysConfig.cloak) sysConfig.cloak = 'none';
+var sysConfig = JSON.parse(localStorage.getItem('intel_sys_config'))||{};
+if(sysConfig.optBg===undefined)sysConfig.optBg=false;
+if(sysConfig.shortBoot===undefined)sysConfig.shortBoot=false;
+if(sysConfig.wpLoop===undefined)sysConfig.wpLoop=false;
+if(sysConfig.idleLock===undefined)sysConfig.idleLock=false;
+if(sysConfig.redirectConfirm===undefined)sysConfig.redirectConfirm=false;
+if(!sysConfig.panicKey)sysConfig.panicKey='`';
+if(!sysConfig.homeWallpaper)sysConfig.homeWallpaper='css-space';
+if(!sysConfig.lockWallpaper)sysConfig.lockWallpaper='css-ocean';
+if(!sysConfig.cloak)sysConfig.cloak='none';
 
-window.updateSysSetting = function(key, value) {
-    sysConfig[key] = value;
-    localStorage.setItem('intel_sys_config', JSON.stringify(sysConfig));
-    if(key === 'optBg') applySystemSettings();
-    if(key === 'wpLoop') updateWallpaperLoop();
-};
+window.updateSysSetting=function(key,value){sysConfig[key]=value;localStorage.setItem('intel_sys_config',JSON.stringify(sysConfig));if(key==='optBg')applySystemSettings();};
+var cloaks={none:{title:"Intellectual OS",icon:""},google:{title:"Google",icon:"https://www.google.com/favicon.ico"},drive:{title:"My Drive - Google Drive",icon:"https://ssl.gstatic.com/images/branding/product/1x/drive_2020q4_32dp.png"},canvas:{title:"Dashboard",icon:"https://du11hjcvx0uqb.cloudfront.net/br/dist/images/favicon-e10d657a73.ico"},classroom:{title:"Classes",icon:"https://ssl.gstatic.com/classroom/favicon.png"}};
+window.updateCloak=function(key){sysConfig.cloak=key;localStorage.setItem('intel_sys_config',JSON.stringify(sysConfig));applyCloak();};
+function applyCloak(){var k=sysConfig.cloak||'none',sel=cloaks[k],icons=document.querySelectorAll("link[rel*='icon']");for(var i=0;i<icons.length;i++)icons[i].remove();if(sel&&k!=='none'){document.title=sel.title;var n=document.createElement('link');n.type='image/x-icon';n.rel='shortcut icon';n.href=sel.icon;document.getElementsByTagName('head')[0].appendChild(n);}else{document.title="Intellectual OS";}}
+setInterval(applyCloak,2000);
 
-var cloaks = {
-    none: {title: "Intellectual OS", icon: ""},
-    google: {title: "Google", icon: "https://www.google.com/favicon.ico"},
-    drive: {title: "My Drive - Google Drive", icon: "https://ssl.gstatic.com/images/branding/product/1x/drive_2020q4_32dp.png"},
-    canvas: {title: "Dashboard", icon: "https://du11hjcvx0uqb.cloudfront.net/br/dist/images/favicon-e10d657a73.ico"},
-    classroom: {title: "Classes", icon: "https://ssl.gstatic.com/classroom/favicon.png"}
-};
+var isDesktopActive=false,bootActive=true,enterCount=0,highestZ=500,activeWindowId=null,isMediaPlaying=false,activeCtxId=null;
+var isMobile=/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+if(isMobile){var mw=document.getElementById('mobile-warning');if(mw&&mw.showModal)mw.showModal();else if(mw)mw.style.display='flex';var lastTap=0;document.addEventListener('touchstart',function(e){var t=new Date().getTime(),tl=t-lastTap;if(tl<500&&tl>0){if(mw&&mw.close)mw.close();else if(mw)mw.style.display='none';}lastTap=t;});}
 
-window.updateCloak = function(key) {
-    sysConfig.cloak = key;
-    localStorage.setItem('intel_sys_config', JSON.stringify(sysConfig));
-    applyCloak();
-};
+document.addEventListener("DOMContentLoaded",function(){applyCloak();document.getElementById('boot-layer').style.display='block';renderUI();initWallpapers();setupAppContextMenu();loadDesktop();updateSidebarData();});
 
-function applyCloak() {
-    var k = sysConfig.cloak || 'none';
-    var sel = cloaks[k];
-    var icons = document.querySelectorAll("link[rel*='icon']");
-    for(var i=0; i<icons.length; i++) icons[i].remove();
-    
-    if(sel && k !== 'none') {
-        document.title = sel.title;
-        let n = document.createElement('link');
-        n.type = 'image/x-icon';
-        n.rel = 'shortcut icon';
-        n.href = sel.icon;
-        document.getElementsByTagName('head')[0].appendChild(n);
+// ── BOOT ─────────────────────────────────────────────────────────────────────
+function startBootSequence(){
+    if(sysConfig.shortBoot){skipBootSequence();return;}
+    var bc=document.getElementById('boot-content');bc.style.display='none';
+    var bl=document.getElementById('boot-layer');
+    var wrap=document.createElement('div');
+    wrap.style.cssText='position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:30px;z-index:2;';
+    wrap.innerHTML='<div style="font-family:\'Orbitron\',sans-serif;font-size:2rem;color:#fff;letter-spacing:10px;text-shadow:0 0 30px rgba(255,255,255,0.3);">INTELLECTUAL OS</div><div style="width:220px;"><div style="width:100%;height:2px;background:#1a1a1a;border-radius:2px;overflow:hidden;"><div id="bp" style="height:100%;width:0%;background:#fff;transition:width 0.08s linear;border-radius:2px;"></div></div><div id="bm" style="margin-top:12px;font-family:\'Rajdhani\',sans-serif;color:#444;font-size:11px;letter-spacing:4px;text-align:center;">INITIALIZING...</div></div>';
+    bl.appendChild(wrap);
+    var msgs=['LOADING CORE...','MOUNTING APPS...','STARTING SERVICES...','SYSTEM READY'];
+    var pct=0,mi=0;
+    var iv=setInterval(function(){pct+=1.5;var bp=document.getElementById('bp'),bm=document.getElementById('bm');if(bp)bp.style.width=Math.min(pct,100)+'%';if(bm&&pct%25<2&&mi<msgs.length)bm.innerText=msgs[mi++];if(pct>=100){clearInterval(iv);setTimeout(function(){if(bootActive)skipBootSequence();},400);}},25);
+}
+function skipBootSequence(){if(!bootActive)return;bootActive=false;var lay=document.getElementById('boot-layer');if(lay){lay.style.opacity='0';document.getElementById('lock-screen').classList.add('active');setTimeout(function(){lay.style.display='none';},600);updateClock();}}
+document.addEventListener('keydown',function(e){if(bootActive&&e.key==='Enter'){enterCount++;if(enterCount>=2)skipBootSequence();setTimeout(function(){enterCount=0;},500);}if(e.key&&sysConfig.panicKey&&e.key.toLowerCase()===sysConfig.panicKey.toLowerCase())window.location.href="https://google.com";});
+
+// ── WALLPAPERS (CSS-based, zero file dependencies) ────────────────────────────
+function applyWallpaperCSS(wp,target){
+    if(!wp)return;
+    var da=document.getElementById('desktop-area'),ls=document.getElementById('lock-screen');
+    var bv=document.getElementById('bg-video'),bi=document.getElementById('bg-img');
+    var lv=document.getElementById('lock-video'),li=document.getElementById('lock-img');
+    if(wp.url==='__css__'){
+        if(target==='home'){bv.style.display='none';bi.style.display='none';da.style.background=wp.css;}
+        else{lv.style.display='none';li.style.display='none';ls.style.background=wp.css;}
     } else {
-        document.title = "Intellectual OS";
+        var isImg=wp.url.match(/\.(png|jpg|jpeg|gif)$/i);
+        var vEl=target==='home'?bv:lv, iEl=target==='home'?bi:li;
+        if(isImg){vEl.style.display='none';iEl.style.display='block';iEl.src=wp.url;iEl.onerror=function(){iEl.style.display='none';};}
+        else{iEl.style.display='none';vEl.style.display='block';vEl.src=wp.url;vEl.load();vEl.onerror=function(){vEl.style.display='none';};if(target==='home'&&isDesktopActive&&!sysConfig.optBg)vEl.play().catch(function(){});}
     }
 }
-setInterval(applyCloak, 2000);
+function initWallpapers(){
+    document.getElementById('desktop-area').style.background='radial-gradient(ellipse at 20% 50%, #0d0d2b 0%, #000 70%)';
+    document.getElementById('lock-screen').style.background='radial-gradient(ellipse at top, #001a2e 0%, #000 70%)';
+    applyWallpaperCSS(wallpaperRegistry[sysConfig.homeWallpaper]||wallpaperRegistry['css-space'],'home');
+    applyWallpaperCSS(wallpaperRegistry[sysConfig.lockWallpaper]||wallpaperRegistry['css-ocean'],'lock');
+    var chk=document.getElementById('wp-loop-chk');if(chk)chk.checked=sysConfig.wpLoop;
+}
+function setWallpaper(k){var d=wallpaperRegistry[k];if(!d)return;if(window.wpMode==='home'||window.wpMode==='both'){applyWallpaperCSS(d,'home');sysConfig.homeWallpaper=k;localStorage.setItem('intel_sys_config',JSON.stringify(sysConfig));}if(window.wpMode==='lock'||window.wpMode==='both'){applyWallpaperCSS(d,'lock');sysConfig.lockWallpaper=k;localStorage.setItem('intel_sys_config',JSON.stringify(sysConfig));}}
+window.wpMode='both';
+function openWallpaperMenu(){var m=document.getElementById('wallpaper-menu'),gu=document.getElementById('wp-grid-unlocked');if(!m||!gu)return;if(m.showModal)m.showModal();else m.style.display='flex';m.classList.add('open');gu.innerHTML='';for(var k in wallpaperRegistry){var d=wallpaperRegistry[k],c=document.createElement('div');c.className='wp-card';c.setAttribute('data-key',k);if(d.url==='__css__'){c.innerHTML='<div style="width:100%;height:100%;background:'+d.css+';"></div><div class="wp-info">'+d.name+'</div>';}else{var mh=d.url.match(/\.(png|jpg|jpeg|gif)$/i)?'<img src="'+d.url+'" alt="wp">':'<video src="'+d.url+'" preload="none" playsinline muted loop onmouseover="this.play()" onmouseout="this.pause()"></video>';c.innerHTML=mh+'<div class="wp-info">'+d.name+'</div>';}c.onclick=function(){setWallpaper(this.getAttribute('data-key'));document.querySelectorAll('.wp-card').forEach(function(x){x.classList.remove('active-wp');});this.classList.add('active-wp');};gu.appendChild(c);}var chk=document.getElementById('wp-loop-chk');if(chk){chk.checked=sysConfig.wpLoop;chk.onchange=function(e){window.updateSysSetting('wpLoop',e.target.checked);};}};
 
-var isDesktopActive = false;
-var bootActive = true;
-var enterCount = 0;
-var highestZ = 500;
-var activeWindowId = null;
-var isMediaPlaying = false;
-var isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-var activeCtxId = null;
+// ── CLOCK ─────────────────────────────────────────────────────────────────────
+function updateClock(){var n=new Date(),dArr=['SUNDAY','MONDAY','TUESDAY','WEDNESDAY','THURSDAY','FRIDAY','SATURDAY'],mArr=['JANUARY','FEBRUARY','MARCH','APRIL','MAY','JUNE','JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER'],hrs=n.getHours().toString().padStart(2,'0'),min=n.getMinutes().toString().padStart(2,'0'),dName=dArr[n.getDay()],dNum=n.getDate().toString().padStart(2,'0'),yr=n.getFullYear();var lDay=document.getElementById('lock-day-large'),lDat=document.getElementById('lock-date'),lTim=document.getElementById('lock-time'),hDay=document.getElementById('lbl-day');if(lDay)lDay.innerText=dName;if(hDay)hDay.innerText=dName;if(lDat)lDat.innerText=dNum+' '+mArr[n.getMonth()]+', '+yr+'.';if(lTim)lTim.innerText='- '+hrs+':'+min+' -';}
+setInterval(updateClock,1000);
 
-if(isMobile) {
-    var mobWarn = document.getElementById('mobile-warning');
-    if(mobWarn && mobWarn.showModal) mobWarn.showModal();
-    else if(mobWarn) mobWarn.style.display = 'flex';
-    
-    var lastTap = 0;
-    document.addEventListener('touchstart', function(e) {
-        let t = new Date().getTime();
-        let tl = t - lastTap;
-        if(tl < 500 && tl > 0) {
-            if(mobWarn && mobWarn.close) mobWarn.close();
-            else if(mobWarn) mobWarn.style.display = 'none';
-        }
-        lastTap = t;
-    });
+// ── LOCK / UNLOCK ─────────────────────────────────────────────────────────────
+var welcomeShown=false;
+window.unlockSystem=function(){var scr=document.getElementById('lock-screen');scr.classList.add('slide-up');setTimeout(function(){scr.classList.remove('active');isDesktopActive=true;if(!welcomeShown){showNotification("Welcome to Intellectual OS","Right-click desktop to change wallpaper!");welcomeShown=true;}},600);resetIdle();};
+var idleTime=0;
+function resetIdle(){idleTime=0;}
+document.addEventListener('mousemove',resetIdle);document.addEventListener('keypress',resetIdle);
+setInterval(function(){idleTime++;var scr=document.getElementById('lock-screen');if(sysConfig.idleLock&&idleTime>=180&&!scr.classList.contains('active')&&!bootActive){if(!isMediaPlaying){isDesktopActive=false;scr.classList.remove('slide-up');scr.classList.add('active');}else idleTime=0;}},1000);
+function applySystemSettings(){var bv=document.getElementById('bg-video');if(sysConfig.optBg&&bv)bv.pause();else if(!sysConfig.optBg&&bv&&bv.src&&isDesktopActive)bv.play().catch(function(){});}
+
+// ── NOTIFICATIONS ─────────────────────────────────────────────────────────────
+function showNotification(title,msg){var c=document.getElementById('toast-container'),t=document.createElement('div');t.className='toast-notification';t.innerHTML='<div class="toast-header"><div class="toast-app-info"><div class="toast-icon"><i class="fas fa-bell"></i></div><span>System</span></div><i class="fas fa-times toast-close"></i></div><div class="toast-title">'+title+'</div><div class="toast-body">'+msg+'</div>';c.appendChild(t);setTimeout(function(){t.classList.add('show');},100);t.onclick=function(){t.classList.remove('show');setTimeout(function(){t.remove();},400);};setTimeout(t.onclick,6000);}
+
+// ── SIDEBAR ───────────────────────────────────────────────────────────────────
+function updateSidebarData(){try{var sp=JSON.parse(localStorage.getItem('intel_music_cache'));if(sp){var k=Object.keys(sp);if(k.length>0){document.getElementById('spotify-track-name').innerText=sp[k[k.length-1]].title||"Liked Song";if(sp[k[k.length-1]].cover)document.getElementById('spotify-album-art').src=sp[k[k.length-1]].cover;}}}catch(e){}}
+setInterval(updateSidebarData,5000);
+window.launchLastPlayed=function(){toggleApp('files');};window.resumeSpotify=function(){toggleApp('term');};window.openUpdateLog=function(){var u=document.getElementById('update-modal');if(u&&u.showModal)u.showModal();else if(u)u.style.display='flex';};
+
+// ── UI RENDER ─────────────────────────────────────────────────────────────────
+function renderUI(){var dock=document.getElementById('dock-container'),dHTML='<div class="dock-item" onclick="toggleStartMenu()"><img src="https://missionsupport.archden.org/wp-content/uploads/2022/02/windows11-icon.png"></div><div class="dock-sep"></div><div class="dock-item" onclick="toggleAppDrawer()"><svg width="24" height="24" viewBox="0 0 24 24" fill="#aaa"><path d="M4 4h4v4H4zm6 0h4v4h-4zm6 0h4v4h-4zM4 10h4v4H4zm6 0h4v4h-4zm6 0h4v4h-4zM4 16h4v4H4zm6 0h4v4h-4zm6 0h4v4h-4z"/></svg></div><div class="dock-sep"></div>',pHTML='';for(var id in APPS){if(APPS[id].pinned){dHTML+='<div class="dock-item" data-id="'+id+'" onmousedown="DragSystem.start(event,this,\'dock\',\''+id+'\')" onclick="toggleApp(\''+id+'\')" oncontextmenu="openDockCtx(event,\''+id+'\')"><img src="'+APPS[id].icon+'"></div>';pHTML+='<div class="pinned-item" onclick="toggleApp(\''+id+'\')"><img src="'+APPS[id].icon+'"><span>'+APPS[id].title+'</span></div>';}}dock.innerHTML=dHTML;document.getElementById('pinned-grid').innerHTML=pHTML;populateDrawer();}
+function openDockCtx(e,id){e.preventDefault();e.stopPropagation();hideAllCtx();activeCtxId=id;var m=document.getElementById('dock-ctx-menu');if(m){m.style.display='block';m.style.left=e.pageX+'px';m.style.top=e.pageY+'px';}}
+function openDrawerCtx(e,id){e.preventDefault();e.stopPropagation();hideAllCtx();activeCtxId=id;var m=document.getElementById('drawer-ctx-menu');if(m){m.style.display='block';m.style.left=e.pageX+'px';m.style.top=e.pageY+'px';}}
+document.getElementById('ctx-pin-app').onclick=function(){if(activeCtxId&&APPS[activeCtxId]){APPS[activeCtxId].pinned=true;syncPins();renderUI();}hideAllCtx();};
+document.getElementById('ctx-unpin-app').onclick=function(){if(activeCtxId&&APPS[activeCtxId]){APPS[activeCtxId].pinned=false;syncPins();renderUI();}hideAllCtx();};
+function hideAllCtx(){['app-context-menu','desktop-context-menu','drawer-ctx-menu','dock-ctx-menu'].forEach(function(x){var m=document.getElementById(x);if(m)m.style.display='none';});}
+document.addEventListener('click',hideAllCtx);
+function populateDrawer(){var g=document.getElementById('drawer-grid');g.innerHTML='';for(var key in APPS){var a=APPS[key],d=document.createElement('div');d.className='drawer-item';d.dataset.id=key;d.innerHTML='<img src="'+a.icon+'" style="pointer-events:none;"><span>'+a.title+'</span>';d.onmousedown=function(e){DragSystem.start(e,this,'drawer',this.dataset.id);};d.onclick=function(e){if(!DragSystem.isDragMove){toggleApp(this.dataset.id);toggleAppDrawer();}};d.oncontextmenu=function(e){openDrawerCtx(e,this.dataset.id);};g.appendChild(d);}}
+function filterDrawer(val){document.querySelectorAll('.drawer-item').forEach(function(it){it.style.display=it.innerText.toLowerCase().includes(val.toLowerCase())?'flex':'none';});}
+function toggleAppDrawer(){var d=document.getElementById('app-drawer');if(d.classList.contains('open')){d.classList.remove('open');setTimeout(function(){d.style.display='none';},300);}else{d.style.display='block';setTimeout(function(){d.classList.add('open');},10);}}
+function toggleStartMenu(){var sm=document.getElementById('start-menu');if(sm.classList.contains('open')){sm.classList.remove('open');setTimeout(function(){sm.style.display='none';},300);}else{sm.style.display='flex';setTimeout(function(){sm.classList.add('open');},10);}}
+document.addEventListener('click',function(e){var sm=document.getElementById('start-menu');if(sm&&!sm.contains(e.target)&&!e.target.closest('.dock-item')){sm.classList.remove('open');setTimeout(function(){sm.style.display='none';},300);}});
+var sInp=document.getElementById('start-search-input');if(sInp)sInp.addEventListener('keydown',function(e){if(e.key==='Enter'){var q=this.value.trim();if(wallpaperRegistry[q]){setWallpaper(q);this.value='';this.blur();}}});
+
+// ── APP CONTENT ───────────────────────────────────────────────────────────────
+function getAppSrcdoc(id){
+var B='<!DOCTYPE html><html><head><meta charset="utf-8"><link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Orbitron:wght@900&display=swap" rel="stylesheet"><style>*{margin:0;padding:0;box-sizing:border-box}body{background:#000;color:#fff;font-family:Rajdhani,sans-serif;height:100vh;overflow:hidden}a{color:inherit}::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:#333;border-radius:2px}</style></head><body>';
+var E='</body></html>';
+
+if(id==='cine')return B+'<div style="height:100%;overflow-y:auto;padding:28px"><h1 style="font-family:Orbitron;font-size:1.3rem;letter-spacing:5px;margin-bottom:8px">INTELLECTUAL HUB</h1><p style="color:#555;font-size:13px;margin-bottom:24px">Click any service — opens in new tab</p><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(135px,1fr));gap:12px">'+[['Netflix','https://netflix.com','#e50914','https://assets.nflxext.com/ffe/siteui/common/logo-and-wordmark.svg'],['Disney+','https://disneyplus.com','#040714','https://upload.wikimedia.org/wikipedia/commons/3/3e/Disney%2B_logo.svg'],['Max','https://max.com','#002be7','https://upload.wikimedia.org/wikipedia/commons/1/17/HBO_Max_Logo.svg'],['Hulu','https://hulu.com','#0a3832','https://upload.wikimedia.org/wikipedia/commons/e/e4/Hulu_Logo.svg'],['YouTube','https://youtube.com','#0f0f0f','https://upload.wikimedia.org/wikipedia/commons/0/09/YouTube_full-color_icon_%282017%29.svg'],['Crunchyroll','https://crunchyroll.com','#1a0a00','https://upload.wikimedia.org/wikipedia/commons/0/08/Crunchyroll_Logo.png'],['Prime','https://primevideo.com','#001a2e','https://upload.wikimedia.org/wikipedia/commons/1/11/Amazon_Prime_Video_logo.svg'],['Peacock','https://peacocktv.com','#111','https://upload.wikimedia.org/wikipedia/commons/d/d3/NBCUniversal_Peacock_Logo.svg'],['Apple TV+','https://tv.apple.com','#1a1a1a','https://upload.wikimedia.org/wikipedia/commons/2/28/Apple_TV_Plus_Logo.svg'],['Paramount+','https://paramountplus.com','#00082e','https://upload.wikimedia.org/wikipedia/commons/a/a7/Paramount_Plus_logo.svg']].map(function(x){return'<a href="'+x[1]+'" target="_blank" style="background:'+x[2]+';border:1px solid #222;border-radius:12px;padding:18px 10px;display:flex;flex-direction:column;align-items:center;gap:10px;text-decoration:none;color:#fff;transition:.2s" onmouseover="this.style.borderColor=\'#fff\';this.style.transform=\'scale(1.04)\'" onmouseout="this.style.borderColor=\'#222\';this.style.transform=\'scale(1)\'"><img src="'+x[3]+'" style="width:48px;height:26px;object-fit:contain" onerror="this.style.display=\'none\'"><span style="font-weight:700;font-size:13px">'+x[0]+'</span></a>';}).join('')+'</div></div>'+E;
+
+if(id==='term')return B+'<div style="height:100%;display:flex;flex-direction:column"><div style="padding:14px 18px;background:#111;border-bottom:1px solid #222;flex-shrink:0"><div style="font-family:Orbitron;font-size:.85rem;letter-spacing:3px">MUSIC LAUNCHER</div><div style="color:#666;font-size:12px;margin-top:2px">Opens in new tab — iframes blocked by these services</div></div><div style="flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:10px">'+[['Spotify','https://open.spotify.com','#1db954'],['SoundCloud','https://soundcloud.com','#ff5500'],['YouTube Music','https://music.youtube.com','#ff0000'],['Pandora','https://pandora.com','#005483'],['Tidal','https://tidal.com','#00ffff'],['Apple Music','https://music.apple.com','#fc3c44']].map(function(x){return'<a href="'+x[1]+'" target="_blank" style="background:#111;border:1px solid #222;border-radius:12px;padding:16px;display:flex;align-items:center;gap:14px;text-decoration:none;color:#fff;transition:.2s" onmouseover="this.style.borderColor=\'#fff\';this.style.background=\'#1a1a1a\'" onmouseout="this.style.borderColor=\'#222\';this.style.background=\'#111\'"><div style="width:38px;height:38px;border-radius:10px;background:'+x[2]+'22;border:1px solid '+x[2]+'44;display:flex;align-items:center;justify-content:center;font-size:1.2rem">♫</div><div><div style="font-weight:700;font-size:15px">'+x[0]+'</div><div style="color:#666;font-size:12px">'+x[1]+'</div></div><div style="margin-left:auto;color:#444;font-size:18px">→</div></a>';}).join('')+'</div></div>'+E;
+
+if(id==='files')return B+'<div style="height:100%;display:flex;flex-direction:column;background:#0a0a0a"><div style="padding:12px 18px;background:#111;border-bottom:1px solid #222;display:flex;align-items:center;gap:10px;flex-shrink:0;flex-wrap:wrap"><span style="font-family:Orbitron;font-size:.8rem;letter-spacing:3px;margin-right:6px">GAME VAULT</span>'+[['Minecraft','mc'],['Slope','slope'],['1v1.LOL','1v1'],['Smash Karts','smash'],['Krunker','krunker'],['Bloxd.io','bloxd'],['Shell Shockers','shell'],['Retro','retro']].map(function(x){return'<button onclick="lg(\''+x[1]+'\')" style="background:#1a1a1a;border:1px solid #333;color:#888;padding:5px 12px;border-radius:18px;cursor:pointer;font-family:Rajdhani;font-weight:700;font-size:13px;transition:.2s" onmouseover="this.style.borderColor=\'#fff\';this.style.color=\'#fff\'" onmouseout="this.style.borderColor=\'#333\';this.style.color=\'#888\'">'+x[0]+'</button>';}).join('')+'</div><div style="flex:1;position:relative;background:#000"><div id="gp" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px"><div style="font-size:3rem">🎮</div><p style="font-family:Orbitron;letter-spacing:3px;color:#2a2a2a;font-size:.8rem">SELECT A GAME</p></div><iframe id="gf" src="" style="width:100%;height:100%;border:none;display:none" allow="autoplay;fullscreen;gamepad"></iframe></div></div><script>var G={mc:"https://eaglercraft.com/mc/1.8.8-wasm/",slope:"https://slope-game.com/",\'1v1\':"https://1v1.lol",smash:"https://smashkarts.io",krunker:"https://krunker.io",bloxd:"https://bloxd.io",shell:"https://shellshock.io",retro:"https://www.retrogames.cc"};function lg(k){var f=document.getElementById("gf"),p=document.getElementById("gp");if(!G[k])return;f.src=G[k];f.style.display="block";p.style.display="none";}<\/script>'+E;
+
+if(id==='web')return B+'<div style="height:100%;display:flex;flex-direction:column;background:#0a0a0a"><div style="padding:10px 14px;background:#111;border-bottom:1px solid #222;display:flex;gap:8px;align-items:center;flex-shrink:0"><button onclick="goBack()" style="background:#1a1a1a;border:1px solid #333;color:#fff;width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:14px;flex-shrink:0">←</button><input id="ub" type="text" placeholder="URL or search..." style="flex:1;background:#1a1a1a;border:1px solid #333;color:#fff;padding:7px 12px;border-radius:8px;outline:none;font-family:Rajdhani;font-size:14px;font-weight:600" onkeydown="if(event.key===\'Enter\')nav()"><button onclick="nav()" style="background:#fff;border:none;color:#000;padding:7px 16px;border-radius:8px;cursor:pointer;font-family:Rajdhani;font-weight:700;flex-shrink:0">GO</button></div><div style="background:#0d0d0d;border-bottom:1px solid #1a1a1a;padding:7px 14px;font-size:11px;color:#555;display:flex;align-items:center;gap:8px;flex-shrink:0">⚡ Proxy (optional — deploy <a href="https://github.com/titaniumnetwork-dev/Ultraviolet" target="_blank" style="color:#777">Ultraviolet</a> on Render):<input id="purl" type="text" placeholder="https://your-proxy.onrender.com" style="flex:1;background:#111;border:1px solid #222;color:#aaa;padding:4px 10px;border-radius:6px;outline:none;font-family:Rajdhani;font-size:11px;margin-left:6px" oninput="localStorage.setItem(\'intel_proxy_url\',this.value)"></div><iframe id="bf" src="about:blank" style="flex:1;border:none;background:#000" allow="autoplay;fullscreen;clipboard-write"></iframe></div><script>document.getElementById("purl").value=localStorage.getItem("intel_proxy_url")||"";function nav(){var raw=document.getElementById("ub").value.trim(),proxy=document.getElementById("purl").value.trim();if(!raw)return;var url=raw.startsWith("http")?raw:(raw.includes(".")?"https://"+raw:"https://www.google.com/search?q="+encodeURIComponent(raw));document.getElementById("bf").src=proxy?proxy+"/service/"+btoa(url):url;}function goBack(){try{document.getElementById("bf").contentWindow.history.back();}catch(e){}}<\/script>'+E;
+
+if(id==='settings')return B+'<div style="padding:22px;height:100%;overflow-y:auto;background:#000"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"><h2 style="font-family:Orbitron;letter-spacing:2px;border-bottom:2px solid #1a1a1a;padding-bottom:12px;margin-bottom:18px;font-size:1rem">SYSTEM CONFIG</h2>'+[['optBg','film','Optimized Background','Disables animated backgrounds'],['shortBoot','bolt','Fast Boot','Skip the boot animation'],['idleLock','lock','Idle Lock Screen','Lock after 3 min inactive'],['redirectConfirm','shield-alt','Redirect Confirmation','Block GoGuardian']].map(function(x){return'<div style="background:#111;border:1px solid #1a1a1a;padding:14px 15px;border-radius:10px;margin-bottom:9px;display:flex;justify-content:space-between;align-items:center"><div style="display:flex;gap:12px;align-items:center"><i class="fas fa-'+x[1]+'" style="color:#555;width:18px;font-size:1.1rem"></i><div><div style="font-weight:700;font-size:14px">'+x[2]+'</div><div style="color:#555;font-size:12px">'+x[3]+'</div></div></div><label style="position:relative;display:inline-block;width:40px;height:20px"><input type="checkbox" id="c-'+x[0]+'" style="opacity:0;width:0;height:0"><span style="position:absolute;cursor:pointer;inset:0;background:#333;border-radius:34px;transition:.3s" onclick="var cb=this.previousElementSibling;cb.checked=!cb.checked;window.parent.updateSysSetting(\''+x[0]+'\',cb.checked)"></span></label></div>';}).join('')+'<div style="background:#111;border:1px solid #1a1a1a;padding:14px 15px;border-radius:10px;margin-bottom:9px;display:flex;justify-content:space-between;align-items:center"><div style="display:flex;gap:12px;align-items:center"><i class="fas fa-mask" style="color:#555;width:18px;font-size:1.1rem"></i><div><div style="font-weight:700;font-size:14px">Tab Cloak</div><div style="color:#555;font-size:12px">Disguise this tab</div></div></div><select onchange="window.parent.updateCloak(this.value)" style="background:#222;color:#fff;border:1px solid #333;padding:6px;border-radius:6px;outline:none;font-family:Rajdhani"><option value="none">None (Intellectual OS)</option><option value="google">Google</option><option value="drive">Google Drive</option><option value="canvas">Canvas</option><option value="classroom">Google Classroom</option></select></div><div style="background:#111;border:1px solid #1a1a1a;padding:14px 15px;border-radius:10px;margin-bottom:9px;display:flex;justify-content:space-between;align-items:center"><div style="display:flex;gap:12px;align-items:center"><i class="fas fa-exclamation-triangle" style="color:#555;width:18px;font-size:1.1rem"></i><div><div style="font-weight:700;font-size:14px">Panic Key</div><div style="color:#555;font-size:12px">Instant Google redirect</div></div></div><input type="text" id="pk" maxlength="1" style="width:38px;height:28px;background:#222;border:1px solid #333;color:#fff;text-align:center;font-size:1.1rem;font-weight:bold;outline:none;border-radius:4px" onkeyup="window.parent.updateSysSetting(\'panicKey\',this.value)"></div><div style="background:#111;border:1px solid #1a1a1a;padding:14px 15px;border-radius:10px;cursor:pointer;transition:.2s" onclick="window.open(\'https://discord.gg/bQCRJgtC74\',\'_blank\')" onmouseover="this.style.borderColor=\'#5865f2\'" onmouseout="this.style.borderColor=\'#1a1a1a\'"><div style="display:flex;gap:12px;align-items:center"><i class="fab fa-discord" style="color:#5865f2;width:18px;font-size:1.1rem"></i><div style="font-weight:700;font-size:14px">Join Discord</div><div style="margin-left:auto;color:#444">→</div></div></div></div><script>var p=window.parent.sysConfig;["optBg","shortBoot","idleLock","redirectConfirm"].forEach(function(k){var el=document.getElementById("c-"+k);if(el)el.checked=p[k];});document.getElementById("pk").value=p.panicKey||"";<\/script>'+E;
+
+if(id==='ciniai')return B+'<div style="height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:30px;text-align:center"><div style="font-size:2.5rem">🤖</div><h2 style="font-family:Orbitron;letter-spacing:3px;font-size:.9rem">INTELLECTUAL AI</h2><p style="color:#555;font-size:13px;max-width:280px;line-height:1.6">AI assistants open in a new tab</p><div style="display:flex;flex-direction:column;gap:10px;width:100%;max-width:260px">'+[['ChatGPT','https://chat.openai.com','#10a37f'],['Claude','https://claude.ai','#d97706'],['Gemini','https://gemini.google.com','#4285f4'],['Perplexity','https://perplexity.ai','#1fb8cd'],['Grok','https://grok.x.ai','#fff']].map(function(x){return'<a href="'+x[1]+'" target="_blank" style="background:'+x[2]+'18;border:1px solid '+x[2]+'33;color:#fff;padding:12px 18px;border-radius:10px;text-decoration:none;font-weight:700;letter-spacing:1px;display:flex;justify-content:space-between;align-items:center;transition:.2s" onmouseover="this.style.borderColor=\''+x[2]+'\'" onmouseout="this.style.borderColor=\''+x[2]+'33\'">'+x[0]+'<span style="color:'+x[2]+';font-size:16px">→</span></a>';}).join('')+'</div></div>'+E;
+
+if(id==='discord')return B+'<div style="height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px"><img src="https://assets-global.website-files.com/6257adef93867e50d84d30e2/636e0a6a49cf127bf92de1e2_icon_clyde_blurple_RGB.png" style="width:70px"><h2 style="font-family:Orbitron;letter-spacing:3px;font-size:.9rem">DISCORD</h2><p style="color:#555;font-size:13px">Discord blocks iframes — opens in new tab</p><a href="https://discord.com/app" target="_blank" style="background:#5865f2;color:#fff;padding:12px 28px;border-radius:8px;text-decoration:none;font-weight:700;letter-spacing:1px">OPEN DISCORD</a></div>'+E;
+
+if(id==='roblox')return B+'<div style="height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS9KvNyFWMg_bjo_q_1IVLKFWbfCeonn2qDow&s" style="width:70px;border-radius:14px"><h2 style="font-family:Orbitron;letter-spacing:3px;font-size:.9rem">ROBLOX</h2><p style="color:#555;font-size:13px">Roblox blocks iframes — opens in new tab</p><a href="https://www.roblox.com" target="_blank" style="background:#e2231a;color:#fff;padding:12px 28px;border-radius:8px;text-decoration:none;font-weight:700;letter-spacing:1px">PLAY ROBLOX</a></div>'+E;
+
+if(id==='youtube')return B+'<div style="height:100%;display:flex;flex-direction:column"><iframe src="https://www.youtube.com" style="flex:1;border:none" allow="autoplay;fullscreen"></iframe><div style="background:#111;padding:7px;text-align:center;font-size:12px;color:#555;flex-shrink:0">Blocked? <a href="https://www.youtube.com" target="_blank" style="color:#ff0000">Open in new tab</a></div></div>'+E;
+
+if(id==='Geforce')return B+'<div style="height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px"><img src="https://play-lh.googleusercontent.com/_-b_HQXrVyyhZSHj_BoE9u_-cxkcHDH_yLX5rDjJsFMIfsCNQs9F3QP4JvEFcWaSIz0=w240-h480-rw" style="width:70px;border-radius:14px"><h2 style="font-family:Orbitron;letter-spacing:3px;font-size:.9rem">GEFORCE NOW</h2><a href="https://play.geforcenow.com" target="_blank" style="background:#76b900;color:#000;padding:12px 28px;border-radius:8px;text-decoration:none;font-weight:700;letter-spacing:1px">LAUNCH</a></div>'+E;
+
+return B+'<div style="height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px"><div style="font-size:2.5rem">🚧</div><p style="font-family:Orbitron;letter-spacing:3px;color:#2a2a2a;font-size:.8rem">APP NOT CONFIGURED</p></div>'+E;
 }
 
-async function loadDynamicResources() {
-    renderUI();
-    initWallpapers();
-    setupAppContextMenu();
-}
+// ── WINDOWS ───────────────────────────────────────────────────────────────────
+function toggleApp(id){var w=document.getElementById('win-'+id);if(w){if(w.classList.contains('minimized')){w.classList.remove('minimized');w.classList.add('active');w.style.zIndex=++highestZ;activeWindowId=id;startImmersiveMode(w);}else if(activeWindowId===id){minimizeWindow(id);}else{w.style.zIndex=++highestZ;activeWindowId=id;startImmersiveMode(w);}}else{openWindow(id);}}
+function openWindow(id){var sm=document.getElementById('start-menu');if(sm){sm.classList.remove('open');setTimeout(function(){sm.style.display='none';},300);}var layer=document.getElementById('windows-layer'),win=document.getElementById('win-'+id);if(!win){var dat=APPS[id]||{title:'APP',internal:true};win=document.createElement('div');win.id='win-'+id;win.className='window active header-visible';win.style.zIndex=++highestZ;win.innerHTML='<div class="win-header" onmousedown="DragSystem.startWinDrag(event,\''+id+'\')"><div class="win-title">'+dat.title+'</div><div class="win-controls"><div class="win-btn btn-min" onclick="minimizeWindow(\''+id+'\')"></div><div class="win-btn btn-close" onclick="closeWindow(\''+id+'\')"></div></div></div><div class="win-body"><iframe id="frame-'+id+'"></iframe></div>';layer.appendChild(win);var f=document.getElementById('frame-'+id);if(f)f.srcdoc=getAppSrcdoc(id);}else{win.classList.remove('minimized');win.classList.add('active');win.style.zIndex=++highestZ;}activeWindowId=id;startImmersiveMode(win);}
+function closeWindow(id){var w=document.getElementById('win-'+id);if(w)w.remove();if(activeWindowId===id)activeWindowId=null;endImmersiveMode();}
+function minimizeWindow(id){var w=document.getElementById('win-'+id);if(w){w.classList.add('minimized');w.classList.remove('active');if(activeWindowId===id)activeWindowId=null;}endImmersiveMode();}
+function startImmersiveMode(win){document.getElementById('dock-container').classList.add('dock-hidden');win.classList.remove('header-visible');}
+function endImmersiveMode(){var aw=document.querySelectorAll('.window.active:not(.minimized)');if(aw.length===0){document.getElementById('dock-container').classList.remove('dock-hidden');activeWindowId=null;}else{var t=aw[aw.length-1];activeWindowId=t.id.replace('win-','');t.style.zIndex=++highestZ;startImmersiveMode(t);}}
+var dockTimer,dEl=document.getElementById('dock-container');
+document.getElementById('bottom-trigger').addEventListener('mouseenter',function(){dEl.classList.remove('dock-hidden');clearTimeout(dockTimer);});
+dEl.addEventListener('mouseleave',function(){if(document.querySelectorAll('.window.active:not(.minimized)').length>0)dockTimer=setTimeout(function(){dEl.classList.add('dock-hidden');},1000);});
+dEl.addEventListener('mouseenter',function(){clearTimeout(dockTimer);});
+document.getElementById('top-trigger').addEventListener('mouseenter',function(){if(activeWindowId){var w=document.getElementById('win-'+activeWindowId);if(w&&!w.classList.contains('minimized'))w.classList.add('header-visible');}});
+document.addEventListener('mouseover',function(e){if(e.target.closest('.win-header')){if(activeWindowId){var w=document.getElementById('win-'+activeWindowId);if(w)w.classList.add('header-visible');}}else if(activeWindowId&&!e.target.closest('#top-trigger')){var w=document.getElementById('win-'+activeWindowId);if(w)w.classList.remove('header-visible');}});
 
-window.onbeforeunload = function(e) {
-    if(sysConfig.redirectConfirm) {
-        let msg = "Are you sure you want to leave? This helps block GoGuardian redirects.";
-        e.returnValue = msg;
-        return msg;
-    }
-};
+// ── DESKTOP ───────────────────────────────────────────────────────────────────
+var desktopLayout=JSON.parse(localStorage.getItem('intel_desktop_v2'))||[];
+function saveDesktop(){localStorage.setItem('intel_desktop_v2',JSON.stringify(desktopLayout));loadDesktop();}
+function loadDesktop(){var c=document.getElementById('desktop-area');document.querySelectorAll('.desktop-app').forEach(function(e){e.remove();});desktopLayout.forEach(function(item,idx){var d=document.createElement('div');d.className='desktop-app';d.style.left=item.x+'px';d.style.top=item.y+'px';d.setAttribute('data-idx',idx);if(item.type==='folder'){var gHTML='<div class="d-folder-grid">';item.apps.slice(0,4).forEach(function(a){if(APPS[a])gHTML+='<img src="'+APPS[a].icon+'">';});gHTML+='</div>';if(!item.hideName)gHTML+='<div class="d-label">'+(item.customName||'Folder')+'</div>';d.innerHTML=gHTML;d.onclick=function(ev){if(DragSystem.isDragMove)return;ev.stopPropagation();if(!this.classList.contains('expanded-folder')){closeAllFolders();expandFolder(this,item,idx);}};}else{var a=APPS[item.id];if(a){d.innerHTML='<img src="'+(item.customIcon||a.icon)+'" class="d-icon">'+(item.hideName?'':'<div class="d-label">'+(item.customName||a.title)+'</div>');d.ondblclick=function(ev){ev.stopPropagation();toggleApp(item.id);};}}d.onmousedown=function(ev){ev.stopPropagation();if(ev.button===0)DragSystem.start(ev,d,'desktop',idx);};d.oncontextmenu=function(ev){ev.preventDefault();ev.stopPropagation();hideAllCtx();var m=document.getElementById('app-context-menu');if(m){m.style.display='block';m.style.left=ev.pageX+'px';m.style.top=ev.pageY+'px';m.setAttribute('data-target-idx',idx);}};c.appendChild(d);});}
+function expandFolder(el,dat,idx){el.classList.add('expanded-folder');var h='<div class="folder-header">'+(dat.customName||'Folder')+' <i class="fas fa-times" onclick="closeAllFolders(event)"></i></div><div class="folder-grid-expanded">';dat.apps.forEach(function(aId){var info=APPS[aId];if(info)h+='<div class="f-app" onclick="event.stopPropagation();toggleApp(\''+aId+'\')"><img src="'+info.icon+'"><span>'+info.title+'</span></div>';});h+='</div>';el.innerHTML=h;setTimeout(function(){var rect=el.getBoundingClientRect();document.querySelectorAll('.desktop-app:not(.expanded-folder)').forEach(function(s){var sr=s.getBoundingClientRect();if(!(rect.right<sr.left||rect.left>sr.right||rect.bottom<sr.top||rect.top>sr.bottom)){s.style.transform='translateY('+(rect.bottom-sr.top+20)+'px)';s.setAttribute('data-pushed','true');}});},50);}
+function closeAllFolders(ev){if(ev)ev.stopPropagation();document.querySelectorAll('.expanded-folder').forEach(function(o){o.classList.remove('expanded-folder');});document.querySelectorAll('.desktop-app[data-pushed="true"]').forEach(function(j){j.style.transform='';j.removeAttribute('data-pushed');});setTimeout(loadDesktop,250);}
+function setupAppContextMenu(){var m=document.getElementById('app-context-menu');if(!m)return;m.innerHTML='<li class="ctx-item" id="ctx-rename" role="menuitem" tabindex="0"><i class="fas fa-edit fa-fw"></i> Rename</li><li class="ctx-item" id="ctx-hidename" role="menuitem" tabindex="0"><i class="fas fa-eye-slash fa-fw"></i> Toggle Name</li><li class="ctx-item" id="ctx-changeicon" role="menuitem" tabindex="0"><i class="fas fa-image fa-fw"></i> Change Icon</li><li class="ctx-separator"></li><li class="ctx-item" id="ctx-delete" role="menuitem" tabindex="0"><i class="fas fa-trash fa-fw" style="color:#aaa"></i> Remove</li>';document.getElementById('ctx-rename').onclick=function(){var i=m.getAttribute('data-target-idx'),nm=prompt("New name:",desktopLayout[i].customName||"");if(nm!==null){desktopLayout[i].customName=nm.trim()||"App";saveDesktop();}m.style.display='none';};document.getElementById('ctx-hidename').onclick=function(){var i=m.getAttribute('data-target-idx');desktopLayout[i].hideName=!desktopLayout[i].hideName;saveDesktop();m.style.display='none';};document.getElementById('ctx-changeicon').onclick=function(){var i=m.getAttribute('data-target-idx'),url=prompt("Image URL for icon:");if(url){desktopLayout[i].customIcon=url;saveDesktop();}m.style.display='none';};document.getElementById('ctx-delete').onclick=function(){var i=m.getAttribute('data-target-idx');desktopLayout.splice(i,1);saveDesktop();m.style.display='none';};}
+document.addEventListener('contextmenu',function(e){var ids=['desktop-area','windows-layer','bg-video','bg-img','snow-fx'];if(ids.includes(e.target.id)||e.target.tagName==='BODY'||e.target.closest('#right-sidebar')){e.preventDefault();hideAllCtx();var m=document.getElementById('desktop-context-menu');if(m){m.style.display='block';var x=e.pageX,y=e.pageY;if(x+200>window.innerWidth)x=window.innerWidth-200;if(y+100>window.innerHeight)y=window.innerHeight-100;m.style.left=x+'px';m.style.top=y+'px';}}});
+window.toggleDesktopSize=function(l){document.getElementById('desktop-area').classList[l?'add':'remove']('desktop-large-mode');document.getElementById('desktop-context-menu').style.display='none';};
 
-document.addEventListener("DOMContentLoaded", function() {
-    applyCloak();
-    loadDynamicResources();
-    document.getElementById('boot-layer').style.display = 'block';
-    loadDesktop();
-    updateSidebarData();
-});
-
-function renderUI() {
-    let dock = document.getElementById('dock-container');
-    let dHTML = '<div class="dock-item" onclick="toggleStartMenu()"><img src="https://missionsupport.archden.org/wp-content/uploads/2022/02/windows11-icon.png"></div><div class="dock-sep"></div><div class="dock-item" onclick="toggleAppDrawer()"><svg width="24" height="24" viewBox="0 0 24 24" fill="#aaa"><path d="M4 4h4v4H4zm6 0h4v4h-4zm6 0h4v4h-4zM4 10h4v4H4zm6 0h4v4h-4zm6 0h4v4h-4zM4 16h4v4H4zm6 0h4v4h-4zm6 0h4v4h-4z"/></svg></div><div class="dock-sep"></div>';
-    
-    let pGrid = document.getElementById('pinned-grid');
-    let pHTML = '';
-    
-    for(let id in APPS) {
-        if(APPS[id].pinned) {
-            dHTML += '<div class="dock-item" data-id="'+id+'" onmousedown="DragSystem.start(event,this,\'dock\',\''+id+'\')" onclick="toggleApp(\''+id+'\')" oncontextmenu="openDockCtx(event, \''+id+'\')"><img src="'+APPS[id].icon+'"></div>';
-            pHTML += '<div class="pinned-item" onclick="toggleApp(\''+id+'\')"><img src="'+APPS[id].icon+'"><span>'+APPS[id].title+'</span></div>';
-        }
-    }
-    
-    dock.innerHTML = dHTML;
-    pGrid.innerHTML = pHTML;
-    populateDrawer();
-}
-
-function openDockCtx(e, id) {
-    e.preventDefault(); e.stopPropagation();
-    hideAllCtx();
-    activeCtxId = id;
-    let m = document.getElementById('dock-ctx-menu');
-    if(m) {
-        m.style.display = 'block';
-        m.style.left = e.pageX + 'px';
-        m.style.top = e.pageY + 'px';
-    }
-}
-
-function openDrawerCtx(e, id) {
-    e.preventDefault(); 
-  e.stopPropagation();
-    hideAllCtx();
-    activeCtxId = id;
-    let m = document.getElementById('drawer-ctx-menu');
-    if(m) {
-        m.style.display = 'block';
-        m.style.left = e.pageX + 'px';
-        m.style.top = e.pageY + 'px';
-    }
-}
-
-document.getElementById('ctx-pin-app').onclick = function() {
-    if(activeCtxId && APPS[activeCtxId]) {
-        APPS[activeCtxId].pinned = true;
-        syncPins();
-        renderUI();
-    }
-    hideAllCtx();
-}
-
-document.getElementById('ctx-unpin-app').onclick = function() {
-    if(activeCtxId && APPS[activeCtxId]) {
-        APPS[activeCtxId].pinned = false;
-        syncPins();
-        renderUI();
-    }
-    hideAllCtx();
-}
-
-function hideAllCtx() {
-    let menus = ['app-context-menu','desktop-context-menu','drawer-ctx-menu','dock-ctx-menu'];
-    for(let i=0; i<menus.length; i++) {
-        let m = document.getElementById(menus[i]);
-        if(m) m.style.display = 'none';
-    }
-}
-document.addEventListener('click', hideAllCtx);
-
-document.addEventListener('keydown', function(e) {
-    if(bootActive && e.key === 'Enter' && document.getElementById('boot-layer').style.display !== 'none') {
-        enterCount++;
-        if(enterCount >= 2) skipBootSequence();
-        setTimeout(function(){ enterCount = 0; }, 500);
-    }
-    if(e.key && sysConfig.panicKey && e.key.toLowerCase() === sysConfig.panicKey.toLowerCase()) {
-        window.location.href = "https://google.com";
-    }
-});
-
-function startBootSequence() {
-    let cb = document.getElementById('boot-content');
-    let bv = document.getElementById('boot-video');
-    cb.style.display = 'none';
-    bv.style.display = 'block';
-    bv.muted = false;
-    bv.volume = 1.0;
-    
-    if(sysConfig.shortBoot) {
-        bv.src = "Videos/QuickBoot.mp4";
-        bv.load();
-    }
-    
-    let p = bv.play();
-    if(p !== undefined) {
-        p.catch(function() {
-            bv.muted = true;
-            bv.play();
-        });
-    }
-    bv.onended = function() {
-        if(bootActive) skipBootSequence();
-    };
-}
-
-function skipBootSequence() {
-    if(!bootActive) return;
-    bootActive = false;
-    let lay = document.getElementById('boot-layer');
-    let bv = document.getElementById('boot-video');
-    if(bv) bv.pause();
-    
-    if(lay) {
-        lay.style.opacity = '0';
-        document.getElementById('lock-screen').classList.add('active');
-        
-        let lv = document.getElementById('lock-video');
-        if(lv.style.display !== 'none') {
-            lv.play().catch(function(e) {});
-        }
-        
-        setTimeout(function() { lay.style.display = 'none'; }, 600);
-        updateClock();
-    }
-}
-
-function showNotification(title, msg) {
-    let c = document.getElementById('toast-container');
-    let t = document.createElement('div');
-    t.className = 'toast-notification';
-    t.innerHTML = '<div class="toast-header"><div class="toast-app-info"><div class="toast-icon"><i class="fas fa-bell"></i></div><span>System</span></div><i class="fas fa-times toast-close"></i></div><div class="toast-title">' + title + '</div><div class="toast-body">' + msg + '</div>';
-    c.appendChild(t);
-    
-    setTimeout(function(){ t.classList.add('show'); }, 100);
-    t.onclick = function() {
-        t.classList.remove('show');
-        setTimeout(function(){ t.remove(); }, 400);
-    };
-    setTimeout(t.onclick, 6000);
-}
-
-var welcomeShown = false;
-window.unlockSystem = function() {
-    let scr = document.getElementById('lock-screen');
-    scr.classList.add('slide-up');
-    setTimeout(function() {
-        scr.classList.remove('active');
-        isDesktopActive = true;
-        document.getElementById('lock-video').pause();
-        
-        if(!sysConfig.optBg) {
-            let bV = document.getElementById('bg-video');
-            if(bV.style.display !== 'none') bV.play().catch(function(e){});
-        }
-        if(!welcomeShown) {
-            showNotification("Welcome To Intellectual OS", "Check Settings for FAQ!");
-            welcomeShown = true;
-        }
-    }, 600);
-    resetIdle();
-};
-
-function applyMediaToElements(url, vidEl, imgEl, isBg) {
-    if(!url) return;
-    let isImg = url.match(/\.(png|jpg|jpeg|gif)$/i);
-    if(isImg) {
-        vidEl.style.display = 'none';
-        vidEl.pause();
-        imgEl.style.display = 'block';
-        imgEl.src = url;
-    } else {
-        imgEl.style.display = 'none';
-        vidEl.style.display = 'block';
-        vidEl.src = url;
-        vidEl.load();
-        if(isBg && isDesktopActive && !sysConfig.optBg) vidEl.play().catch(function(e){});
-        if(!isBg && document.getElementById('lock-screen').classList.contains('active')) vidEl.play().catch(function(e){});
-    }
-}
-
-function initWallpapers() {
-    let bV = document.getElementById('bg-video');
-    let bI = document.getElementById('bg-img');
-    let lV = document.getElementById('lock-video');
-    let lI = document.getElementById('lock-img');
-    
-    if(wallpaperRegistry[sysConfig.homeWallpaper]) {
-        applyMediaToElements(wallpaperRegistry[sysConfig.homeWallpaper].url, bV, bI, true);
-    }
-    if(wallpaperRegistry[sysConfig.lockWallpaper]) {
-        applyMediaToElements(wallpaperRegistry[sysConfig.lockWallpaper].url, lV, lI, false);
-    } else {
-        applyMediaToElements("Videos/green.mp4", lV, lI, false);
-    }
-    
-    updateWallpaperLoop();
-    let wChk = document.getElementById('wp-loop-chk');
-    if(wChk) wChk.checked = sysConfig.wpLoop;
-}
-
-function updateWallpaperLoop() {
-    let bV = document.getElementById('bg-video');
-    let lV = document.getElementById('lock-video');
-    if(bV) bV.loop = sysConfig.wpLoop;
-    if(lV) lV.loop = sysConfig.wpLoop;
-    if(!sysConfig.optBg && isDesktopActive && bV && bV.paused && bV.style.display !== 'none') {
-        bV.play().catch(function(e){});
-    }
-}
-
-function updateClock() {
-    let n = new Date();
-    let dArr = ['SUNDAY','MONDAY','TUESDAY','WEDNESDAY','THURSDAY','FRIDAY','SATURDAY'];
-    let mArr = ['JANUARY','FEBRUARY','MARCH','APRIL','MAY','JUNE','JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER'];
-    
-    let hrs = n.getHours().toString().padStart(2, '0');
-    let min = n.getMinutes().toString().padStart(2, '0');
-    let dNum = n.getDate().toString().padStart(2, '0');
-    let dName = dArr[n.getDay()];
-    let yr = n.getFullYear();
-    
-    let lDay = document.getElementById('lock-day-large');
-    let lDat = document.getElementById('lock-date');
-    let lTim = document.getElementById('lock-time');
-    let hDay = document.getElementById('lbl-day');
-    
-    if(lDay) lDay.innerText = dName;
-    if(hDay) hDay.innerText = dName;
-    if(lDat) lDat.innerText = dNum + ' ' + mArr[n.getMonth()] + ', ' + yr + '.';
-    if(lTim) lTim.innerText = '- ' + hrs + ':' + min + ' -';
-}
-setInterval(updateClock, 1000);
-
-var idleTime = 0;
-function resetIdle() { idleTime = 0; }
-document.addEventListener('mousemove', resetIdle);
-document.addEventListener('keypress', resetIdle);
-
-setInterval(function() {
-    idleTime++;
-    let scr = document.getElementById('lock-screen');
-    if(sysConfig.idleLock && idleTime >= 180 && !scr.classList.contains('active') && !bootActive) {
-        if(isMediaPlaying) {
-            idleTime = 0; 
-        } else {
-            isDesktopActive = false;
-            scr.classList.remove('slide-up');
-            scr.classList.add('active');
-            document.getElementById('bg-video').pause();
-            let lv = document.getElementById('lock-video');
-            if(lv.style.display !== 'none') lv.play().catch(function(e){});
-        }
-    }
-}, 1000);
-
-window.launchLastPlayed = function() { toggleApp('files'); };
-window.resumeSpotify = function() { toggleApp('term'); };
-window.openUpdateLog = function() {
-    let u = document.getElementById('update-modal');
-    if(u && u.showModal) u.showModal();
-    else if(u) u.style.display = 'flex';
-};
-
-function updateSidebarData() {
-    try {
-        let ps = JSON.parse(localStorage.getItem('ps_purchased'));
-        if(ps && ps.length > 0) document.getElementById('last-game-name').innerText = "PS5 Library Ready";
-        let sp = JSON.parse(localStorage.getItem('cinify_cache'));
-        if(sp) {
-            let k = Object.keys(sp);
-            if(k.length > 0) {
-                document.getElementById('spotify-track-name').innerText = sp[k[k.length-1]].title || "Liked Song";
-                if(sp[k[k.length-1]].cover) document.getElementById('spotify-album-art').src = sp[k[k.length-1]].cover;
-            }
-        }
-    } catch(e) {}
-}
-setInterval(updateSidebarData, 5000);
-
-function populateDrawer() {
-    let g = document.getElementById('drawer-grid');
-    g.innerHTML = '';
-    for(let key in APPS) {
-        let a = APPS[key];
-        let d = document.createElement('div');
-        d.className = 'drawer-item';
-        d.dataset.id = key;
-        d.innerHTML = '<img src="' + a.icon + '" style="pointer-events:none;"><span>' + a.title + '</span>';
-        
-        d.onmousedown = function(e) { DragSystem.start(e, this, 'drawer', this.dataset.id); };
-        d.onclick = function(e) {
-            if(!DragSystem.isDragMove) {
-                toggleApp(this.dataset.id);
-                toggleAppDrawer();
-            }
-        };
-        d.oncontextmenu = function(e) { openDrawerCtx(e, this.dataset.id); }
-        g.appendChild(d);
-    }
-}
-
-function filterDrawer(val) {
-    let items = document.querySelectorAll('.drawer-item');
-    let q = val.toLowerCase();
-    for(let i=0; i<items.length; i++) {
-        let txt = items[i].innerText.toLowerCase();
-        if(txt.includes(q)) items[i].style.display = 'flex';
-        else items[i].style.display = 'none';
-    }
-}
-
-function toggleAppDrawer() {
-    let d = document.getElementById('app-drawer');
-    if(d.classList.contains('open')) {
-        d.classList.remove('open');
-        setTimeout(function(){ d.style.display='none'; }, 300);
-    } else {
-        d.style.display = 'block';
-        setTimeout(function(){ d.classList.add('open'); }, 10);
-    }
-}
-
-function toggleApp(id) {
-    let w = document.getElementById('win-' + id);
-    if(w) {
-        if(w.classList.contains('minimized')) {
-            w.classList.remove('minimized');
-            w.classList.add('active');
-            w.style.zIndex = ++highestZ;
-            activeWindowId = id;
-            startImmersiveMode(w);
-        } else if(activeWindowId === id) {
-            minimizeWindow(id);
-        } else {
-            w.style.zIndex = ++highestZ;
-            activeWindowId = id;
-            startImmersiveMode(w);
-        }
-    } else {
-        openWindow(id);
-    }
-}
-
-function openWindow(id) {
-    let m = document.getElementById('start-menu');
-    if(m) {
-        m.classList.remove('open');
-        setTimeout(function(){ m.style.display='none'; }, 300);
-    }
-    
-    let layer = document.getElementById('windows-layer');
-    let win = document.getElementById('win-' + id);
-    
-    if(!win) {
-        let dat = APPS[id] || {title: 'APP', path: 'about:blank'};
-        win = document.createElement('div');
-        win.id = 'win-' + id;
-        win.className = 'window active header-visible';
-        win.style.zIndex = ++highestZ;
-        
-        let iframeStr = dat.internal ? '<iframe id="frame-' + id + '"></iframe>' : '<iframe id="frame-' + id + '" src="' + dat.path + '"></iframe>';
-        
-        win.innerHTML = '<div class="win-header" onmousedown="DragSystem.startWinDrag(event, \'' + id + '\')"><div class="win-title">' + dat.title + '</div><div class="win-controls"><div class="win-btn btn-min" onclick="minimizeWindow(\'' + id + '\')"></div><div class="win-btn btn-close" onclick="closeWindow(\'' + id + '\')"></div></div></div><div class="win-body">' + iframeStr + '</div>';
-        
-        layer.appendChild(win);
-        
-        if(dat.internal && id === 'settings') {
-            let f = document.getElementById('frame-' + id);
-            if(f) {
-                let html = `
-                <!DOCTYPE html>
-                <html>
-                <head>
-                    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
-                    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-                    <style>
-                        body { background: #000; color: #fff; font-family: 'Rajdhani', sans-serif; padding: 25px; margin: 0; outline: none; }
-                        * { outline: none; -webkit-tap-highlight-color: transparent; }
-                        h2 { border-bottom: 2px solid #333; padding-bottom: 10px; font-weight: 700; letter-spacing: 1px; }
-                        .setting-card { background: #111; border: 1px solid #333; padding: 15px; border-radius: 10px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
-                        .setting-text { display: flex; flex-direction: column; }
-                        .setting-text b { color: #fff; font-size: 15px; }
-                        .setting-text small { color: #888; font-size: 13px; }
-                        .switch { position: relative; display: inline-block; width: 40px; height: 20px; }
-                        .switch input { opacity: 0; width: 0; height: 0; }
-                        .slider { position: absolute; cursor: pointer; inset: 0; background-color: #444; transition: .3s; border-radius: 34px; }
-                        .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: #fff; transition: .3s; border-radius: 50%; }
-                        input:checked + .slider { background-color: #fff; }
-                        input:checked + .slider:before { transform: translateX(20px); background-color: #000; }
-                        input[type="text"], select { background: #222; color: #fff; border: 1px solid #444; padding: 6px; border-radius: 6px; }
-                        input:focus, select:focus { border-color: #888; }
-                    </style>
-                </head>
-                <body>
-                    <h2>SYSTEM CONFIGURATION</h2>
-                    <div class="setting-card">
-                        <div class="setting-text"><b>Optimized Background</b><small>Disables video background</small></div>
-                        <label class="switch"><input type="checkbox" id="chk-bg" onchange="window.parent.updateSysSetting('optBg',this.checked)"><span class="slider"></span></label>
-                    </div>
-                    <div class="setting-card">
-                        <div class="setting-text"><b>Fast Boot</b><small>Skips the startup sequence</small></div>
-                        <label class="switch"><input type="checkbox" id="chk-boot" onchange="window.parent.updateSysSetting('shortBoot',this.checked)"><span class="slider"></span></label>
-                    </div>
-                    <div class="setting-card">
-                        <div class="setting-text"><b>Idle Lock Screen</b><small>Locks system when away for 3 minutes</small></div>
-                        <label class="switch"><input type="checkbox" id="chk-idle" onchange="window.parent.updateSysSetting('idleLock',this.checked)"><span class="slider"></span></label>
-                    </div>
-                    <div class="setting-card">
-                        <div class="setting-text"><b>Redirect Confirmation</b><small>Helps Protect Against GoGuardian tracking!</small></div>
-                        <label class="switch"><input type="checkbox" id="chk-redir" onchange="window.parent.updateSysSetting('redirectConfirm',this.checked)"><span class="slider"></span></label>
-                    </div>
-                    <div class="setting-card">
-                        <div class="setting-text"><b>Tab Cloaking</b><small>Disguises OS as another site</small></div>
-                        <select id="cloak-select" onchange="window.parent.updateCloak(this.value)">
-                            <option value="none">None (Intellectual OS)</option>
-                            <option value="google">Google</option>
-                            <option value="drive">Google Drive</option>
-                            <option value="canvas">Canvas</option>
-                        </select>
-                    </div>
-                    <div class="setting-card">
-                        <div class="setting-text"><b>Panic Key</b><small>Instant site redirection shortcut</small></div>
-                        <input type="text" id="panic-input" maxlength="1" style="width:40px; text-align:center; font-weight:bold; font-size:16px;" onkeyup="window.parent.updateSysSetting('panicKey',this.value)">
-                    </div>
-                    <script>
-                        var prefs = window.parent.sysConfig;
-                        document.getElementById('chk-bg').checked = prefs.optBg;
-                        document.getElementById('chk-boot').checked = prefs.shortBoot;
-                        document.getElementById('chk-idle').checked = prefs.idleLock;
-                        document.getElementById('chk-redir').checked = prefs.redirectConfirm;
-                        document.getElementById('cloak-select').value = prefs.cloak;
-                        document.getElementById('panic-input').value = prefs.panicKey;
-                    <\/script>
-                </body>
-                </html>`;
-                f.srcdoc = html;
-            }
-        }
-    } else {
-        win.classList.remove('minimized');
-        win.classList.add('active');
-        win.style.zIndex = ++highestZ;
-    }
-    
-    activeWindowId = id;
-    startImmersiveMode(win);
-}
-
-function closeWindow(id) {
-    let w = document.getElementById('win-' + id);
-    if(w) w.remove();
-    if(activeWindowId === id) activeWindowId = null;
-    endImmersiveMode();
-}
-
-function minimizeWindow(id) {
-    let w = document.getElementById('win-' + id);
-    if(w) {
-        w.classList.add('minimized');
-        w.classList.remove('active');
-        if(activeWindowId === id) activeWindowId = null;
-    }
-    endImmersiveMode();
-}
-
-function startImmersiveMode(win) {
-    document.getElementById('dock-container').classList.add('dock-hidden');
-    win.classList.remove('header-visible');
-}
-
-function endImmersiveMode() {
-    let aw = document.querySelectorAll('.window.active:not(.minimized)');
-    if(aw.length === 0) {
-        document.getElementById('dock-container').classList.remove('dock-hidden');
-        activeWindowId = null;
-    } else {
-        let t = aw[aw.length - 1];
-        activeWindowId = t.id.replace('win-', '');
-        t.style.zIndex = ++highestZ;
-        startImmersiveMode(t);
-    }
-}
-
-var dockTimer;
-var dEl = document.getElementById('dock-container');
-document.getElementById('bottom-trigger').addEventListener('mouseenter', function() {
-    dEl.classList.remove('dock-hidden');
-    clearTimeout(dockTimer);
-});
-dEl.addEventListener('mouseleave', function() {
-    let aw = document.querySelectorAll('.window.active:not(.minimized)');
-    if(aw.length > 0) {
-        dockTimer = setTimeout(function() { dEl.classList.add('dock-hidden'); }, 1000);
-    }
-});
-dEl.addEventListener('mouseenter', function() { clearTimeout(dockTimer); });
-
-document.getElementById('top-trigger').addEventListener('mouseenter', function() {
-    if(activeWindowId) {
-        let w = document.getElementById('win-' + activeWindowId);
-        if(w && !w.classList.contains('minimized')) w.classList.add('header-visible');
-    }
-});
-
-document.addEventListener('mouseover', function(e) {
-    if(e.target.closest('.win-header')) {
-        if(activeWindowId) {
-            let w = document.getElementById('win-' + activeWindowId);
-            if(w) w.classList.add('header-visible');
-        }
-    } else if(activeWindowId && !e.target.closest('#top-trigger')) {
-        let w = document.getElementById('win-' + activeWindowId);
-        if(w) w.classList.remove('header-visible');
-    }
-});
-
-var desktopLayout = JSON.parse(localStorage.getItem('intel_desktop_v2')) || [];
-
-function saveDesktop() {
-    localStorage.setItem('intel_desktop_v2', JSON.stringify(desktopLayout));
-    loadDesktop();
-}
-
-function loadDesktop() {
-    let c = document.getElementById('desktop-area');
-    let ex = document.querySelectorAll('.desktop-app');
-    for(let j=0; j<ex.length; j++) ex[j].remove();
-    
-    desktopLayout.forEach(function(item, idx) {
-        let d = document.createElement('div');
-        d.className = 'desktop-app';
-        d.style.left = item.x + 'px';
-        d.style.top = item.y + 'px';
-        d.setAttribute('data-idx', idx);
-        
-        if(item.type === 'folder') {
-            let gHTML = '<div class="d-folder-grid">';
-            let mx = item.apps.slice(0, 4);
-            mx.forEach(function(a) {
-                if(APPS[a]) gHTML += '<img src="' + APPS[a].icon + '">';
-            });
-            gHTML += '</div>';
-            if(!item.hideName) gHTML += '<div class="d-label">' + (item.customName || 'Folder') + '</div>';
-            
-            d.innerHTML = gHTML;
-            d.onclick = function(ev) {
-                if(DragSystem.isDragMove) return;
-                ev.stopPropagation();
-                if(!this.classList.contains('expanded-folder')) {
-                    closeAllFolders();
-                    expandFolder(this, item, idx);
-                }
-            };
-        } else {
-            let a = APPS[item.id];
-            if(a) {
-                let iSrc = item.customIcon || a.icon;
-                let lbl = item.customName || a.title;
-                let h = '<img src="' + iSrc + '" class="d-icon">';
-                if(!item.hideName) h += '<div class="d-label">' + lbl + '</div>';
-                d.innerHTML = h;
-                d.ondblclick = function(ev) { ev.stopPropagation(); toggleApp(item.id); };
-            }
-        }
-        
-        d.onmousedown = function(ev) {
-            ev.stopPropagation();
-            if(ev.button === 0) DragSystem.start(ev, d, 'desktop', idx);
-        };
-        
-        d.oncontextmenu = function(ev) {
-            ev.preventDefault(); ev.stopPropagation();
-            hideAllCtx();
-            let m = document.getElementById('app-context-menu');
-            if(m) {
-                m.style.display = 'block';
-                m.style.left = ev.pageX + 'px';
-                m.style.top = ev.pageY + 'px';
-                m.setAttribute('data-target-idx', idx);
-            }
-        };
-        
-        c.appendChild(d);
-    });
-}
-
-function expandFolder(el, dat, idx) {
-    el.classList.add('expanded-folder');
-    
-    let h = '<div class="folder-header">' + (dat.customName || 'Folder') + ' <i class="fas fa-times" onclick="closeAllFolders(event)"></i></div>';
-    h += '<div class="folder-grid-expanded">';
-    for(let k=0; k<dat.apps.length; k++) {
-        let aId = dat.apps[k];
-        let info = APPS[aId];
-        if(info) {
-            h += '<div class="f-app" onclick="event.stopPropagation(); toggleApp(\'' + aId + '\')"><img src="' + info.icon + '"><span>' + info.title + '</span></div>';
-        }
-    }
-    h += '</div>';
-    el.innerHTML = h;
-    
-    setTimeout(function() {
-        let rect = el.getBoundingClientRect();
-        let sibs = document.querySelectorAll('.desktop-app:not(.expanded-folder)');
-        for(let s=0; s<sibs.length; s++) {
-            let sib = sibs[s];
-            let sr = sib.getBoundingClientRect();
-            if(!(rect.right < sr.left || rect.left > sr.right || rect.bottom < sr.top || rect.top > sr.bottom)) {
-                let push = (rect.bottom - sr.top) + 20;
-                sib.style.transform = 'translateY(' + push + 'px)';
-                sib.setAttribute('data-pushed', 'true');
-            }
-        }
-    }, 50);
-}
-
-function closeAllFolders(ev) {
-    if(ev) ev.stopPropagation();
-    let op = document.querySelectorAll('.expanded-folder');
-    if(op.length === 0) return;
-    
-    for(let i=0; i<op.length; i++) op[i].classList.remove('expanded-folder');
-    
-    let push = document.querySelectorAll('.desktop-app[data-pushed="true"]');
-    for(let j=0; j<push.length; j++) {
-        push[j].style.transform = '';
-        push[j].removeAttribute('data-pushed');
-    }
-    setTimeout(loadDesktop, 250);
-}
-
-function setupAppContextMenu() {
-    let m = document.getElementById('app-context-menu');
-    if(!m) return;
-    m.innerHTML = `
-        <li class="ctx-item" id="ctx-rename" role="menuitem" tabindex="0"><i class="fas fa-edit fa-fw" aria-hidden="true"></i> Rename</li>
-        <li class="ctx-item" id="ctx-hidename" role="menuitem" tabindex="0"><i class="fas fa-eye-slash fa-fw" aria-hidden="true"></i> Toggle Name</li>
-        <li class="ctx-item" id="ctx-changeicon" role="menuitem" tabindex="0"><i class="fas fa-image fa-fw" aria-hidden="true"></i> Change Icon</li>
-        <li class="ctx-separator" role="separator"></li>
-        <li class="ctx-item" id="ctx-delete" role="menuitem" tabindex="0"><i class="fas fa-trash fa-fw" style="color:#aaa;" aria-hidden="true"></i> Remove</li>
-    `;
-    
-    document.getElementById('ctx-rename').onclick = function() {
-        let i = m.getAttribute('data-target-idx');
-        let nm = prompt("Enter new name:", desktopLayout[i].customName || "");
-        if(nm !== null) {
-            desktopLayout[i].customName = nm.trim() === "" ? "App" : nm;
-            saveDesktop();
-        }
-        m.style.display = 'none';
-    };
-    
-    document.getElementById('ctx-hidename').onclick = function() {
-        let i = m.getAttribute('data-target-idx');
-        desktopLayout[i].hideName = !desktopLayout[i].hideName;
-        saveDesktop();
-        m.style.display = 'none';
-    };
-    
-    document.getElementById('ctx-changeicon').onclick = function() {
-        let i = m.getAttribute('data-target-idx');
-        let url = prompt("Enter image URL for custom icon:");
-        if(url) {
-            desktopLayout[i].customIcon = url;
-            saveDesktop();
-        }
-        m.style.display = 'none';
-    };
-    
-    document.getElementById('ctx-delete').onclick = function() {
-        let i = m.getAttribute('data-target-idx');
-        desktopLayout.splice(i, 1);
-        saveDesktop();
-        m.style.display = 'none';
-    };
-}
-
-document.addEventListener('contextmenu', function(e) {
-    let ids = ['desktop-area', 'windows-layer', 'bg-video', 'bg-img', 'snow-fx', 'right-sidebar'];
-    if(ids.includes(e.target.id) || e.target.tagName === 'BODY' || e.target.closest('#right-sidebar')) {
-        e.preventDefault();
-        hideAllCtx();
-        let m = document.getElementById('desktop-context-menu');
-        if(m) {
-            m.style.display = 'block';
-            let x = e.pageX, y = e.pageY;
-            if(x + 200 > window.innerWidth) x = window.innerWidth - 200;
-            if(y + 100 > window.innerHeight) y = window.innerHeight - 100;
-            m.style.left = x + 'px';
-            m.style.top = y + 'px';
-        }
-    }
-});
-
-var DragSystem = {
-    dragging: false, startPos: {x:0,y:0}, sourceType: null, sourceEl: null,
-    idx: null, appId: null, proxy: document.getElementById('drag-proxy'),
-    pImg: document.getElementById('proxy-img'), badge: document.getElementById('folder-badge'),
-    
-    init: function() {
-        window.addEventListener('mousemove', e => this.move(e));
-        window.addEventListener('mouseup', e => this.end(e));
-    },
-    
-    start: function(e, el, type, id) {
-        this.startPos = {x: e.clientX, y: e.clientY};
-        this.sourceType = type; this.sourceEl = el; this.isDragMove = false;
-        if(type === 'drawer' || type === 'dock') this.appId = id;
-        else if(type === 'desktop') { this.idx = id; this.sourceEl.style.opacity = '0.5'; }
-    },
-    
-    startWinDrag: function(e, id) {
-        this.startPos = {x: e.clientX, y: e.clientY};
-        this.sourceType = 'window'; this.sourceEl = document.getElementById('win-' + id);
-        this.isDragMove = false;
-    },
-    
-    move: function(e) {
-        if(!this.sourceEl) return;
-        let dx = Math.abs(e.clientX - this.startPos.x);
-        let dy = Math.abs(e.clientY - this.startPos.y);
-        
-        if(dx > 3 || dy > 3) {
-            this.dragging = true; this.isDragMove = true;
-            if(this.sourceType === 'desktop' || this.sourceType === 'drawer' || this.sourceType === 'dock') {
-                if(this.sourceType === 'drawer') toggleAppDrawer();
-                this.proxy.style.display = 'block';
-                this.proxy.style.left = (e.clientX - 25) + 'px';
-                this.proxy.style.top = (e.clientY - 25) + 'px';
-                
-                if(this.sourceType === 'drawer' || this.sourceType === 'dock') {
-                    if(APPS[this.appId]) this.pImg.src = APPS[this.appId].icon;
-                } else {
-                    let itm = desktopLayout[this.idx];
-                    if(itm.type === 'app') {
-                        if(APPS[itm.id]) this.pImg.src = APPS[itm.id].icon;
-                    } else {
-                        this.pImg.src = '';
-                        this.badge.style.display = 'flex';
-                        this.badge.innerText = itm.apps.length;
-                    }
-                }
-            }
-        }
-    },
-    
-    end: function(e) {
-        if(!this.sourceEl) return;
-        if(!this.isDragMove && this.sourceType === 'desktop') { this.reset(); return; }
-        if(!this.dragging) { this.reset(); return; }
-        
-        if(this.sourceType === 'desktop' || this.sourceType === 'drawer' || this.sourceType === 'dock') {
-            let nx = Math.round((e.clientX - 40) / 90) * 90;
-            let ny = Math.round((e.clientY - 40) / 100) * 100;
-            
-            if(e.clientY > window.innerHeight - 80) {
-                if(this.sourceType === 'desktop') desktopLayout.splice(this.idx, 1);
-            } else {
-                let tIdx = -1;
-                let aAll = document.querySelectorAll('.desktop-app');
-                for(let i=0; i<aAll.length; i++) {
-                    if(aAll[i] !== this.sourceEl) {
-                        let r = aAll[i].getBoundingClientRect();
-                        if(e.clientX > r.left && e.clientX < r.right && e.clientY > r.top && e.clientY < r.bottom) tIdx = aAll[i].dataset.idx;
-                    }
-                }
-                
-                if(tIdx > -1) {
-                    let targ = desktopLayout[tIdx];
-                    let drp = (this.sourceType === 'drawer' || this.sourceType === 'dock') ? [this.appId] : (desktopLayout[this.idx].type === 'app' ? [desktopLayout[this.idx].id] : desktopLayout[this.idx].apps);
-                    
-                    if(targ.type === 'app') {
-                        targ.type = 'folder';
-                        targ.apps = [targ.id].concat(drp);
-                        delete targ.id;
-                    } else {
-                        targ.apps.push.apply(targ.apps, drp);
-                    }
-                    if(this.sourceType === 'desktop') desktopLayout.splice(this.idx, 1);
-                } else {
-                    if(this.sourceType === 'drawer' || this.sourceType === 'dock') {
-                        desktopLayout.push({type: 'app', id: this.appId, x: nx, y: ny});
-                    } else {
-                        desktopLayout[this.idx].x = nx;
-                        desktopLayout[this.idx].y = ny;
-                    }
-                }
-            }
-            saveDesktop();
-        }
-        this.reset();
-    },
-    
-    reset: function() {
-        this.dragging = false;
-        if(this.sourceEl) this.sourceEl.style.opacity = '1';
-        this.sourceEl = null;
-        this.proxy.style.display = 'none';
-        this.badge.style.display = 'none';
-    }
-};
+// ── DRAG SYSTEM ───────────────────────────────────────────────────────────────
+var DragSystem={dragging:false,startPos:{x:0,y:0},sourceType:null,sourceEl:null,idx:null,appId:null,proxy:document.getElementById('drag-proxy'),pImg:document.getElementById('proxy-img'),badge:document.getElementById('folder-badge'),init:function(){window.addEventListener('mousemove',function(e){DragSystem.move(e);});window.addEventListener('mouseup',function(e){DragSystem.end(e);});},start:function(e,el,type,id){this.startPos={x:e.clientX,y:e.clientY};this.sourceType=type;this.sourceEl=el;this.isDragMove=false;if(type==='drawer'||type==='dock')this.appId=id;else if(type==='desktop'){this.idx=id;this.sourceEl.style.opacity='0.5';}},startWinDrag:function(e,id){this.startPos={x:e.clientX,y:e.clientY};this.sourceType='window';this.sourceEl=document.getElementById('win-'+id);this.isDragMove=false;},move:function(e){if(!this.sourceEl)return;var dx=Math.abs(e.clientX-this.startPos.x),dy=Math.abs(e.clientY-this.startPos.y);if(dx>3||dy>3){this.dragging=true;this.isDragMove=true;if(this.sourceType==='desktop'||this.sourceType==='drawer'||this.sourceType==='dock'){if(this.sourceType==='drawer')toggleAppDrawer();this.proxy.style.display='block';this.proxy.style.left=(e.clientX-25)+'px';this.proxy.style.top=(e.clientY-25)+'px';if(this.sourceType==='drawer'||this.sourceType==='dock'){if(APPS[this.appId])this.pImg.src=APPS[this.appId].icon;}else{var itm=desktopLayout[this.idx];if(itm.type==='app'&&APPS[itm.id])this.pImg.src=APPS[itm.id].icon;else{this.pImg.src='';this.badge.style.display='flex';this.badge.innerText=itm.apps.length;}}}}},end:function(e){if(!this.sourceEl)return;if(!this.isDragMove&&this.sourceType==='desktop'){this.reset();return;}if(!this.dragging){this.reset();return;}if(this.sourceType==='desktop'||this.sourceType==='drawer'||this.sourceType==='dock'){var nx=Math.round((e.clientX-40)/90)*90,ny=Math.round((e.clientY-40)/100)*100;if(e.clientY>window.innerHeight-80){if(this.sourceType==='desktop')desktopLayout.splice(this.idx,1);}else{var tIdx=-1;document.querySelectorAll('.desktop-app').forEach(function(a){if(a!==DragSystem.sourceEl){var r=a.getBoundingClientRect();if(e.clientX>r.left&&e.clientX<r.right&&e.clientY>r.top&&e.clientY<r.bottom)tIdx=a.dataset.idx;}});if(tIdx>-1){var targ=desktopLayout[tIdx],drp=(DragSystem.sourceType==='drawer'||DragSystem.sourceType==='dock')?[DragSystem.appId]:(desktopLayout[DragSystem.idx].type==='app'?[desktopLayout[DragSystem.idx].id]:desktopLayout[DragSystem.idx].apps);if(targ.type==='app'){targ.type='folder';targ.apps=[targ.id].concat(drp);delete targ.id;}else{targ.apps.push.apply(targ.apps,drp);}if(DragSystem.sourceType==='desktop')desktopLayout.splice(DragSystem.idx,1);}else{if(DragSystem.sourceType==='drawer'||DragSystem.sourceType==='dock')desktopLayout.push({type:'app',id:DragSystem.appId,x:nx,y:ny});else{desktopLayout[DragSystem.idx].x=nx;desktopLayout[DragSystem.idx].y=ny;}}}saveDesktop();}this.reset();},reset:function(){this.dragging=false;if(this.sourceEl)this.sourceEl.style.opacity='1';this.sourceEl=null;this.proxy.style.display='none';this.badge.style.display='none';}};
 DragSystem.init();
 
-window.toggleDesktopSize = function(l) {
-    if(l) document.getElementById('desktop-area').classList.add('desktop-large-mode');
-    else document.getElementById('desktop-area').classList.remove('desktop-large-mode');
-    document.getElementById('desktop-context-menu').style.display = 'none';
-};
+// ── SNOW ──────────────────────────────────────────────────────────────────────
+var cvsSnow=document.getElementById('snow-fx');
+if(cvsSnow){var ctxSnow=cvsSnow.getContext('2d');cvsSnow.width=window.innerWidth;cvsSnow.height=window.innerHeight;var flakes=[];for(var f=0;f<30;f++)flakes.push({x:Math.random()*cvsSnow.width,y:Math.random()*cvsSnow.height,r:Math.random()*2,s:Math.random()+0.5});(function ds(){if(isDesktopActive){ctxSnow.clearRect(0,0,cvsSnow.width,cvsSnow.height);ctxSnow.fillStyle="rgba(255,255,255,0.25)";for(var i=0;i<flakes.length;i++){var fl=flakes[i];ctxSnow.beginPath();ctxSnow.arc(fl.x,fl.y,fl.r,0,Math.PI*2);ctxSnow.fill();fl.y+=fl.s;if(fl.y>cvsSnow.height)fl.y=0;}}requestAnimationFrame(ds);})();}
 
-var unlockedWallpapers = JSON.parse(localStorage.getItem('intel_unlocked_wp')) || ['default'];
-window.wpMode = 'both';
-
-function setWallpaper(k, noti=false) {
-    let d = wallpaperRegistry[k];
-    if(!d) return;
-    
-    if(noti && d.locked && !unlockedWallpapers.includes(d.id)) {
-        unlockedWallpapers.push(d.id);
-        localStorage.setItem('intel_unlocked_wp', JSON.stringify(unlockedWallpapers));
-        alert("Wallpaper: [ " + d.name + " ] Unlocked.");
-    }
-    
-    if(window.wpMode === 'home' || window.wpMode === 'both') {
-        let bV = document.getElementById('bg-video');
-        let bI = document.getElementById('bg-img');
-        applyMediaToElements(d.url, bV, bI, true);
-        updateSysSetting('homeWallpaper', k);
-    }
-    
-    if(window.wpMode === 'lock' || window.wpMode === 'both') {
-        let lV = document.getElementById('lock-video');
-        let lI = document.getElementById('lock-img');
-        applyMediaToElements(d.url, lV, lI, false);
-        updateSysSetting('lockWallpaper', k);
-    }
-    
-    updateWallpaperLoop();
-    openWallpaperMenu();
-}
-
-function openWallpaperMenu() {
-    let m = document.getElementById('wallpaper-menu');
-    let gu = document.getElementById('wp-grid-unlocked');
-    let gl = document.getElementById('wp-grid-locked');
-    if(!m) return;
-    
-    if(m.showModal) m.showModal();
-    else m.style.display = 'flex';
-    m.classList.add('open');
-    
-    gu.innerHTML = '';
-    gl.innerHTML = '';
-    
-    for(let k in wallpaperRegistry) {
-        let d = wallpaperRegistry[k];
-        let ul = !d.locked || unlockedWallpapers.includes(d.id);
-        let c = document.createElement('div');
-        c.className = "wp-card " + (ul ? "" : "wp-locked");
-        
-        if(ul) {
-            let mHtml = "";
-            if(d.url.match(/\.(png|jpg|jpeg|gif)$/i)) mHtml = '<img src="' + d.url + '" alt="wp">';
-            else mHtml = '<video src="' + d.url + '" preload="auto" playsinline muted loop onmouseover="this.play()" onmouseout="this.pause()"></video>';
-            
-            c.innerHTML = mHtml + '<div class="wp-info">' + d.name + '</div>';
-            c.setAttribute('data-key', k);
-            c.onclick = function() {
-                setWallpaper(this.getAttribute('data-key'));
-                let crds = document.querySelectorAll('.wp-card');
-                for(let j=0; j<crds.length; j++) crds[j].classList.remove('active-wp');
-                this.classList.add('active-wp');
-            };
-            gu.appendChild(c);
-        } else {
-            c.innerHTML = '<div class="wp-info"><i class="fas fa-lock"></i></div>';
-            gl.appendChild(c);
-        }
-    }
-    
-    let chk = document.getElementById('wp-loop-chk');
-    if(chk) {
-        chk.checked = sysConfig.wpLoop;
-        chk.onchange = e => updateSysSetting('wpLoop', e.target.checked);
-    }
-}
-
-var sInp = document.getElementById('start-search-input');
-if(sInp) {
-    sInp.addEventListener('keydown', function(e) {
-        if(e.key === 'Enter') {
-            let q = this.value.trim();
-            if(wallpaperRegistry[q]) {
-                setWallpaper(q, true);
-                this.value = "";
-                this.blur();
-            }
-        }
-    });
-}
-
-function toggleStartMenu() {
-    let sm = document.getElementById('start-menu');
-    if(sm.classList.contains('open')) {
-        sm.classList.remove('open');
-        setTimeout(function(){ sm.style.display='none'; }, 300);
-    } else {
-        sm.style.display = 'flex';
-        setTimeout(function(){ sm.classList.add('open'); }, 10);
-    }
-}
-
-document.addEventListener('click', function(e) {
-    let sm = document.getElementById('start-menu');
-    if(sm && !sm.contains(e.target) && !e.target.closest('.dock-item')) {
-        sm.classList.remove('open');
-        setTimeout(function(){ sm.style.display='none'; }, 300);
-    }
-});
-
-var cvsSnow = document.getElementById('snow-fx');
-if(cvsSnow) {
-    var ctxSnow = cvsSnow.getContext('2d');
-    var sW = window.innerWidth, sH = window.innerHeight;
-    cvsSnow.width = sW; cvsSnow.height = sH;
-    
-    var flakes = [];
-    for(var f=0; f<30; f++) flakes.push({x: Math.random()*sW, y: Math.random()*sH, r: Math.random()*2, s: Math.random()+0.5});
-    
-    function drawSnow() {
-        if(isDesktopActive) {
-            ctxSnow.clearRect(0, 0, sW, sH);
-            ctxSnow.fillStyle = "rgba(255,255,255,0.3)";
-            for(let i=0; i<flakes.length; i++) {
-                let fl = flakes[i];
-                ctxSnow.beginPath();
-                ctxSnow.arc(fl.x, fl.y, fl.r, 0, Math.PI * 2);
-                ctxSnow.fill();
-                fl.y += fl.s;
-                if(fl.y > sH) fl.y = 0;
-            }
-        }
-        requestAnimationFrame(drawSnow);
-    }
-    drawSnow();
-}
-
-var MODES = ['FAST', 'THINKING', 'LIVE'];
-var cMode = 0;
-var isCiriActive = false;
-var holdTimer = null;
-var hasBootCiri = false;
-var expectKey = false;
-var sStream = null;
-var cImgB64 = null;
-var cImgMime = null;
-
-function checkApiKey() {
-    let st = document.getElementById('status-text');
-    let si = document.getElementById('status-icon');
-    if(!st) return;
-    if(localStorage.getItem('ciri_key')) {
-        st.textContent = "Secure"; st.className = "secure";
-        si.innerHTML = '<svg class="secure-svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><path d="M9 12l2 2 4-4"></path></svg>';
-    } else {
-        st.textContent = "Unstable"; st.className = "unstable";
-        si.innerHTML = '<svg class="unstable-svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>';
-    }
-}
+// ── CIRI ──────────────────────────────────────────────────────────────────────
+var isCiriActive=false,holdTimer=null,hasBootCiri=false;
+window.closeCiri=function(){document.body.classList.remove('ciri-active');isCiriActive=false;};
+function checkApiKey(){var st=document.getElementById('status-text'),si=document.getElementById('status-icon');if(!st)return;if(localStorage.getItem('ciri_key')){st.textContent="Secure";st.className="secure";si.innerHTML='<svg class="secure-svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><path d="M9 12l2 2 4-4"></path></svg>';}else{st.textContent="Unstable";st.className="unstable";si.innerHTML='<svg class="unstable-svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>';}}
 checkApiKey();
+window.autoGrow=function(el){el.style.height="5px";el.style.height=(el.scrollHeight)+"px";};
+window.addEventListener('keydown',function(e){if(e.altKey&&(e.code==='KeyS'||e.key.toLowerCase()==='s')){if(!holdTimer&&!isCiriActive){holdTimer=setTimeout(function(){document.body.classList.add('ciri-active');isCiriActive=true;var cInp=document.getElementById('chat-input');if(!hasBootCiri){var bs=document.getElementById('ciri-boot-screen');if(bs)bs.style.display='flex';setTimeout(function(){document.getElementById('boot-ciri-text').classList.add('typing');},300);setTimeout(function(){document.getElementById('boot-sub-text').classList.add('show');},1100);setTimeout(function(){document.getElementById('boot-loader').style.opacity='1';setTimeout(function(){document.getElementById('boot-status-text').textContent="Connection Established.";document.getElementById('boot-spinner').style.display='none';setTimeout(function(){bs.style.filter='blur(10px)';bs.style.opacity='0';setTimeout(function(){bs.style.display='none';hasBootCiri=true;if(cInp)cInp.focus();},800);},1800);},1000);},2200);}else{setTimeout(function(){if(cInp)cInp.focus();},100);}},2000);}}else if(e.code==='Escape'&&isCiriActive){closeCiri();}});
+window.addEventListener('keyup',function(e){if(e.code==='KeyS'||e.key.toLowerCase()==='s'||e.key==='Alt'){clearTimeout(holdTimer);holdTimer=null;}});
 
-window.autoGrow = function(el) { el.style.height = "5px"; el.style.height = (el.scrollHeight) + "px"; };
+// ── MEDIA PLAYER ──────────────────────────────────────────────────────────────
+var aMedia=null,nHide,cNoti=document.getElementById('cine-noti');
+function showNoti(){if(!cNoti)return;cNoti.classList.add('active');cNoti.classList.remove('minimized');var rb=document.getElementById('restore-btn');if(rb)rb.classList.remove('visible');resetNH();}
+function hideNoti(){if(!cNoti)return;cNoti.classList.remove('active');cNoti.classList.remove('minimized');var rb=document.getElementById('restore-btn');if(rb)rb.classList.remove('visible');clearTimeout(nHide);}
+function resetNH(){clearTimeout(nHide);if(cNoti&&cNoti.classList.contains('active')&&!cNoti.classList.contains('minimized')){nHide=setTimeout(function(){cNoti.classList.add('minimized');setTimeout(function(){var rb=document.getElementById('restore-btn');if(rb)rb.classList.add('visible');},300);},5000);}}
+if(cNoti){cNoti.addEventListener('mouseenter',function(){clearTimeout(nHide);});cNoti.addEventListener('mouseleave',resetNH);var mn=document.getElementById('minimize-noti-btn');if(mn)mn.onclick=function(){cNoti.classList.add('minimized');setTimeout(function(){var rb=document.getElementById('restore-btn');if(rb)rb.classList.add('visible');},300);};var rbtn=document.getElementById('restore-btn');if(rbtn)rbtn.onclick=function(){this.classList.remove('visible');cNoti.classList.remove('minimized');resetNH();};var clbtn=document.getElementById('close-noti-btn');if(clbtn)clbtn.onclick=function(){if(aMedia)aMedia.pause();hideNoti();};}
+setInterval(function(){var fnd=null;document.querySelectorAll('audio,video').forEach(function(m){if(!m.paused&&!m.muted&&m.volume>0&&!['bg-video','lock-video','boot-video'].includes(m.id))fnd=m;});document.querySelectorAll('iframe').forEach(function(ifr){try{var idc=ifr.contentDocument||ifr.contentWindow.document;if(idc)idc.querySelectorAll('audio,video').forEach(function(m){if(!m.paused&&!m.muted&&m.volume>0)fnd=m;});}catch(e){}});isMediaPlaying=!!fnd;if(fnd!==aMedia){if(fnd){aMedia=fnd;setupM();showNoti();}else{aMedia=null;hideNoti();}}if(aMedia){var ct=document.getElementById('current-time');if(ct)ct.textContent=fmtT(aMedia.currentTime);if(isFinite(aMedia.duration)&&aMedia.duration>0){var pf=document.getElementById('progress-fill');if(pf)pf.style.width=((aMedia.currentTime/aMedia.duration)*100)+'%';var tt=document.getElementById('total-time');if(tt)tt.textContent=fmtT(aMedia.duration);}}},1000);
+function setupM(){if(!aMedia)return;var nt=document.getElementById('noti-title');if(nt)nt.innerText=aMedia.title||"Web Media Playing";var pp=document.getElementById('play-pause');if(pp)pp.onclick=function(){aMedia.paused?aMedia.play():aMedia.pause();resetNH();};aMedia.addEventListener('play',function(){document.getElementById('icon-play').classList.add('hidden-svg');document.getElementById('icon-pause').classList.add('visible-svg');showNoti();});aMedia.addEventListener('pause',function(){var ipl=document.getElementById('icon-play'),ipa=document.getElementById('icon-pause');if(ipl){ipl.classList.remove('hidden-svg');ipl.classList.add('visible-svg');}if(ipa){ipa.classList.remove('visible-svg');ipa.classList.add('hidden-svg');}});var sb=document.getElementById('skip-back');if(sb)sb.onclick=function(){if(isFinite(aMedia.currentTime))aMedia.currentTime=Math.max(0,aMedia.currentTime-15);resetNH();};var sf=document.getElementById('skip-forward');if(sf)sf.onclick=function(){if(isFinite(aMedia.duration)&&aMedia.duration>0)aMedia.currentTime=Math.min(aMedia.duration,aMedia.currentTime+15);resetNH();};var pha=document.getElementById('progress-hit-area');if(pha)pha.onclick=function(e){if(isFinite(aMedia.duration)&&aMedia.duration>0){var r=this.getBoundingClientRect();aMedia.currentTime=((e.clientX-r.left)/r.width)*aMedia.duration;}resetNH();};}
+function fmtT(s){if(isNaN(s)||!isFinite(s))return"0:00";return Math.floor(s/60)+":"+(Math.floor(s%60)).toString().padStart(2,'0');}
+(function drawFV(){requestAnimationFrame(drawFV);var cv=document.getElementById('visualizer');if(!cv)return;var cx=cv.getContext('2d');cv.width=cv.parentElement.clientWidth;cv.height=14;cx.clearRect(0,0,cv.width,cv.height);var bL=32,bW=(cv.width/bL)*2,xP=0;for(var i=0;i<bL;i++){var bH=aMedia&&!aMedia.paused?(Math.random()*cv.height):2;cx.fillStyle="#fff";cx.beginPath();try{cx.roundRect(xP,cv.height-bH,bW-1.5,bH,2);}catch(e){cx.rect(xP,cv.height-bH,bW-1.5,bH);}cx.fill();xP+=bW;}})();
 
-window.addEventListener('keydown', function(e) {
-    if(e.altKey && (e.code === 'KeyS' || e.key.toLowerCase() === 's')) {
-        if(!holdTimer && !isCiriActive) {
-            holdTimer = setTimeout(function() {
-                document.body.classList.add('ciri-active');
-                isCiriActive = true;
-                let cInp = document.getElementById('chat-input');
-                if(!hasBootCiri) {
-                    let bs = document.getElementById('ciri-boot-screen');
-                    if(bs) bs.style.display = 'flex';
-                    setTimeout(function(){ document.getElementById('boot-ciri-text').classList.add('typing'); }, 300);
-                    setTimeout(function(){ document.getElementById('boot-sub-text').classList.add('show'); }, 1100);
-                    setTimeout(function() {
-                        document.getElementById('boot-loader').style.opacity = '1';
-                        setTimeout(function() {
-                            document.getElementById('boot-status-text').textContent = "Connection Established.";
-                            document.getElementById('boot-spinner').style.display = 'none';
-                            setTimeout(function() {
-                                bs.style.filter = 'blur(10px)'; bs.style.opacity = '0';
-                                setTimeout(function() {
-                                    bs.style.display = 'none';
-                                    hasBootCiri = true;
-                                    if(cInp) cInp.focus();
-                                }, 800);
-                            }, 1800);
-                        }, 1000);
-                    }, 2200);
-                } else {
-                    setTimeout(function(){ if(cInp) cInp.focus(); }, 100);
-                }
-            }, 2000);
-        }
-    } else if(e.code === 'Escape' && isCiriActive) {
-        closeCiri();
-    }
-});
+// ── FPS ───────────────────────────────────────────────────────────────────────
+var fLT=performance.now(),fFr=0,fLC=0;
+(function chkFps(){requestAnimationFrame(chkFps);var nw=performance.now();fFr++;if(nw-fLT>=1000){var cFps=fFr,fv=document.getElementById('fps-val');if(fv)fv.innerText=cFps;if(cFps<=20){fLC++;if(fLC>=5&&!sysConfig.optBg){sysConfig.optBg=true;localStorage.setItem('intel_sys_config',JSON.stringify(sysConfig));showNotification("System Optimized","Low FPS — backgrounds paused.");}}else{fLC=0;}fFr=0;fLT=nw;}})();
 
-window.addEventListener('keyup', function(e) {
-    if(e.code === 'KeyS' || e.key.toLowerCase() === 's' || e.key === 'Alt') {
-        clearTimeout(holdTimer); holdTimer = null;
-    }
-});
-
-window.closeCiri = function() {
-    document.body.classList.remove('ciri-active');
-    isCiriActive = false;
-};
-
-var aMedia = null;
-var nHide;
-var cNoti = document.getElementById('cine-noti');
-
-function showNoti() {
-    if(!cNoti) return;
-    cNoti.classList.add('active'); cNoti.classList.remove('minimized');
-    let rb = document.getElementById('restore-btn');
-    if(rb) rb.classList.remove('visible');
-    resetNH();
-}
-
-function hideNoti() {
-    if(!cNoti) return;
-    cNoti.classList.remove('active'); cNoti.classList.remove('minimized');
-    let rb = document.getElementById('restore-btn');
-    if(rb) rb.classList.remove('visible');
-    clearTimeout(nHide);
-}
-
-function resetNH() {
-    clearTimeout(nHide);
-    if(cNoti && cNoti.classList.contains('active') && !cNoti.classList.contains('minimized')) {
-        nHide = setTimeout(function() {
-            cNoti.classList.add('minimized');
-            setTimeout(function(){ let rb = document.getElementById('restore-btn'); if(rb) rb.classList.add('visible'); }, 300);
-        }, 5000);
-    }
-}
-
-if(cNoti) {
-    cNoti.addEventListener('mouseenter', function(){ clearTimeout(nHide); });
-    cNoti.addEventListener('mouseleave', resetNH);
-    let mn = document.getElementById('minimize-noti-btn');
-    if(mn) mn.onclick = function() {
-        cNoti.classList.add('minimized');
-        setTimeout(function(){ let rb = document.getElementById('restore-btn'); if(rb) rb.classList.add('visible'); }, 300);
-    };
-    let rbtn = document.getElementById('restore-btn');
-    if(rbtn) rbtn.onclick = function() {
-        this.classList.remove('visible');
-        cNoti.classList.remove('minimized');
-        resetNH();
-    };
-    let clbtn = document.getElementById('close-noti-btn');
-    if(clbtn) clbtn.onclick = function() {
-        if(aMedia) aMedia.pause();
-        hideNoti();
-    };
-}
-
-setInterval(function() {
-    let fnd = null;
-    let md = document.querySelectorAll('audio, video');
-    for(let i=0; i<md.length; i++) {
-        let m = md[i];
-        if(!m.paused && !m.muted && m.volume > 0 && !['bg-video', 'lock-video', 'boot-video'].includes(m.id)) fnd = m;
-    }
-    
-    let ifr = document.querySelectorAll('iframe');
-    for(let j=0; j<ifr.length; j++) {
-        try {
-            let idc = ifr[j].contentDocument || ifr[j].contentWindow.document;
-            if(idc) {
-                let imd = idc.querySelectorAll('audio, video');
-                for(let k=0; k<imd.length; k++) {
-                    if(!imd[k].paused && !imd[k].muted && imd[k].volume > 0) fnd = imd[k];
-                }
-            }
-        } catch(e) {}
-    }
-    
-    isMediaPlaying = !!fnd;
-    if(fnd !== aMedia) {
-        if(fnd) { aMedia = fnd; setupM(); showNoti(); }
-        else { aMedia = null; hideNoti(); }
-    }
-    
-    if(aMedia) {
-        let ct = document.getElementById('current-time');
-        if(ct) ct.textContent = fmtT(aMedia.currentTime);
-        if(isFinite(aMedia.duration) && aMedia.duration > 0) {
-            let pf = document.getElementById('progress-fill');
-            if(pf) pf.style.width = ((aMedia.currentTime / aMedia.duration) * 100) + "%";
-            let tt = document.getElementById('total-time');
-            if(tt) tt.textContent = fmtT(aMedia.duration);
-        }
-    }
-}, 1000);
-
-function setupM() {
-    if(!aMedia) return;
-    let nt = document.getElementById('noti-title');
-    if(nt) nt.innerText = aMedia.title || "Web Media Playing";
-    
-    let pp = document.getElementById('play-pause');
-    if(pp) pp.onclick = function() { aMedia.paused ? aMedia.play() : aMedia.pause(); resetNH(); };
-    
-    aMedia.addEventListener('play', function() {
-        let iPl = document.getElementById('icon-play');
-        let iPa = document.getElementById('icon-pause');
-        if(iPl) iPl.classList.add('hidden-svg');
-        if(iPa) iPa.classList.add('visible-svg');
-        showNoti();
-    });
-    
-    aMedia.addEventListener('pause', function() {
-        let iPl = document.getElementById('icon-play');
-        let iPa = document.getElementById('icon-pause');
-        if(iPl) { iPl.classList.remove('hidden-svg'); iPl.classList.add('visible-svg'); }
-        if(iPa) { iPa.classList.remove('visible-svg'); iPa.classList.add('hidden-svg'); }
-    });
-    
-    let sb = document.getElementById('skip-back');
-    if(sb) sb.onclick = function() { if(isFinite(aMedia.currentTime)) aMedia.currentTime = Math.max(0, aMedia.currentTime - 15); resetNH(); };
-    
-    let sf = document.getElementById('skip-forward');
-    if(sf) sf.onclick = function() { if(isFinite(aMedia.duration) && aMedia.duration > 0) aMedia.currentTime = Math.min(aMedia.duration, aMedia.currentTime + 15); resetNH(); };
-    
-    let pha = document.getElementById('progress-hit-area');
-    if(pha) pha.onclick = function(e) {
-        if(isFinite(aMedia.duration) && aMedia.duration > 0) {
-            let r = this.getBoundingClientRect();
-            let p = (e.clientX - r.left) / r.width;
-            aMedia.currentTime = p * aMedia.duration;
-        }
-        resetNH();
-    };
-}
-
-function fmtT(s) {
-    if(isNaN(s) || !isFinite(s)) return "0:00";
-    let m = Math.floor(s / 60);
-    let se = Math.floor(s % 60);
-    return m + ":" + se.toString().padStart(2, '0');
-}
-
-function drawFV() {
-    requestAnimationFrame(drawFV);
-    let cv = document.getElementById('visualizer');
-    if(!cv) return;
-    let cx = cv.getContext('2d');
-    
-    cv.width = cv.parentElement.clientWidth;
-    cv.height = 14;
-    
-    let bL = 32;
-    cx.clearRect(0, 0, cv.width, cv.height);
-    let bW = (cv.width / bL) * 2;
-    let xP = 0;
-    
-    for(let i=0; i<bL; i++) {
-        let bH = aMedia && !aMedia.paused ? (Math.random() * cv.height) : 2;
-        cx.fillStyle = "#fff";
-        cx.beginPath();
-        cx.roundRect(xP, cv.height - bH, bW - 1.5, bH, 2);
-        cx.fill();
-        xP += bW;
-    }
-}
-drawFV();
-
-var fLT = performance.now();
-var fFr = 0;
-var fLC = 0;
-
-function chkFps() {
-    let nw = performance.now();
-    fFr++;
-    if(nw - fLT >= 1000) {
-        let cFps = fFr;
-        let fv = document.getElementById('fps-val');
-        if(fv) fv.innerText = cFps;
-
-        if(cFps <= 20) {
-            fLC++;
-            if(fLC >= 5 && !sysConfig.optBg) {
-                sysConfig.optBg = true;
-                localStorage.setItem('intel_sys_config', JSON.stringify(sysConfig));
-                let bv = document.getElementById('bg-video');
-                let lv = document.getElementById('lock-video');
-                if(bv) bv.pause();
-                if(lv) lv.pause();
-                showNotification("System Optimized", "Low FPS detected. Backgrounds paused.");
-            }
-        } else {
-            fLC = 0;
-        }
-        
-        fFr = 0;
-        fLT = nw;
-    }
-    requestAnimationFrame(chkFps);
-}
-requestAnimationFrame(chkFps);
+window.onbeforeunload=function(e){if(sysConfig.redirectConfirm){var msg="Leave? This helps block GoGuardian.";e.returnValue=msg;return msg;}};
