@@ -128,33 +128,401 @@ function toggleStartMenu(){var sm=document.getElementById('start-menu');if(sm.cl
 document.addEventListener('click',function(e){var sm=document.getElementById('start-menu');if(sm&&!sm.contains(e.target)&&!e.target.closest('.dock-item')){sm.classList.remove('open');setTimeout(function(){sm.style.display='none';},300);}});
 var sInp=document.getElementById('start-search-input');if(sInp)sInp.addEventListener('keydown',function(e){if(e.key==='Enter'){var q=this.value.trim();if(wallpaperRegistry[q]){setWallpaper(q);this.value='';this.blur();}}});
 
-// ── APP CONTENT ───────────────────────────────────────────────────────────────
 function getAppSrcdoc(id){
-var B='<!DOCTYPE html><html><head><meta charset="utf-8"><link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Orbitron:wght@900&display=swap" rel="stylesheet"><style>*{margin:0;padding:0;box-sizing:border-box}body{background:#000;color:#fff;font-family:Rajdhani,sans-serif;height:100vh;overflow:hidden}a{color:inherit}::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:#333;border-radius:2px}</style></head><body>';
+var B='<!DOCTYPE html><html><head><meta charset="utf-8"><link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Orbitron:wght@900&display=swap" rel="stylesheet"><style>*{margin:0;padding:0;box-sizing:border-box}body{background:#000;color:#fff;font-family:Rajdhani,sans-serif;height:100vh;overflow:hidden}::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:#333;border-radius:2px}input,select,button{font-family:Rajdhani}</style></head><body>';
 var E='</body></html>';
 
-if(id==='cine')return B+'<div style="height:100%;overflow-y:auto;padding:28px"><h1 style="font-family:Orbitron;font-size:1.3rem;letter-spacing:5px;margin-bottom:8px">INTELLECTUAL HUB</h1><p style="color:#555;font-size:13px;margin-bottom:24px">Click any service — opens in new tab</p><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(135px,1fr));gap:12px">'+[['Netflix','https://netflix.com','#e50914','https://assets.nflxext.com/ffe/siteui/common/logo-and-wordmark.svg'],['Disney+','https://disneyplus.com','#040714','https://upload.wikimedia.org/wikipedia/commons/3/3e/Disney%2B_logo.svg'],['Max','https://max.com','#002be7','https://upload.wikimedia.org/wikipedia/commons/1/17/HBO_Max_Logo.svg'],['Hulu','https://hulu.com','#0a3832','https://upload.wikimedia.org/wikipedia/commons/e/e4/Hulu_Logo.svg'],['YouTube','https://youtube.com','#0f0f0f','https://upload.wikimedia.org/wikipedia/commons/0/09/YouTube_full-color_icon_%282017%29.svg'],['Crunchyroll','https://crunchyroll.com','#1a0a00','https://upload.wikimedia.org/wikipedia/commons/0/08/Crunchyroll_Logo.png'],['Prime','https://primevideo.com','#001a2e','https://upload.wikimedia.org/wikipedia/commons/1/11/Amazon_Prime_Video_logo.svg'],['Peacock','https://peacocktv.com','#111','https://upload.wikimedia.org/wikipedia/commons/d/d3/NBCUniversal_Peacock_Logo.svg'],['Apple TV+','https://tv.apple.com','#1a1a1a','https://upload.wikimedia.org/wikipedia/commons/2/28/Apple_TV_Plus_Logo.svg'],['Paramount+','https://paramountplus.com','#00082e','https://upload.wikimedia.org/wikipedia/commons/a/a7/Paramount_Plus_logo.svg']].map(function(x){return'<a href="'+x[1]+'" target="_blank" style="background:'+x[2]+';border:1px solid #222;border-radius:12px;padding:18px 10px;display:flex;flex-direction:column;align-items:center;gap:10px;text-decoration:none;color:#fff;transition:.2s" onmouseover="this.style.borderColor=\'#fff\';this.style.transform=\'scale(1.04)\'" onmouseout="this.style.borderColor=\'#222\';this.style.transform=\'scale(1)\'"><img src="'+x[3]+'" style="width:48px;height:26px;object-fit:contain" onerror="this.style.display=\'none\'"><span style="font-weight:700;font-size:13px">'+x[0]+'</span></a>';}).join('')+'</div></div>'+E;
-
-if(id==='term')return B+'<div style="height:100%;display:flex;flex-direction:column"><div style="padding:14px 18px;background:#111;border-bottom:1px solid #222;flex-shrink:0"><div style="font-family:Orbitron;font-size:.85rem;letter-spacing:3px">MUSIC LAUNCHER</div><div style="color:#666;font-size:12px;margin-top:2px">Opens in new tab — iframes blocked by these services</div></div><div style="flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:10px">'+[['Spotify','https://open.spotify.com','#1db954'],['SoundCloud','https://soundcloud.com','#ff5500'],['YouTube Music','https://music.youtube.com','#ff0000'],['Pandora','https://pandora.com','#005483'],['Tidal','https://tidal.com','#00ffff'],['Apple Music','https://music.apple.com','#fc3c44']].map(function(x){return'<a href="'+x[1]+'" target="_blank" style="background:#111;border:1px solid #222;border-radius:12px;padding:16px;display:flex;align-items:center;gap:14px;text-decoration:none;color:#fff;transition:.2s" onmouseover="this.style.borderColor=\'#fff\';this.style.background=\'#1a1a1a\'" onmouseout="this.style.borderColor=\'#222\';this.style.background=\'#111\'"><div style="width:38px;height:38px;border-radius:10px;background:'+x[2]+'22;border:1px solid '+x[2]+'44;display:flex;align-items:center;justify-content:center;font-size:1.2rem">♫</div><div><div style="font-weight:700;font-size:15px">'+x[0]+'</div><div style="color:#666;font-size:12px">'+x[1]+'</div></div><div style="margin-left:auto;color:#444;font-size:18px">→</div></a>';}).join('')+'</div></div>'+E;
-
-if(id==='files')return B+'<div style="height:100%;display:flex;flex-direction:column;background:#0a0a0a"><div style="padding:12px 18px;background:#111;border-bottom:1px solid #222;display:flex;align-items:center;gap:10px;flex-shrink:0;flex-wrap:wrap"><span style="font-family:Orbitron;font-size:.8rem;letter-spacing:3px;margin-right:6px">GAME VAULT</span>'+[['Minecraft','mc'],['Slope','slope'],['1v1.LOL','1v1'],['Smash Karts','smash'],['Krunker','krunker'],['Bloxd.io','bloxd'],['Shell Shockers','shell'],['Retro','retro']].map(function(x){return'<button onclick="lg(\''+x[1]+'\')" style="background:#1a1a1a;border:1px solid #333;color:#888;padding:5px 12px;border-radius:18px;cursor:pointer;font-family:Rajdhani;font-weight:700;font-size:13px;transition:.2s" onmouseover="this.style.borderColor=\'#fff\';this.style.color=\'#fff\'" onmouseout="this.style.borderColor=\'#333\';this.style.color=\'#888\'">'+x[0]+'</button>';}).join('')+'</div><div style="flex:1;position:relative;background:#000"><div id="gp" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px"><div style="font-size:3rem">🎮</div><p style="font-family:Orbitron;letter-spacing:3px;color:#2a2a2a;font-size:.8rem">SELECT A GAME</p></div><iframe id="gf" src="" style="width:100%;height:100%;border:none;display:none" allow="autoplay;fullscreen;gamepad"></iframe></div></div><script>var G={mc:"https://eaglercraft.com/mc/1.8.8-wasm/",slope:"https://slope-game.com/",\'1v1\':"https://1v1.lol",smash:"https://smashkarts.io",krunker:"https://krunker.io",bloxd:"https://bloxd.io",shell:"https://shellshock.io",retro:"https://www.retrogames.cc"};function lg(k){var f=document.getElementById("gf"),p=document.getElementById("gp");if(!G[k])return;f.src=G[k];f.style.display="block";p.style.display="none";}<\/script>'+E;
-
-if(id==='web')return B+'<div style="height:100%;display:flex;flex-direction:column;background:#0a0a0a"><div style="padding:10px 14px;background:#111;border-bottom:1px solid #222;display:flex;gap:8px;align-items:center;flex-shrink:0"><button onclick="goBack()" style="background:#1a1a1a;border:1px solid #333;color:#fff;width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:14px;flex-shrink:0">←</button><input id="ub" type="text" placeholder="URL or search..." style="flex:1;background:#1a1a1a;border:1px solid #333;color:#fff;padding:7px 12px;border-radius:8px;outline:none;font-family:Rajdhani;font-size:14px;font-weight:600" onkeydown="if(event.key===\'Enter\')nav()"><button onclick="nav()" style="background:#fff;border:none;color:#000;padding:7px 16px;border-radius:8px;cursor:pointer;font-family:Rajdhani;font-weight:700;flex-shrink:0">GO</button></div><div style="background:#0d0d0d;border-bottom:1px solid #1a1a1a;padding:7px 14px;font-size:11px;color:#555;display:flex;align-items:center;gap:8px;flex-shrink:0">⚡ Proxy (optional — deploy <a href="https://github.com/titaniumnetwork-dev/Ultraviolet" target="_blank" style="color:#777">Ultraviolet</a> on Render):<input id="purl" type="text" placeholder="https://your-proxy.onrender.com" style="flex:1;background:#111;border:1px solid #222;color:#aaa;padding:4px 10px;border-radius:6px;outline:none;font-family:Rajdhani;font-size:11px;margin-left:6px" oninput="localStorage.setItem(\'intel_proxy_url\',this.value)"></div><iframe id="bf" src="about:blank" style="flex:1;border:none;background:#000" allow="autoplay;fullscreen;clipboard-write"></iframe></div><script>document.getElementById("purl").value=localStorage.getItem("intel_proxy_url")||"";function nav(){var raw=document.getElementById("ub").value.trim(),proxy=document.getElementById("purl").value.trim();if(!raw)return;var url=raw.startsWith("http")?raw:(raw.includes(".")?"https://"+raw:"https://www.google.com/search?q="+encodeURIComponent(raw));document.getElementById("bf").src=proxy?proxy+"/service/"+btoa(url):url;}function goBack(){try{document.getElementById("bf").contentWindow.history.back();}catch(e){}}<\/script>'+E;
-
-if(id==='settings')return B+'<div style="padding:22px;height:100%;overflow-y:auto;background:#000"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"><h2 style="font-family:Orbitron;letter-spacing:2px;border-bottom:2px solid #1a1a1a;padding-bottom:12px;margin-bottom:18px;font-size:1rem">SYSTEM CONFIG</h2>'+[['optBg','film','Optimized Background','Disables animated backgrounds'],['shortBoot','bolt','Fast Boot','Skip the boot animation'],['idleLock','lock','Idle Lock Screen','Lock after 3 min inactive'],['redirectConfirm','shield-alt','Redirect Confirmation','Block GoGuardian']].map(function(x){return'<div style="background:#111;border:1px solid #1a1a1a;padding:14px 15px;border-radius:10px;margin-bottom:9px;display:flex;justify-content:space-between;align-items:center"><div style="display:flex;gap:12px;align-items:center"><i class="fas fa-'+x[1]+'" style="color:#555;width:18px;font-size:1.1rem"></i><div><div style="font-weight:700;font-size:14px">'+x[2]+'</div><div style="color:#555;font-size:12px">'+x[3]+'</div></div></div><label style="position:relative;display:inline-block;width:40px;height:20px"><input type="checkbox" id="c-'+x[0]+'" style="opacity:0;width:0;height:0"><span style="position:absolute;cursor:pointer;inset:0;background:#333;border-radius:34px;transition:.3s" onclick="var cb=this.previousElementSibling;cb.checked=!cb.checked;window.parent.updateSysSetting(\''+x[0]+'\',cb.checked)"></span></label></div>';}).join('')+'<div style="background:#111;border:1px solid #1a1a1a;padding:14px 15px;border-radius:10px;margin-bottom:9px;display:flex;justify-content:space-between;align-items:center"><div style="display:flex;gap:12px;align-items:center"><i class="fas fa-mask" style="color:#555;width:18px;font-size:1.1rem"></i><div><div style="font-weight:700;font-size:14px">Tab Cloak</div><div style="color:#555;font-size:12px">Disguise this tab</div></div></div><select onchange="window.parent.updateCloak(this.value)" style="background:#222;color:#fff;border:1px solid #333;padding:6px;border-radius:6px;outline:none;font-family:Rajdhani"><option value="none">None (Intellectual OS)</option><option value="google">Google</option><option value="drive">Google Drive</option><option value="canvas">Canvas</option><option value="classroom">Google Classroom</option></select></div><div style="background:#111;border:1px solid #1a1a1a;padding:14px 15px;border-radius:10px;margin-bottom:9px;display:flex;justify-content:space-between;align-items:center"><div style="display:flex;gap:12px;align-items:center"><i class="fas fa-exclamation-triangle" style="color:#555;width:18px;font-size:1.1rem"></i><div><div style="font-weight:700;font-size:14px">Panic Key</div><div style="color:#555;font-size:12px">Instant Google redirect</div></div></div><input type="text" id="pk" maxlength="1" style="width:38px;height:28px;background:#222;border:1px solid #333;color:#fff;text-align:center;font-size:1.1rem;font-weight:bold;outline:none;border-radius:4px" onkeyup="window.parent.updateSysSetting(\'panicKey\',this.value)"></div><div style="background:#111;border:1px solid #1a1a1a;padding:14px 15px;border-radius:10px;cursor:pointer;transition:.2s" onclick="window.open(\'https://discord.gg/bQCRJgtC74\',\'_blank\')" onmouseover="this.style.borderColor=\'#5865f2\'" onmouseout="this.style.borderColor=\'#1a1a1a\'"><div style="display:flex;gap:12px;align-items:center"><i class="fab fa-discord" style="color:#5865f2;width:18px;font-size:1.1rem"></i><div style="font-weight:700;font-size:14px">Join Discord</div><div style="margin-left:auto;color:#444">→</div></div></div></div><script>var p=window.parent.sysConfig;["optBg","shortBoot","idleLock","redirectConfirm"].forEach(function(k){var el=document.getElementById("c-"+k);if(el)el.checked=p[k];});document.getElementById("pk").value=p.panicKey||"";<\/script>'+E;
-
-if(id==='ciniai')return B+'<div style="height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:30px;text-align:center"><div style="font-size:2.5rem">🤖</div><h2 style="font-family:Orbitron;letter-spacing:3px;font-size:.9rem">INTELLECTUAL AI</h2><p style="color:#555;font-size:13px;max-width:280px;line-height:1.6">AI assistants open in a new tab</p><div style="display:flex;flex-direction:column;gap:10px;width:100%;max-width:260px">'+[['ChatGPT','https://chat.openai.com','#10a37f'],['Claude','https://claude.ai','#d97706'],['Gemini','https://gemini.google.com','#4285f4'],['Perplexity','https://perplexity.ai','#1fb8cd'],['Grok','https://grok.x.ai','#fff']].map(function(x){return'<a href="'+x[1]+'" target="_blank" style="background:'+x[2]+'18;border:1px solid '+x[2]+'33;color:#fff;padding:12px 18px;border-radius:10px;text-decoration:none;font-weight:700;letter-spacing:1px;display:flex;justify-content:space-between;align-items:center;transition:.2s" onmouseover="this.style.borderColor=\''+x[2]+'\'" onmouseout="this.style.borderColor=\''+x[2]+'33\'">'+x[0]+'<span style="color:'+x[2]+';font-size:16px">→</span></a>';}).join('')+'</div></div>'+E;
-
-if(id==='discord')return B+'<div style="height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px"><img src="https://assets-global.website-files.com/6257adef93867e50d84d30e2/636e0a6a49cf127bf92de1e2_icon_clyde_blurple_RGB.png" style="width:70px"><h2 style="font-family:Orbitron;letter-spacing:3px;font-size:.9rem">DISCORD</h2><p style="color:#555;font-size:13px">Discord blocks iframes — opens in new tab</p><a href="https://discord.com/app" target="_blank" style="background:#5865f2;color:#fff;padding:12px 28px;border-radius:8px;text-decoration:none;font-weight:700;letter-spacing:1px">OPEN DISCORD</a></div>'+E;
-
-if(id==='roblox')return B+'<div style="height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS9KvNyFWMg_bjo_q_1IVLKFWbfCeonn2qDow&s" style="width:70px;border-radius:14px"><h2 style="font-family:Orbitron;letter-spacing:3px;font-size:.9rem">ROBLOX</h2><p style="color:#555;font-size:13px">Roblox blocks iframes — opens in new tab</p><a href="https://www.roblox.com" target="_blank" style="background:#e2231a;color:#fff;padding:12px 28px;border-radius:8px;text-decoration:none;font-weight:700;letter-spacing:1px">PLAY ROBLOX</a></div>'+E;
-
-if(id==='youtube')return B+'<div style="height:100%;display:flex;flex-direction:column"><iframe src="https://www.youtube.com" style="flex:1;border:none" allow="autoplay;fullscreen"></iframe><div style="background:#111;padding:7px;text-align:center;font-size:12px;color:#555;flex-shrink:0">Blocked? <a href="https://www.youtube.com" target="_blank" style="color:#ff0000">Open in new tab</a></div></div>'+E;
-
-if(id==='Geforce')return B+'<div style="height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px"><img src="https://play-lh.googleusercontent.com/_-b_HQXrVyyhZSHj_BoE9u_-cxkcHDH_yLX5rDjJsFMIfsCNQs9F3QP4JvEFcWaSIz0=w240-h480-rw" style="width:70px;border-radius:14px"><h2 style="font-family:Orbitron;letter-spacing:3px;font-size:.9rem">GEFORCE NOW</h2><a href="https://play.geforcenow.com" target="_blank" style="background:#76b900;color:#000;padding:12px 28px;border-radius:8px;text-decoration:none;font-weight:700;letter-spacing:1px">LAUNCH</a></div>'+E;
-
-return B+'<div style="height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px"><div style="font-size:2.5rem">🚧</div><p style="font-family:Orbitron;letter-spacing:3px;color:#2a2a2a;font-size:.8rem">APP NOT CONFIGURED</p></div>'+E;
+// ── HUB: YouTube Embed Player ────────────────────────────────────────────────
+if(id==='cine')return B+`
+<div style="height:100%;display:flex;flex-direction:column;background:#0a0a0a">
+  <div style="padding:12px 16px;background:#111;border-bottom:1px solid #222;display:flex;gap:8px;align-items:center;flex-shrink:0">
+    <div style="font-family:Orbitron;font-size:.8rem;letter-spacing:3px;color:#fff;flex-shrink:0">INTELLECTUAL HUB</div>
+    <input id="vi" type="text" placeholder="Paste YouTube URL or video ID..."
+      style="flex:1;background:#1a1a1a;border:1px solid #333;color:#fff;padding:8px 12px;border-radius:8px;outline:none;font-size:14px;font-weight:600"
+      onkeydown="if(event.key==='Enter')load()">
+    <button onclick="load()" style="background:#fff;color:#000;border:none;padding:8px 16px;border-radius:8px;cursor:pointer;font-weight:700;flex-shrink:0">PLAY</button>
+  </div>
+  <div id="cats" style="padding:10px 16px;background:#0d0d0d;border-bottom:1px solid #1a1a1a;display:flex;gap:8px;flex-wrap:wrap;flex-shrink:0">
+    ${[['Anime','anime episodes full'],['Movies','full movie 2024'],['TV Shows','full episode'],['Cartoons','cartoon full episode'],['Documentaries','documentary full 2024'],['Music Videos','official music video']].map(function(x){return'<button onclick="srch(\''+x[1]+'\')" style="background:#1a1a1a;border:1px solid #333;color:#888;padding:5px 12px;border-radius:16px;cursor:pointer;font-size:12px;font-weight:700;transition:.2s" onmouseover="this.style.color=\'#fff\';this.style.borderColor=\'#fff\'" onmouseout="this.style.color=\'#888\';this.style.borderColor=\'#333\'">'+x[0]+'</button>';}).join('')}
+  </div>
+  <div id="ph" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px">
+    <div style="font-size:3rem">📺</div>
+    <p style="font-family:Orbitron;letter-spacing:4px;color:#222;font-size:.75rem">PASTE A YOUTUBE URL ABOVE</p>
+    <p style="color:#333;font-size:12px;max-width:300px;text-align:center">Tip: Go to YouTube, right-click any video → Copy link, then paste it here</p>
+  </div>
+  <iframe id="yt" src="" style="flex:1;border:none;display:none" allow="autoplay;fullscreen;encrypted-media" allowfullscreen></iframe>
+</div>
+<script>
+function getid(s){
+  s=s.trim();
+  var m=s.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/ ]{11})/);
+  return m?m[1]:(s.length===11?s:null);
 }
+function load(){
+  var v=document.getElementById('vi').value;
+  var vid=getid(v);
+  if(!vid){document.getElementById('ph').innerHTML='<div style="color:#e55;font-size:14px;font-weight:700">⚠ Paste a full YouTube URL or 11-character video ID</div>';document.getElementById('ph').style.display='flex';return;}
+  document.getElementById('ph').style.display='none';
+  document.getElementById('yt').style.display='block';
+  document.getElementById('yt').src='https://www.youtube.com/embed/'+vid+'?autoplay=1&rel=0';
+}
+function srch(q){document.getElementById('vi').value=q;document.getElementById('ph').innerHTML='<div style="font-size:2rem">🔍</div><p style="font-family:Orbitron;letter-spacing:3px;color:#333;font-size:.75rem">GO TO YOUTUBE, SEARCH: '+q.toUpperCase()+'</p><p style="color:#333;font-size:12px;max-width:280px;text-align:center;margin-top:8px">Copy the URL from YouTube and paste it above to play here</p>';document.getElementById('ph').style.display='flex';}
+<\/script>`+E;
+
+// ── MUSIC: SoundCloud + YouTube embeds ───────────────────────────────────────
+if(id==='term')return B+`
+<div style="height:100%;display:flex;flex-direction:column;background:#0a0a0a">
+  <div style="padding:10px 16px;background:#111;border-bottom:1px solid #222;display:flex;gap:8px;align-items:center;flex-shrink:0">
+    <div style="font-family:Orbitron;font-size:.8rem;letter-spacing:3px;flex-shrink:0">MUSIC</div>
+    <div id="tabs" style="display:flex;gap:6px;margin-left:auto">
+      <button onclick="sw('sc')" id="t-sc" style="background:#ff5500;color:#fff;border:none;padding:5px 14px;border-radius:16px;cursor:pointer;font-weight:700;font-size:12px">SoundCloud</button>
+      <button onclick="sw('yt')" id="t-yt" style="background:#1a1a1a;color:#888;border:1px solid #333;padding:5px 14px;border-radius:16px;cursor:pointer;font-weight:700;font-size:12px">YouTube</button>
+    </div>
+  </div>
+  <div id="sc-wrap" style="flex:1;display:flex;flex-direction:column">
+    <div style="padding:10px 16px;background:#0d0d0d;border-bottom:1px solid #1a1a1a;display:flex;gap:6px;flex-wrap:wrap;flex-shrink:0">
+      ${[['Hip-Hop Charts','https://soundcloud.com/charts/top?genre=hiphoprap'],['Pop Charts','https://soundcloud.com/charts/top?genre=pop'],['Lo-Fi Beats','https://soundcloud.com/lo-fi-beats'],['Phonk','https://soundcloud.com/charts/top?genre=danceedm'],['R&B','https://soundcloud.com/charts/top?genre=rnb']].map(function(x){return'<button onclick="loadsc(\''+x[1]+'\')" style="background:#1a1a1a;border:1px solid #333;color:#888;padding:4px 10px;border-radius:14px;cursor:pointer;font-size:12px;font-weight:700;transition:.2s" onmouseover="this.style.color=\'#fff\';this.style.borderColor=\'#ff5500\'" onmouseout="this.style.color=\'#888\';this.style.borderColor=\'#333\'">'+x[0]+'</button>';}).join('')}
+      <input id="sc-in" type="text" placeholder="SoundCloud URL..." style="flex:1;background:#1a1a1a;border:1px solid #333;color:#fff;padding:5px 10px;border-radius:8px;outline:none;font-size:13px;min-width:140px">
+      <button onclick="loadsc(document.getElementById('sc-in').value)" style="background:#ff5500;border:none;color:#fff;padding:5px 12px;border-radius:8px;cursor:pointer;font-weight:700;font-size:12px">GO</button>
+    </div>
+    <iframe id="sc-frame" src="https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/charts/top&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false" style="flex:1;border:none" allow="autoplay"></iframe>
+  </div>
+  <div id="yt-wrap" style="flex:1;display:none;flex-direction:column">
+    <div style="padding:10px 16px;background:#0d0d0d;border-bottom:1px solid #1a1a1a;display:flex;gap:8px;flex-shrink:0">
+      <input id="yt-in" type="text" placeholder="Paste YouTube music video URL..." style="flex:1;background:#1a1a1a;border:1px solid #333;color:#fff;padding:7px 12px;border-radius:8px;outline:none;font-size:13px">
+      <button onclick="loadyt()" style="background:#ff0000;border:none;color:#fff;padding:7px 14px;border-radius:8px;cursor:pointer;font-weight:700;font-size:12px">PLAY</button>
+    </div>
+    <iframe id="yt-frame" src="" style="flex:1;border:none" allow="autoplay;fullscreen" allowfullscreen></iframe>
+  </div>
+</div>
+<script>
+function sw(t){
+  document.getElementById('sc-wrap').style.display=t==='sc'?'flex':'none';
+  document.getElementById('yt-wrap').style.display=t==='yt'?'flex':'none';
+  document.getElementById('t-sc').style.background=t==='sc'?'#ff5500':'#1a1a1a';
+  document.getElementById('t-sc').style.color=t==='sc'?'#fff':'#888';
+  document.getElementById('t-sc').style.border=t==='sc'?'none':'1px solid #333';
+  document.getElementById('t-yt').style.background=t==='yt'?'#ff0000':'#1a1a1a';
+  document.getElementById('t-yt').style.color=t==='yt'?'#fff':'#888';
+  document.getElementById('t-yt').style.border=t==='yt'?'none':'1px solid #333';
+}
+function loadsc(url){
+  if(!url)return;
+  document.getElementById('sc-frame').src='https://w.soundcloud.com/player/?url='+encodeURIComponent(url)+'&color=%23ff5500&auto_play=true';
+}
+function loadyt(){
+  var s=document.getElementById('yt-in').value.trim();
+  var m=s.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/ ]{11})/);
+  var vid=m?m[1]:(s.length===11?s:null);
+  if(!vid)return;
+  document.getElementById('yt-frame').src='https://www.youtube.com/embed/'+vid+'?autoplay=1';
+}
+<\/script>`+E;
+
+// ── GAMES ─────────────────────────────────────────────────────────────────────
+if(id==='files')return B+`
+<div style="height:100%;display:flex;flex-direction:column;background:#0a0a0a">
+  <div style="padding:10px 16px;background:#111;border-bottom:1px solid #222;display:flex;align-items:center;gap:8px;flex-shrink:0;flex-wrap:wrap">
+    <div style="font-family:Orbitron;font-size:.8rem;letter-spacing:3px;flex-shrink:0">GAME VAULT</div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap">
+      ${[['Minecraft','mc'],['Bloxd.io','bloxd'],['Smash Karts','smash'],['Venge.io','venge'],['Zombs Royale','zombs'],['Retro Emu','retro']].map(function(x){return'<button id="gb-'+x[1]+'" onclick="lg(\''+x[1]+'\')" style="background:#1a1a1a;border:1px solid #333;color:#888;padding:5px 13px;border-radius:16px;cursor:pointer;font-weight:700;font-size:12px;transition:.2s" onmouseover="this.style.borderColor=\'#fff\';this.style.color=\'#fff\'" onmouseout="if(cur!==\''+x[1]+'\'){this.style.borderColor=\'#333\';this.style.color=\'#888\';}">'+x[0]+'</button>';}).join('')}
+    </div>
+  </div>
+  <div id="retro-bar" style="display:none;padding:10px 16px;background:#0d0d0d;border-bottom:1px solid #1a1a1a;flex-shrink:0">
+    <div style="font-size:12px;color:#666;margin-bottom:8px;font-weight:600">RETRO EMULATOR — Select system & paste a ROM URL from <a href="https://vimm.net" style="color:#aaa">vimm.net</a> or archive.org</div>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <select id="sys" style="background:#111;color:#fff;border:1px solid #333;padding:6px 10px;border-radius:6px;outline:none">
+        <option value="gba">GBA</option>
+        <option value="nes">NES</option>
+        <option value="snes">SNES</option>
+        <option value="n64">N64</option>
+        <option value="nds">Nintendo DS</option>
+        <option value="psx">PlayStation 1</option>
+      </select>
+      <input id="rom-url" type="text" placeholder="Direct ROM file URL (.gba, .nes, .sfc, .z64, .nds, .bin)..."
+        style="flex:1;background:#111;border:1px solid #333;color:#fff;padding:6px 10px;border-radius:6px;outline:none;font-size:13px;min-width:200px">
+      <button onclick="launchEmu()" style="background:#fff;color:#000;border:none;padding:6px 16px;border-radius:6px;cursor:pointer;font-weight:700;font-size:13px">LAUNCH</button>
+    </div>
+  </div>
+  <div id="gph" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px">
+    <div style="font-size:3rem">🎮</div>
+    <p style="font-family:Orbitron;letter-spacing:3px;color:#222;font-size:.75rem">SELECT A GAME ABOVE</p>
+  </div>
+  <iframe id="gf" src="" style="width:100%;border:none;display:none;flex:1" allow="autoplay;fullscreen;gamepad;clipboard-write" allowfullscreen></iframe>
+  <div id="emu-wrap" style="flex:1;display:none;flex-direction:column">
+    <div id="emu-container" style="flex:1;position:relative"></div>
+  </div>
+</div>
+<script src="https://cdn.emulatorjs.org/stable/data/loader.js" id="emu-script" data-autoload="false"><\/script>
+<script>
+var cur='';
+var GAMES={
+  mc:{url:'https://eaglercraft.com/mc/1.8.8-wasm/',label:'Minecraft'},
+  bloxd:{url:'https://bloxd.io/',label:'Bloxd.io'},
+  smash:{url:'https://smashkarts.io/',label:'Smash Karts'},
+  venge:{url:'https://venge.io/',label:'Venge.io'},
+  zombs:{url:'https://zombsroyale.io/',label:'Zombs Royale'},
+};
+function lg(k){
+  cur=k;
+  document.querySelectorAll('[id^="gb-"]').forEach(function(b){b.style.background='#1a1a1a';b.style.color='#888';b.style.borderColor='#333';});
+  document.getElementById('gb-'+k).style.background='#fff';
+  document.getElementById('gb-'+k).style.color='#000';
+  document.getElementById('gb-'+k).style.border='none';
+  document.getElementById('gph').style.display='none';
+  document.getElementById('emu-wrap').style.display='none';
+  document.getElementById('retro-bar').style.display='none';
+  if(k==='retro'){
+    document.getElementById('gf').style.display='none';
+    document.getElementById('retro-bar').style.display='block';
+    document.getElementById('emu-wrap').style.display='flex';
+    return;
+  }
+  document.getElementById('gf').style.display='block';
+  document.getElementById('gf').src=GAMES[k]?GAMES[k].url:'';
+}
+function launchEmu(){
+  var sys=document.getElementById('sys').value;
+  var rom=document.getElementById('rom-url').value.trim();
+  if(!rom){alert('Paste a ROM URL first!');return;}
+  var c=document.getElementById('emu-container');
+  c.innerHTML='';
+  window.EJS_player='#emu-container';
+  window.EJS_gameUrl=rom;
+  window.EJS_core=sys;
+  window.EJS_pathtodata='https://cdn.emulatorjs.org/stable/data/';
+  window.EJS_startOnLoaded=true;
+  var s=document.createElement('script');
+  s.src='https://cdn.emulatorjs.org/stable/data/loader.js';
+  document.body.appendChild(s);
+}
+<\/script>`+E;
+
+// ── BROWSER: Proxy browser ────────────────────────────────────────────────────
+if(id==='web')return B+`
+<div style="height:100%;display:flex;flex-direction:column;background:#0a0a0a">
+  <div style="padding:10px 14px;background:#111;border-bottom:1px solid #222;display:flex;gap:8px;align-items:center;flex-shrink:0">
+    <button onclick="goBack()" style="background:#1a1a1a;border:1px solid #333;color:#fff;width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:15px;flex-shrink:0;transition:.2s" onmouseover="this.style.background='#333'" onmouseout="this.style.background='#1a1a1a'">←</button>
+    <button onclick="goFwd()" style="background:#1a1a1a;border:1px solid #333;color:#fff;width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:15px;flex-shrink:0;transition:.2s" onmouseover="this.style.background='#333'" onmouseout="this.style.background='#1a1a1a'">→</button>
+    <input id="ub" type="text" placeholder="Enter URL or search..."
+      style="flex:1;background:#1a1a1a;border:1px solid #333;color:#fff;padding:8px 12px;border-radius:8px;outline:none;font-size:14px;font-weight:600"
+      onkeydown="if(event.key==='Enter')nav()">
+    <button onclick="nav()" style="background:#fff;color:#000;border:none;padding:8px 16px;border-radius:8px;cursor:pointer;font-weight:700;flex-shrink:0">GO</button>
+  </div>
+  <div id="proxy-bar" style="background:#0d0d0d;border-bottom:1px solid #1a1a1a;padding:8px 14px;display:flex;align-items:center;gap:8px;flex-shrink:0">
+    <span style="font-size:11px;color:#555;flex-shrink:0">⚡ PROXY:</span>
+    <input id="purl" type="text" placeholder="Paste your Ultraviolet URL here to unlock all sites..."
+      style="flex:1;background:#111;border:1px solid #222;color:#aaa;padding:5px 10px;border-radius:6px;outline:none;font-size:12px"
+      oninput="localStorage.setItem('intel_proxy_url',this.value);updateStatus()">
+    <div id="pstatus" style="font-size:11px;font-weight:700;flex-shrink:0"></div>
+    <button onclick="showSetup()" style="background:#1a1a1a;border:1px solid #333;color:#888;padding:4px 10px;border-radius:6px;cursor:pointer;font-size:11px;font-weight:700;flex-shrink:0" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#888'">HOW TO SET UP</button>
+  </div>
+  <div id="setup-guide" style="display:none;background:#0a0a0a;border-bottom:1px solid #1a1a1a;padding:16px;flex-shrink:0;max-height:200px;overflow-y:auto">
+    <div style="font-family:Orbitron;font-size:.75rem;letter-spacing:3px;margin-bottom:12px;color:#fff">PROXY SETUP (FREE, 5 MIN)</div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      ${[
+        ['1','Go to','github.com/titaniumnetwork-dev/Ultraviolet-App','https://github.com/titaniumnetwork-dev/Ultraviolet-App'],
+        ['2','Click the purple','Deploy to Render','https://render.com/deploy?repo=https://github.com/titaniumnetwork-dev/Ultraviolet-App'],
+        ['3','Sign up for Render (free) and deploy','',''],
+        ['4','Wait ~2 min, then copy the URL Render gives you','',''],
+        ['5','Paste that URL in the proxy box above — done!','',''],
+      ].map(function(x){return'<div style="display:flex;gap:10px;align-items:flex-start"><div style="background:#222;color:#fff;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">'+x[0]+'</div><div style="font-size:13px;color:#aaa">'+(x[1]?x[1]+' ':'')+(x[3]?'<a href="'+x[3]+'" target="_blank" style="color:#fff;font-weight:700">'+x[2]+'</a>':x[2])+'</div></div>';}).join('')}
+    </div>
+    <button onclick="document.getElementById(\'setup-guide\').style.display=\'none\'" style="margin-top:12px;background:#333;border:none;color:#fff;padding:6px 14px;border-radius:6px;cursor:pointer;font-weight:700;font-size:12px">CLOSE</button>
+  </div>
+  <div id="no-proxy-ph" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:30px;text-align:center">
+    <div style="font-size:2.5rem">🔒</div>
+    <div style="font-family:Orbitron;font-size:.8rem;letter-spacing:3px;color:#333">NO PROXY CONFIGURED</div>
+    <div style="color:#444;font-size:13px;max-width:320px;line-height:1.7">Without a proxy, school filters will block most sites. Click <strong style="color:#888">HOW TO SET UP</strong> above to deploy your free proxy in 5 minutes.</div>
+    <div style="background:#1a1a1a;border:1px solid #222;border-radius:12px;padding:16px 20px;max-width:320px">
+      <div style="color:#888;font-size:12px;font-weight:700;margin-bottom:6px">OR — enter a URL to try without proxy:</div>
+      <div style="color:#555;font-size:12px">Some sites (YouTube, Wikipedia, etc.) may still load directly</div>
+    </div>
+  </div>
+  <iframe id="bf" src="" style="flex:1;border:none;display:none;background:#000" allow="autoplay;fullscreen;clipboard-write;camera;microphone" allowfullscreen></iframe>
+</div>
+<script>
+document.getElementById('purl').value=localStorage.getItem('intel_proxy_url')||'';
+function updateStatus(){
+  var p=localStorage.getItem('intel_proxy_url')||'';
+  var s=document.getElementById('pstatus');
+  if(p){s.textContent='✓ PROXY SET';s.style.color='#4a4';}
+  else{s.textContent='✗ NO PROXY';s.style.color='#a44';}
+}
+updateStatus();
+function nav(){
+  var raw=document.getElementById('ub').value.trim();
+  var proxy=document.getElementById('purl').value.trim();
+  if(!raw)return;
+  var url=raw.startsWith('http')?raw:(raw.includes('.')&&!raw.includes(' ')?'https://'+raw:'https://www.google.com/search?q='+encodeURIComponent(raw));
+  var f=document.getElementById('bf'),ph=document.getElementById('no-proxy-ph');
+  f.style.display='block';ph.style.display='none';
+  if(proxy){
+    var enc=btoa(url);
+    f.src=proxy.replace(/\/$/,'')+'/service/'+enc;
+  }else{
+    f.src=url;
+    f.onerror=function(){ph.style.display='flex';f.style.display='none';ph.querySelector('div:first-child').textContent='🚫';};
+  }
+}
+function goBack(){try{document.getElementById('bf').contentWindow.history.back();}catch(e){}}
+function goFwd(){try{document.getElementById('bf').contentWindow.history.forward();}catch(e){}}
+function showSetup(){var g=document.getElementById('setup-guide');g.style.display=g.style.display==='none'?'block':'none';}
+<\/script>`+E;
+
+// ── SETTINGS ──────────────────────────────────────────────────────────────────
+if(id==='settings')return B+`<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<div style="padding:22px;height:100%;overflow-y:auto;background:#000">
+  <h2 style="font-family:Orbitron;letter-spacing:2px;border-bottom:2px solid #1a1a1a;padding-bottom:12px;margin-bottom:18px;font-size:1rem">SYSTEM CONFIG</h2>
+  ${[['optBg','film','Optimized Background','Disables animated backgrounds'],['shortBoot','bolt','Fast Boot','Skip the boot animation'],['idleLock','lock','Idle Lock Screen','Lock after 3 min inactive'],['redirectConfirm','shield-alt','Redirect Confirmation','Block GoGuardian']].map(function(x){return'<div style="background:#111;border:1px solid #1a1a1a;padding:14px 15px;border-radius:10px;margin-bottom:9px;display:flex;justify-content:space-between;align-items:center"><div style="display:flex;gap:12px;align-items:center"><i class="fas fa-'+x[1]+'" style="color:#555;width:18px;font-size:1.1rem"></i><div><div style="font-weight:700;font-size:14px">'+x[2]+'</div><div style="color:#555;font-size:12px">'+x[3]+'</div></div></div><label style="position:relative;display:inline-block;width:40px;height:20px"><input type="checkbox" id="c-'+x[0]+'" style="opacity:0;width:0;height:0"><span style="position:absolute;cursor:pointer;inset:0;background:#333;border-radius:34px;transition:.3s" onclick="var cb=this.previousElementSibling;cb.checked=!cb.checked;applyToggle(\''+x[0]+'\',cb.checked)"></span></label></div>';}).join('')}
+  <div style="background:#111;border:1px solid #1a1a1a;padding:14px 15px;border-radius:10px;margin-bottom:9px;display:flex;justify-content:space-between;align-items:center">
+    <div style="display:flex;gap:12px;align-items:center"><i class="fas fa-mask" style="color:#555;width:18px;font-size:1.1rem"></i><div><div style="font-weight:700;font-size:14px">Tab Cloak</div><div style="color:#555;font-size:12px">Disguise this tab</div></div></div>
+    <select id="cloak-sel" onchange="window.parent.updateCloak(this.value)" style="background:#222;color:#fff;border:1px solid #333;padding:6px;border-radius:6px;outline:none">
+      <option value="none">None (Intellectual OS)</option><option value="google">Google</option><option value="drive">Google Drive</option><option value="canvas">Canvas</option><option value="classroom">Google Classroom</option>
+    </select>
+  </div>
+  <div style="background:#111;border:1px solid #1a1a1a;padding:14px 15px;border-radius:10px;margin-bottom:9px;display:flex;justify-content:space-between;align-items:center">
+    <div style="display:flex;gap:12px;align-items:center"><i class="fas fa-exclamation-triangle" style="color:#555;width:18px;font-size:1.1rem"></i><div><div style="font-weight:700;font-size:14px">Panic Key</div><div style="color:#555;font-size:12px">Instant redirect to Google</div></div></div>
+    <input type="text" id="pk" maxlength="1" style="width:36px;height:28px;background:#222;border:1px solid #333;color:#fff;text-align:center;font-size:1.1rem;font-weight:bold;outline:none;border-radius:4px" onkeyup="window.parent.updateSysSetting('panicKey',this.value)">
+  </div>
+</div>
+<script>
+function applyToggle(k,v){
+  var sl=document.querySelectorAll('#c-'+k+' + span');
+  if(sl.length){sl[0].style.background=v?'#fff':'#333';}
+  // move knob
+  var cb=document.getElementById('c-'+k);
+  if(cb){var knob=cb.nextElementSibling;if(knob){knob.style.background=v?'#fff':'#333';}}
+  window.parent.updateSysSetting(k,v);
+}
+(function(){
+  var p=window.parent.sysConfig;
+  ['optBg','shortBoot','idleLock','redirectConfirm'].forEach(function(k){
+    var cb=document.getElementById('c-'+k);
+    if(cb){
+      cb.checked=p[k];
+      var span=cb.nextElementSibling;
+      if(span){span.style.background=p[k]?'#fff':'#333';}
+    }
+  });
+  var cs=document.getElementById('cloak-sel');if(cs)cs.value=p.cloak||'none';
+  var pk=document.getElementById('pk');if(pk)pk.value=p.panicKey||'';
+})();
+<\/script>`+E;
+
+// ── DISCORD ───────────────────────────────────────────────────────────────────
+if(id==='discord')return B+`
+<div style="height:100%;display:flex;flex-direction:column;background:#111">
+  <div style="padding:10px 16px;background:#111;border-bottom:1px solid #1a1a1a;display:flex;align-items:center;gap:10px;flex-shrink:0">
+    <img src="https://assets-global.website-files.com/6257adef93867e50d84d30e2/636e0a6a49cf127bf92de1e2_icon_clyde_blurple_RGB.png" style="width:24px">
+    <div style="font-family:Orbitron;font-size:.8rem;letter-spacing:3px">DISCORD</div>
+    <div id="dc-status" style="margin-left:auto;font-size:11px;color:#555">Needs proxy to fully work</div>
+  </div>
+  <div style="padding:10px 14px;background:#0d0d0d;border-bottom:1px solid #1a1a1a;display:flex;gap:8px;flex-shrink:0">
+    <input id="dc-proxy" type="text" placeholder="Paste your proxy URL to load Discord..."
+      style="flex:1;background:#111;border:1px solid #222;color:#aaa;padding:6px 10px;border-radius:6px;outline:none;font-size:12px"
+      value="">
+    <button onclick="loadDc()" style="background:#5865f2;border:none;color:#fff;padding:6px 14px;border-radius:6px;cursor:pointer;font-weight:700;font-size:12px">LOAD</button>
+  </div>
+  <iframe id="dc-frame" src="" style="flex:1;border:none;background:#2b2d31" allow="autoplay;fullscreen;clipboard-write;camera;microphone"></iframe>
+</div>
+<script>
+document.getElementById('dc-proxy').value=localStorage.getItem('intel_proxy_url')||'';
+function loadDc(){
+  var proxy=document.getElementById('dc-proxy').value.trim();
+  var f=document.getElementById('dc-frame');
+  if(proxy){
+    f.src=proxy.replace(/\/$/,'')+'/service/'+btoa('https://discord.com/app');
+  }else{
+    f.src='https://discord.com/app';
+  }
+  document.getElementById('dc-status').textContent='Loading...';
+  document.getElementById('dc-status').style.color='#888';
+}
+if(localStorage.getItem('intel_proxy_url'))loadDc();
+<\/script>`+E;
+
+// ── AI ────────────────────────────────────────────────────────────────────────
+if(id==='ciniai')return B+`
+<div style="height:100%;display:flex;flex-direction:column">
+  <div style="padding:10px 16px;background:#111;border-bottom:1px solid #222;display:flex;align-items:center;gap:10px;flex-shrink:0">
+    <div style="font-family:Orbitron;font-size:.8rem;letter-spacing:3px">INTELLECTUAL AI</div>
+    <div style="margin-left:auto;display:flex;gap:6px">
+      ${[['ChatGPT','gpt','https://chat.openai.com'],['Claude','claude','https://claude.ai'],['Gemini','gemini','https://gemini.google.com'],['Perplexity','perp','https://perplexity.ai']].map(function(x){return'<button id="ai-'+x[1]+'" onclick="loadAi(\''+x[2]+'\',\''+x[1]+'\')" style="background:#1a1a1a;border:1px solid #333;color:#888;padding:5px 12px;border-radius:14px;cursor:pointer;font-size:12px;font-weight:700;transition:.2s" onmouseover="this.style.color=\'#fff\'" onmouseout="if(curAi!==\''+x[1]+'\')this.style.color=\'#888\'">'+x[0]+'</button>';}).join('')}
+    </div>
+  </div>
+  <div style="padding:8px 14px;background:#0d0d0d;border-bottom:1px solid #1a1a1a;display:flex;gap:8px;flex-shrink:0">
+    <input id="ai-proxy" type="text" placeholder="Proxy URL (needed to bypass school AI blocks)..."
+      style="flex:1;background:#111;border:1px solid #222;color:#aaa;padding:5px 10px;border-radius:6px;outline:none;font-size:12px">
+    <button onclick="reloadAi()" style="background:#333;border:none;color:#fff;padding:5px 12px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:700">RELOAD</button>
+  </div>
+  <iframe id="ai-frame" src="" style="flex:1;border:none;background:#111" allow="autoplay;fullscreen;clipboard-write"></iframe>
+</div>
+<script>
+var curAi='',curAiUrl='';
+document.getElementById('ai-proxy').value=localStorage.getItem('intel_proxy_url')||'';
+function loadAi(url,key){
+  curAi=key;curAiUrl=url;
+  document.querySelectorAll('[id^="ai-"]').forEach(function(b){if(b.tagName==='BUTTON'){b.style.background='#1a1a1a';b.style.color='#888';b.style.border='1px solid #333';}});
+  var btn=document.getElementById('ai-'+key);if(btn){btn.style.background='#fff';btn.style.color='#000';btn.style.border='none';}
+  var proxy=document.getElementById('ai-proxy').value.trim();
+  var f=document.getElementById('ai-frame');
+  f.src=proxy?proxy.replace(/\/$/,'')+'/service/'+btoa(url):url;
+}
+function reloadAi(){if(curAiUrl)loadAi(curAiUrl,curAi);}
+loadAi('https://chat.openai.com','gpt');
+<\/script>`+E;
+
+// ── ROBLOX ────────────────────────────────────────────────────────────────────
+if(id==='roblox')return B+`
+<div style="height:100%;display:flex;flex-direction:column">
+  <div style="padding:10px 16px;background:#111;border-bottom:1px solid #222;display:flex;align-items:center;gap:10px;flex-shrink:0">
+    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS9KvNyFWMg_bjo_q_1IVLKFWbfCeonn2qDow&s" style="width:24px;border-radius:6px">
+    <div style="font-family:Orbitron;font-size:.8rem;letter-spacing:3px">ROBLOX</div>
+  </div>
+  <div style="padding:8px 14px;background:#0d0d0d;border-bottom:1px solid #1a1a1a;display:flex;gap:8px;flex-shrink:0">
+    <input id="rb-proxy" type="text" placeholder="Proxy URL (required to load Roblox through school filters)..."
+      style="flex:1;background:#111;border:1px solid #222;color:#aaa;padding:5px 10px;border-radius:6px;outline:none;font-size:12px">
+    <button onclick="loadRb()" style="background:#e2231a;border:none;color:#fff;padding:5px 14px;border-radius:6px;cursor:pointer;font-weight:700;font-size:12px">LAUNCH</button>
+  </div>
+  <iframe id="rb-frame" src="" style="flex:1;border:none;background:#111" allow="autoplay;fullscreen;clipboard-write"></iframe>
+</div>
+<script>
+document.getElementById('rb-proxy').value=localStorage.getItem('intel_proxy_url')||'';
+function loadRb(){
+  var proxy=document.getElementById('rb-proxy').value.trim();
+  var f=document.getElementById('rb-frame');
+  f.src=proxy?proxy.replace(/\/$/,'')+'/service/'+btoa('https://www.roblox.com'):'https://www.roblox.com';
+}
+if(localStorage.getItem('intel_proxy_url'))loadRb();
+<\/script>`+E;
+
+// ── GEFORCE NOW ───────────────────────────────────────────────────────────────
+if(id==='Geforce')return B+`
+<div style="height:100%;display:flex;flex-direction:column">
+  <div style="padding:10px 16px;background:#111;border-bottom:1px solid #222;display:flex;align-items:center;gap:10px;flex-shrink:0">
+    <div style="font-family:Orbitron;font-size:.8rem;letter-spacing:3px">GEFORCE NOW</div>
+  </div>
+  <div style="padding:8px 14px;background:#0d0d0d;border-bottom:1px solid #1a1a1a;display:flex;gap:8px;flex-shrink:0">
+    <input id="gfn-proxy" type="text" placeholder="Proxy URL..."
+      style="flex:1;background:#111;border:1px solid #222;color:#aaa;padding:5px 10px;border-radius:6px;outline:none;font-size:12px">
+    <button onclick="loadGfn()" style="background:#76b900;border:none;color:#000;padding:5px 14px;border-radius:6px;cursor:pointer;font-weight:700;font-size:12px">LAUNCH</button>
+  </div>
+  <iframe id="gfn-frame" src="" style="flex:1;border:none;background:#111" allow="autoplay;fullscreen;clipboard-write;gamepad"></iframe>
+</div>
+<script>
+document.getElementById('gfn-proxy').value=localStorage.getItem('intel_proxy_url')||'';
+function loadGfn(){
+  var proxy=document.getElementById('gfn-proxy').value.trim();
+  var f=document.getElementById('gfn-frame');
+  f.src=proxy?proxy.replace(/\/$/,'')+'/service/'+btoa('https://play.geforcenow.com'):'https://play.geforcenow.com';
+}
+if(localStorage.getItem('intel_proxy_url'))loadGfn();
+<\/script>`+E;
+
+return B+'<div style="height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px"><div style="font-size:2.5rem">🚧</div><p style="font-family:Orbitron;letter-spacing:3px;color:#2a2a2a;font-size:.8rem">APP NOT CONFIGURED</p></div>'+E;
+}
+
 
 // ── WINDOWS ───────────────────────────────────────────────────────────────────
 function toggleApp(id){var w=document.getElementById('win-'+id);if(w){if(w.classList.contains('minimized')){w.classList.remove('minimized');w.classList.add('active');w.style.zIndex=++highestZ;activeWindowId=id;startImmersiveMode(w);}else if(activeWindowId===id){minimizeWindow(id);}else{w.style.zIndex=++highestZ;activeWindowId=id;startImmersiveMode(w);}}else{openWindow(id);}}
