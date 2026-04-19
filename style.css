@@ -149,6 +149,10 @@ body {
     opacity: 0.9;
 }
 
+/* Hide by default — shown by JS when src is set */
+#bg-img { display: none; }
+#lock-img { display: none; }
+
 #snow-fx {
     position: absolute;
     inset: 0;
