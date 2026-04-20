@@ -2013,3 +2013,20 @@ html { filter: brightness(var(--sys-brightness, 1)); }
 .sp-login-screen h2 { font-size: 28px; font-weight: 800; }
 .sp-login-screen p { color: #aaa; font-size: 14px; max-width: 380px; line-height: 1.5; }
 .user-email { font-size: 10px; color: #484848; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 144px; }
+
+/* low-power mode: disables every expensive effect */
+body.perf-low *, body.perf-low {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+body.perf-low .window {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5) !important;
+  background: rgba(15, 15, 20, 0.96) !important;
+}
+body.perf-low #bg-video,
+body.perf-low #blackhole-canvas,
+body.perf-low #snow-fx { display: none !important; }
+body.perf-low .win-resize,
+body.perf-low #quick-settings-panel,
+body.perf-low #dock-container { backdrop-filter: none !important; }
+body.perf-low * { transition-duration: 0.12s !important; }
