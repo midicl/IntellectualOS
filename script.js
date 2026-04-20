@@ -1,21 +1,22 @@
 var _devBuildVer = "1.0.0";
 
+var _ico = function(svg){ return 'data:image/svg+xml,' + encodeURIComponent(svg); };
 var APPS = {
-    'cine':     {title:'Hub', internal:true, icon:'https://cdn.worldvectorlogo.com/logos/netflix-logo-icon.svg', pinned:true},
-    'term':     {title:'Music',               internal:true, icon:'https://cdn.pixabay.com/photo/2016/10/22/00/15/spotify-1759471_1280.jpg', pinned:true},
-    'files':    {title:'Games',               internal:true, icon:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ-OeL_be7RFaoHi3PswkuAR5XcMgBNRDynsg&s', pinned:true},
-    'web':      {title:'Browser',             internal:true, icon:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSeD89ZcX5W1FBtal7RerasT27q-OmZqnBixQ&s', pinned:true},
-    'settings': {title:'Settings',              internal:true, icon:'https://cdn.iconscout.com/icon/free/png-256/free-apple-settings-icon-svg-download-png-493162.png', pinned:true},
-    'discord':  {title:'Discord',             internal:true, icon:'https://assets-global.website-files.com/6257adef93867e50d84d30e2/636e0a6a49cf127bf92de1e2_icon_clyde_blurple_RGB.png', pinned:false},
-    'roblox':   {title:'Roblox',              internal:true, icon:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS9KvNyFWMg_bjo_q_1IVLKFWbfCeonn2qDow&s', pinned:false},
-    'youtube':  {title:'YouTube',             internal:true, icon:'https://upload.wikimedia.org/wikipedia/commons/0/09/YouTube_full-color_icon_%282017%29.svg', pinned:false},
-    'ciniai':   {title:'Intellectual AI',     internal:true, icon:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRkLXhvns5Rrdf-XBNlWcPIRh0hlJfWnEtBWg&s', pinned:false},
-    'Geforce':  {title:'GeForce NOW',         internal:true, icon:'https://play-lh.googleusercontent.com/_-b_HQXrVyyhZSHj_BoE9u_-cxkcHDH_yLX5rDjJsFMIfsCNQs9F3QP4JvEFcWaSIz0=w240-h480-rw', pinned:false},
+    'cine': {title:'Hub', internal:true, pinned:true, icon: _ico('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect width="48" height="48" rx="12" fill="#1a1a2e"/><rect x="8" y="8" width="14" height="14" rx="3" fill="#9090b0"/><rect x="26" y="8" width="14" height="14" rx="3" fill="#7070a0"/><rect x="8" y="26" width="14" height="14" rx="3" fill="#7070a0"/><rect x="26" y="26" width="14" height="14" rx="3" fill="#5050a0"/></svg>')},
+    'term': {title:'Music', internal:true, pinned:true, icon: _ico('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect width="48" height="48" rx="12" fill="#0f1a28"/><path d="M20 34V16l20-4v7" stroke="#8aa0c0" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/><circle cx="14" cy="34" r="6" fill="none" stroke="#8aa0c0" stroke-width="2.5"/><circle cx="34" cy="19" r="6" fill="none" stroke="#8aa0c0" stroke-width="2.5"/></svg>')},
+    'files': {title:'Games', internal:true, pinned:true, icon: _ico('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect width="48" height="48" rx="12" fill="#0d1520"/><rect x="5" y="16" width="38" height="19" rx="7" fill="none" stroke="#8090a8" stroke-width="2"/><line x1="17" y1="22" x2="17" y2="29" stroke="#a0b0c0" stroke-width="2.5" stroke-linecap="round"/><line x1="13" y1="25.5" x2="21" y2="25.5" stroke="#a0b0c0" stroke-width="2.5" stroke-linecap="round"/><circle cx="31" cy="22" r="2" fill="#8090a8"/><circle cx="35" cy="25.5" r="2" fill="#8090a8"/><circle cx="31" cy="29" r="2" fill="#8090a8"/><circle cx="27" cy="25.5" r="2" fill="#8090a8"/></svg>')},
+    'web': {title:'Browser', internal:true, pinned:true, icon: _ico('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect width="48" height="48" rx="12" fill="#101520"/><circle cx="24" cy="24" r="16" fill="none" stroke="#7080a0" stroke-width="2"/><ellipse cx="24" cy="24" rx="7" ry="16" fill="none" stroke="#7080a0" stroke-width="1.5"/><line x1="8" y1="24" x2="40" y2="24" stroke="#7080a0" stroke-width="1.5"/><line x1="11" y1="17" x2="37" y2="17" stroke="#505870" stroke-width="1"/><line x1="11" y1="31" x2="37" y2="31" stroke="#505870" stroke-width="1"/></svg>')},
+    'settings': {title:'Settings', internal:true, pinned:true, icon: _ico('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect width="48" height="48" rx="12" fill="#141414"/><circle cx="24" cy="24" r="6" fill="none" stroke="#909090" stroke-width="2.5"/><path d="M24 8v4M24 36v4M8 24h4M36 24h4M12.7 12.7l2.8 2.8M32.5 32.5l2.8 2.8M12.7 35.3l2.8-2.8M32.5 15.5l2.8-2.8" stroke="#909090" stroke-width="2.5" stroke-linecap="round"/></svg>')},
+    'discord': {title:'Discord', internal:true, pinned:false, icon:'https://assets-global.website-files.com/6257adef93867e50d84d30e2/636e0a6a49cf127bf92de1e2_icon_clyde_blurple_RGB.png'},
+    'roblox': {title:'Roblox', internal:true, pinned:false, icon:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS9KvNyFWMg_bjo_q_1IVLKFWbfCeonn2qDow&s'},
+    'youtube': {title:'YouTube', internal:true, pinned:false, icon:'https://upload.wikimedia.org/wikipedia/commons/0/09/YouTube_full-color_icon_%282017%29.svg'},
+    'ciniai': {title:'Intellectual AI', internal:true, pinned:false, icon: _ico('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect width="48" height="48" rx="12" fill="#080e1c"/><circle cx="24" cy="24" r="7" fill="#1e3060" stroke="#4060b0" stroke-width="1.5"/><circle cx="24" cy="24" r="3" fill="#6090e0"/><circle cx="24" cy="9" r="3.5" fill="#3050a0" opacity="0.85"/><circle cx="24" cy="39" r="3.5" fill="#3050a0" opacity="0.85"/><circle cx="9" cy="24" r="3.5" fill="#3050a0" opacity="0.85"/><circle cx="39" cy="24" r="3.5" fill="#3050a0" opacity="0.85"/><circle cx="13.5" cy="13.5" r="2.5" fill="#2040a0" opacity="0.6"/><circle cx="34.5" cy="13.5" r="2.5" fill="#2040a0" opacity="0.6"/><circle cx="13.5" cy="34.5" r="2.5" fill="#2040a0" opacity="0.6"/><circle cx="34.5" cy="34.5" r="2.5" fill="#2040a0" opacity="0.6"/><line x1="24" y1="17" x2="24" y2="12.5" stroke="#4060b0" stroke-width="1.5" opacity="0.8"/><line x1="24" y1="31" x2="24" y2="35.5" stroke="#4060b0" stroke-width="1.5" opacity="0.8"/><line x1="17" y1="24" x2="12.5" y2="24" stroke="#4060b0" stroke-width="1.5" opacity="0.8"/><line x1="31" y1="24" x2="35.5" y2="24" stroke="#4060b0" stroke-width="1.5" opacity="0.8"/></svg>')},
+    'Geforce': {title:'GeForce NOW', internal:true, pinned:false, icon:'https://play-lh.googleusercontent.com/_-b_HQXrVyyhZSHj_BoE9u_-cxkcHDH_yLX5rDjJsFMIfsCNQs9F3QP4JvEFcWaSIz0=w240-h480-rw'},
 };
 
 var savedPins = localStorage.getItem('intel_pins_v2');
 if(savedPins){var p=JSON.parse(savedPins);for(var k in p){if(APPS[k])APPS[k].pinned=p[k];}}
-function syncPins(){var obj={};for(var k in APPS)obj[k]=APPS[k].pinned;localStorage.setItem('intel_pins_v2',JSON.stringify(obj));}
+function syncPins(){var obj={};for(var k in APPS)obj[k]=APPS[k].pinned;localStorage.setItem('intel_pins_v2',JSON.stringify(obj));if(window.saveToCloud)window.saveToCloud();}
 
 var wallpaperRegistry = {
     "css-space":  {id:"css-space",  name:"Deep Space",  url:"__css__", css:"radial-gradient(ellipse at 20% 50%, #0d0d2b 0%, #000 70%)",  locked:false},
@@ -24,6 +25,7 @@ var wallpaperRegistry = {
     "css-fire":   {id:"css-fire",   name:"Ember",        url:"__css__", css:"radial-gradient(ellipse at bottom right, #1a0500 0%, #000 70%)", locked:false},
     "css-purple": {id:"css-purple", name:"Nebula",       url:"__css__", css:"radial-gradient(ellipse at center, #0d001a 0%, #000 70%)",   locked:false},
     "css-ice":    {id:"css-ice",    name:"Frost",        url:"__css__", css:"radial-gradient(ellipse at top left, #001020 0%, #000 70%)", locked:false},
+    "blackhole":  {id:"blackhole",  name:"Blue Void",    url:"__blackhole__", locked:false},
 };
 
 var sysConfig = JSON.parse(localStorage.getItem('intel_sys_config'))||{};
@@ -33,15 +35,15 @@ if(sysConfig.wpLoop===undefined)sysConfig.wpLoop=false;
 if(sysConfig.idleLock===undefined)sysConfig.idleLock=false;
 if(sysConfig.redirectConfirm===undefined)sysConfig.redirectConfirm=false;
 if(!sysConfig.panicKey)sysConfig.panicKey='`';
-if(!sysConfig.homeWallpaper)sysConfig.homeWallpaper='css-space';
+if(!sysConfig.homeWallpaper)sysConfig.homeWallpaper='blackhole';
 if(!sysConfig.lockWallpaper)sysConfig.lockWallpaper='css-ocean';
 if(!sysConfig.cloak)sysConfig.cloak='none';
 
-window.updateSysSetting=function(key,value){sysConfig[key]=value;localStorage.setItem('intel_sys_config',JSON.stringify(sysConfig));if(key==='optBg')applySystemSettings();};
+window.updateSysSetting=function(key,value){sysConfig[key]=value;localStorage.setItem('intel_sys_config',JSON.stringify(sysConfig));if(key==='optBg')applySystemSettings();if(window.saveToCloud)window.saveToCloud();};
 var cloaks={none:{title:"Intellectual OS",icon:""},google:{title:"Google",icon:"https://www.google.com/favicon.ico"},drive:{title:"My Drive - Google Drive",icon:"https://ssl.gstatic.com/images/branding/product/1x/drive_2020q4_32dp.png"},canvas:{title:"Dashboard",icon:"https://du11hjcvx0uqb.cloudfront.net/br/dist/images/favicon-e10d657a73.ico"},classroom:{title:"Classes",icon:"https://ssl.gstatic.com/classroom/favicon.png"}};
 window.updateCloak=function(key){sysConfig.cloak=key;localStorage.setItem('intel_sys_config',JSON.stringify(sysConfig));applyCloak();};
 function applyCloak(){var k=sysConfig.cloak||'none',sel=cloaks[k],icons=document.querySelectorAll("link[rel*='icon']");for(var i=0;i<icons.length;i++)icons[i].remove();if(sel&&k!=='none'){document.title=sel.title;var n=document.createElement('link');n.type='image/x-icon';n.rel='shortcut icon';n.href=sel.icon;document.getElementsByTagName('head')[0].appendChild(n);}else{document.title="Intellectual OS";}}
-setInterval(applyCloak,2000);
+// applyCloak is called on load and whenever updateCloak() is invoked — no polling needed
 
 var isDesktopActive=false,bootActive=true,enterCount=0,highestZ=500,activeWindowId=null,isMediaPlaying=false,activeCtxId=null;
 var isMobile=/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
@@ -49,7 +51,7 @@ if(isMobile){var mw=document.getElementById('mobile-warning');if(mw&&mw.showModa
 
 document.addEventListener("DOMContentLoaded",function(){
     var _bi=document.getElementById('bg-img');if(_bi)_bi.style.display='none';
-    var _li=document.getElementById('lock-img');if(_li)_li.style.display='none';applyCloak();document.getElementById('boot-layer').style.display='block';renderUI();initWallpapers();setupAppContextMenu();loadDesktop();updateSidebarData();if(sysConfig.accentColor)applyAccentColor(sysConfig.accentColor);});
+    var _li=document.getElementById('lock-img');if(_li)_li.style.display='none';applyCloak();document.getElementById('boot-layer').style.display='block';renderUI();initWallpapers();setupAppContextMenu();loadDesktop();updateSidebarData();if(sysConfig.accentColor)applyAccentColor(sysConfig.accentColor);setupWallpaperUpload();});
 
 // ── BOOT ─────────────────────────────────────────────────────────────────────
 function startBootSequence(){
@@ -139,6 +141,7 @@ window.addCustomWallpaper = function(name, url, type){
     customWallpapers[id] = wp;
     localStorage.setItem('intel_custom_wp', JSON.stringify(customWallpapers));
     showNotification("Wallpaper added", '"'+name+'" is now available in Wallpaper Protocols.');
+    if(window.saveToCloud)window.saveToCloud();
     return id;
 };
 
@@ -147,12 +150,18 @@ function applyWallpaperCSS(wp,target){
     var da=document.getElementById('desktop-area'),ls=document.getElementById('lock-screen');
     var bv=document.getElementById('bg-video'),bi=document.getElementById('bg-img');
     var lv=document.getElementById('lock-video'),li=document.getElementById('lock-img');
+    var bhc=document.getElementById('blackhole-canvas');
+    if(wp.url==='__blackhole__'){
+        if(target==='home'){bv.style.display='none';bi.style.display='none';da.style.background='transparent';if(bhc)bhc.style.display='block';}
+        return;
+    }
+    if(bhc&&target==='home')bhc.style.display='none';
     if(wp.url==='__css__'||wp.css){
         var cssVal=wp.css||'#000';
         if(target==='home'){bv.style.display='none';bi.style.display='none';da.style.background=cssVal;}
         else{lv.style.display='none';li.style.display='none';ls.style.background=cssVal;}
     } else {
-        var isImg=wp.url.match(/\.(png|jpg|jpeg|gif|webp|svg)(\?.*)?$/i);
+        var isImg=wp.url.startsWith('data:image/')||wp.url.match(/\.(png|jpg|jpeg|gif|webp|svg)(\?.*)?$/i);
         var vEl=target==='home'?bv:lv, iEl=target==='home'?bi:li;
         if(isImg){
             vEl.style.display='none';iEl.style.display='block';iEl.src=wp.url;
@@ -166,9 +175,9 @@ function applyWallpaperCSS(wp,target){
 }
 
 function initWallpapers(){
-    document.getElementById('desktop-area').style.background='radial-gradient(ellipse at 20% 50%, #0d0d2b 0%, #000 70%)';
+    document.getElementById('desktop-area').style.background='transparent';
     document.getElementById('lock-screen').style.background='radial-gradient(ellipse at top, #001a2e 0%, #000 70%)';
-    applyWallpaperCSS(wallpaperRegistry[sysConfig.homeWallpaper]||wallpaperRegistry['css-space'],'home');
+    applyWallpaperCSS(wallpaperRegistry[sysConfig.homeWallpaper]||wallpaperRegistry['blackhole'],'home');
     applyWallpaperCSS(wallpaperRegistry[sysConfig.lockWallpaper]||wallpaperRegistry['css-ocean'],'lock');
     var chk=document.getElementById('wp-loop-chk');if(chk)chk.checked=sysConfig.wpLoop;
     applyAccentColor(sysConfig.accentColor||'#ffffff');
@@ -180,61 +189,147 @@ function applyAccentColor(color){
     // derive muted version
     document.documentElement.style.setProperty('--accent-glow',color+'33');
     localStorage.setItem('intel_sys_config',JSON.stringify(sysConfig));
+    if(window.saveToCloud)window.saveToCloud();
 }
 
 function setWallpaper(k){
     var d=wallpaperRegistry[k];if(!d)return;
     if(window.wpMode==='home'||window.wpMode==='both'){applyWallpaperCSS(d,'home');sysConfig.homeWallpaper=k;localStorage.setItem('intel_sys_config',JSON.stringify(sysConfig));}
     if(window.wpMode==='lock'||window.wpMode==='both'){applyWallpaperCSS(d,'lock');sysConfig.lockWallpaper=k;localStorage.setItem('intel_sys_config',JSON.stringify(sysConfig));}
+    if(window.saveToCloud)window.saveToCloud();
 }
 window.wpMode='both';
 
 function openWallpaperMenu(){
-    var m=document.getElementById('wallpaper-menu'),gu=document.getElementById('wp-grid-unlocked');
-    if(!m||!gu)return;
+    var m=document.getElementById('wallpaper-menu');
+    if(!m)return;
     if(m.showModal)m.showModal();else m.style.display='flex';
     m.classList.add('open');
-    gu.innerHTML='';
-    for(var k in wallpaperRegistry){
-        var d=wallpaperRegistry[k],c=document.createElement('div');
-        c.className='wp-card';c.setAttribute('data-key',k);
-        if(d.url==='__css__'||d.css){
-            c.innerHTML='<div style="width:100%;height:100%;background:'+(d.css||'#111')+';"></div><div class="wp-info">'+(d.custom?' ':'')+d.name+'</div>';
-        }else if(d.url.match(/\.(png|jpg|jpeg|gif|webp|svg)(\?.*)?$/i)){
-            c.innerHTML='<img src="'+d.url+'" alt="wp" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.style.background=\'#111\'"><div class="wp-info">'+(d.custom?' ':'')+d.name+'</div>';
-        }else{
-            c.innerHTML='<video src="'+d.url+'" preload="none" playsinline muted loop onmouseover="this.play()" onmouseout="this.pause()" style="width:100%;height:100%;object-fit:cover;"></video><div class="wp-info">'+(d.custom?' ':'')+d.name+'</div>';
-        }
-        if(d.custom){
-            var del=document.createElement('div');
-            del.style.cssText='position:absolute;top:5px;right:5px;background:rgba(0,0,0,0.7);color:#fff;border-radius:50%;width:18px;height:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:10px;z-index:2;';
-            del.textContent='';
-            del.onclick=function(e){e.stopPropagation();var k2=this.parentElement.getAttribute('data-key');delete wallpaperRegistry[k2];delete customWallpapers[k2];localStorage.setItem('intel_custom_wp',JSON.stringify(customWallpapers));openWallpaperMenu();};
-            c.style.position='relative';
-            c.appendChild(del);
-        }
-        c.onclick=function(){
-            setWallpaper(this.getAttribute('data-key'));
-            document.querySelectorAll('.wp-card').forEach(function(x){x.classList.remove('active-wp');});
-            this.classList.add('active-wp');
-        };
-        gu.appendChild(c);
-    }
-    // Add custom wallpaper card
-    var addCard=document.createElement('div');
-    addCard.className='wp-card wp-add-card';
-    addCard.style.cssText='display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;border:1px dashed #333;background:#0a0a0a;';
-    addCard.innerHTML='<div style="font-size:1.5rem;color:#444;">+</div><div style="font-size:11px;color:#444;font-weight:700;letter-spacing:1px;text-align:center;">ADD CUSTOM</div>';
-    addCard.onclick=function(){
-        var name=prompt('Wallpaper name:');if(!name)return;
-        var url=prompt('Image or video URL (direct link to .jpg/.png/.mp4 etc):');if(!url)return;
-        addCustomWallpaper(name.trim(),url.trim());
-        openWallpaperMenu();
-    };
-    gu.appendChild(addCard);
+    _renderWpGallery();
+    // Ensure gallery tab is active on open
+    var galleryBtn=document.querySelector('.wp-tab[data-tab="gallery"]');
+    if(galleryBtn)switchWpTab(galleryBtn,'gallery');
+}
 
-    var chk=document.getElementById('wp-loop-chk');
-    if(chk){chk.checked=sysConfig.wpLoop;chk.onchange=function(e){window.updateSysSetting('wpLoop',e.target.checked);};}
+function _renderWpGallery(){
+    var gu=document.getElementById('wp-grid-unlocked');
+    if(!gu)return;
+    gu.innerHTML='';
+    var activeKey=window.wpMode==='lock'?sysConfig.lockWallpaper:sysConfig.homeWallpaper;
+    for(var k in wallpaperRegistry){
+        (function(key){
+            var d=wallpaperRegistry[key];
+            var c=document.createElement('div');
+            c.className='wp-card'+(key===activeKey?' active-wp':'');
+            c.setAttribute('data-key',key);
+            var inner='';
+            if(d.url==='__css__'||d.css){
+                inner='<div style="width:100%;height:100%;background:'+(d.css||'#111')+'"></div>';
+            }else if(d.url.startsWith('data:image/')||d.url.match(/\.(png|jpg|jpeg|gif|webp|svg)(\?.*)?$/i)){
+                inner='<img src="'+d.url+'" alt="'+d.name+'" loading="lazy" onerror="this.parentElement.style.background=\'#111\'">';
+            }else{
+                inner='<video src="'+d.url+'" preload="none" playsinline muted loop onmouseover="this.play()" onmouseout="this.pause()"></video>';
+            }
+            inner+='<div class="wp-info">'+d.name+'</div>';
+            c.innerHTML=inner;
+            if(d.custom){
+                var del=document.createElement('button');
+                del.className='wp-del-btn';
+                del.innerHTML='<i class="fas fa-trash"></i>';
+                del.onclick=function(e){
+                    e.stopPropagation();
+                    delete wallpaperRegistry[key];delete customWallpapers[key];
+                    localStorage.setItem('intel_custom_wp',JSON.stringify(customWallpapers));
+                    _renderWpGallery();
+                };
+                c.appendChild(del);
+            }
+            c.onclick=function(){
+                setWallpaper(key);
+                document.querySelectorAll('.wp-card').forEach(function(x){x.classList.remove('active-wp');});
+                this.classList.add('active-wp');
+            };
+            gu.appendChild(c);
+        })(k);
+    }
+}
+
+function closeWallpaperMenu(){
+    var m=document.getElementById('wallpaper-menu');
+    if(!m)return;
+    m.classList.remove('open');
+    setTimeout(function(){if(m.close)m.close();else m.style.display='none';},300);
+}
+
+function switchWpTab(btn,tab){
+    document.querySelectorAll('.wp-tab').forEach(function(b){b.classList.remove('active');});
+    document.querySelectorAll('.wp-tab-content').forEach(function(c){c.classList.remove('active');});
+    btn.classList.add('active');
+    var content=document.getElementById('wp-tab-'+tab);
+    if(content)content.classList.add('active');
+    if(tab==='gallery')_renderWpGallery();
+}
+
+window.setWpTarget=function(btn,target){
+    window.wpMode=target;
+    document.querySelectorAll('.wp-target-btn').forEach(function(b){b.classList.remove('active');});
+    btn.classList.add('active');
+    _renderWpGallery();
+};
+
+function addWpFromUrl(){
+    var name=(document.getElementById('wp-url-name').value||'').trim();
+    var url=(document.getElementById('wp-url-link').value||'').trim();
+    if(!name||!url){showNotification('Missing info','Please enter both a name and a URL.');return;}
+    addCustomWallpaper(name,url);
+    document.getElementById('wp-url-name').value='';
+    document.getElementById('wp-url-link').value='';
+    var galleryBtn=document.querySelector('.wp-tab[data-tab="gallery"]');
+    if(galleryBtn)switchWpTab(galleryBtn,'gallery');
+}
+
+function compressAndAddWallpaper(file,name){
+    var img=new Image(),reader=new FileReader();
+    reader.onload=function(e){
+        img.onload=function(){
+            var canvas=document.createElement('canvas');
+            var MAX_W=1920,MAX_H=1080,w=img.width,h=img.height;
+            if(w>MAX_W){h=Math.round(h*MAX_W/w);w=MAX_W;}
+            if(h>MAX_H){w=Math.round(w*MAX_H/h);h=MAX_H;}
+            canvas.width=w;canvas.height=h;
+            canvas.getContext('2d').drawImage(img,0,0,w,h);
+            var dataUrl=canvas.toDataURL('image/jpeg',0.85);
+            addCustomWallpaper(name,dataUrl);
+            var galleryBtn=document.querySelector('.wp-tab[data-tab="gallery"]');
+            if(galleryBtn)switchWpTab(galleryBtn,'gallery');
+            showNotification('Wallpaper saved','"'+name+'" has been added to your gallery.');
+        };
+        img.src=e.target.result;
+    };
+    reader.readAsDataURL(file);
+}
+
+function setupWallpaperUpload(){
+    var fileInput=document.getElementById('wp-file-input');
+    var dropZone=document.getElementById('wp-drop-zone');
+    if(!fileInput||!dropZone)return;
+    fileInput.addEventListener('change',function(){
+        var file=this.files[0];
+        if(!file)return;
+        var name=file.name.replace(/\.[^.]+$/,'').replace(/[_\-]/g,' ');
+        compressAndAddWallpaper(file,name);
+        this.value='';
+    });
+    dropZone.addEventListener('dragover',function(e){e.preventDefault();this.classList.add('drag-over');});
+    dropZone.addEventListener('dragleave',function(){this.classList.remove('drag-over');});
+    dropZone.addEventListener('drop',function(e){
+        e.preventDefault();this.classList.remove('drag-over');
+        var file=e.dataTransfer.files[0];
+        if(file&&file.type.startsWith('image/')){
+            var name=file.name.replace(/\.[^.]+$/,'').replace(/[_\-]/g,' ');
+            compressAndAddWallpaper(file,name);
+        }
+    });
 }
 
 // ── CLOCK ─────────────────────────────────────────────────────────────────────
@@ -357,14 +452,14 @@ body{background:#000}
 #root{height:100vh;display:flex;flex-direction:column}
 
 /* NAV */
-#nav{height:46px;background:#000;border-bottom:1px solid #111;display:flex;align-items:center;padding:0 20px;gap:2px;flex-shrink:0}
-.nt{padding:0 16px;height:100%;display:flex;align-items:center;font-size:13px;font-weight:600;color:#666;border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap;user-select:none;transition:color .15s}
-.nt:hover{color:#ccc}
+#nav{height:40px;background:rgba(6,6,6,1);border-bottom:1px solid rgba(255,255,255,.05);display:flex;align-items:center;padding:0 16px;gap:0;flex-shrink:0}
+.nt{padding:0 14px;height:100%;display:flex;align-items:center;font-size:10px;font-weight:700;color:#383838;border-bottom:1.5px solid transparent;cursor:pointer;white-space:nowrap;user-select:none;transition:color .15s;letter-spacing:.8px;text-transform:uppercase}
+.nt:hover{color:#777}
 .nt.on{color:#fff;border-bottom-color:#fff}
-#nav-r{margin-left:auto;display:flex;align-items:center;gap:16px}
-#clk{font-size:12px;font-weight:600;color:#333}
-#nav-search-btn{display:flex;align-items:center;gap:6px;color:#555;cursor:pointer;font-size:13px;transition:.15s}
-#nav-search-btn:hover{color:#aaa}
+#nav-r{margin-left:auto;display:flex;align-items:center;gap:14px}
+#clk{font-size:11px;font-weight:600;color:#2a2a2a}
+#nav-search-btn{display:flex;align-items:center;gap:5px;color:#383838;cursor:pointer;font-size:11px;transition:.15s;font-weight:600;letter-spacing:.3px}
+#nav-search-btn:hover{color:#888}
 
 /* MAIN SCROLL */
 #main{flex:1;overflow-y:auto;overflow-x:hidden}
@@ -419,15 +514,15 @@ body{background:#000}
 
 /* LAUNCHER */
 #launcher{display:none;position:fixed;inset:0;z-index:1000;background:#000;flex-direction:column}
-#ll-load{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px}
-#ll-name{font-family:'Space Grotesk',sans-serif;font-size:1rem;font-weight:700;color:#fff}
-#ll-sub{font-size:11px;color:#333;letter-spacing:1px}
-#ll-track{width:220px;height:1px;background:#1a1a1a;border-radius:1px;overflow:hidden;margin-top:4px}
+#ll-load{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}
+#ll-name{font-family:'Space Grotesk',sans-serif;font-size:.95rem;font-weight:700;color:#fff;letter-spacing:.3px}
+#ll-sub{font-size:10px;color:#2a2a2a;letter-spacing:1.5px;text-transform:uppercase;font-weight:700}
+#ll-track{width:200px;height:1px;background:#161616;border-radius:1px;overflow:hidden;margin-top:6px}
 #ll-fill{height:100%;width:0%;background:#fff;border-radius:1px;transition:width .06s}
-#ll-pct{font-size:11px;color:#2a2a2a;font-weight:600}
+#ll-pct{font-size:10px;color:#252525;font-weight:700;letter-spacing:.5px}
 #ll-frame{flex:1;border:none;display:none;width:100%;height:100%}
-#ll-x{position:absolute;top:14px;right:14px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);color:#888;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;z-index:10;transition:.15s}
-#ll-x:hover{background:rgba(255,255,255,.14);color:#fff}
+#ll-x{position:absolute;top:12px;right:12px;background:rgba(14,14,14,.95);border:1px solid rgba(255,255,255,.07);color:#555;height:28px;padding:0 14px;border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;z-index:10;transition:all .15s;gap:7px}
+#ll-x:hover{background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.15)}
 
 /* SEARCH OVERLAY */
 #srch{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.96);backdrop-filter:blur(16px);flex-direction:column;padding:36px 24px}
@@ -436,8 +531,8 @@ body{background:#000}
 #srch-in{flex:1;background:#111;border:1px solid #1e1e1e;color:#fff;padding:10px 14px;border-radius:8px;outline:none;font-size:14px;font-weight:500}
 #srch-in:focus{border-color:#2a2a2a}
 #srch-in::placeholder{color:#2a2a2a}
-#srch-x{background:#1a1a1a;border:1px solid #1e1e1e;color:#888;padding:10px 16px;border-radius:8px;font-size:13px;font-weight:600}
-#srch-x:hover{color:#fff}
+#srch-x{background:#111;border:1px solid #1e1e1e;color:#555;padding:8px 16px;border-radius:7px;font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;transition:.15s}
+#srch-x:hover{background:#fff;color:#000;border-color:#fff}
 #srch-res{display:flex;flex-wrap:wrap;gap:8px;overflow-y:auto}
 
 /* ADD MODAL */
@@ -528,7 +623,7 @@ body{background:#000}
     <div id="ll-pct">0%</div>
   </div>
   <iframe id="ll-frame" allow="autoplay;fullscreen;gamepad;clipboard-write" allowfullscreen></iframe>
-  <div id="ll-x" onclick="closeLaunch()">&#215;</div>
+  <div id="ll-x" onclick="closeLaunch()"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>CLOSE</div>
 </div>
 
 <!-- SEARCH -->
@@ -1175,7 +1270,7 @@ document.addEventListener('mouseover',function(e){if(e.target.closest('.win-head
 
 // ── DESKTOP ───────────────────────────────────────────────────────────────────
 var desktopLayout=JSON.parse(localStorage.getItem('intel_desktop_v2'))||[];
-function saveDesktop(){localStorage.setItem('intel_desktop_v2',JSON.stringify(desktopLayout));loadDesktop();}
+function saveDesktop(){localStorage.setItem('intel_desktop_v2',JSON.stringify(desktopLayout));loadDesktop();if(window.saveToCloud)window.saveToCloud();}
 function loadDesktop(){var c=document.getElementById('desktop-area');document.querySelectorAll('.desktop-app').forEach(function(e){e.remove();});desktopLayout.forEach(function(item,idx){var d=document.createElement('div');d.className='desktop-app';d.style.left=item.x+'px';d.style.top=item.y+'px';d.setAttribute('data-idx',idx);if(item.type==='folder'){var gHTML='<div class="d-folder-grid">';item.apps.slice(0,4).forEach(function(a){if(APPS[a])gHTML+='<img src="'+APPS[a].icon+'">';});gHTML+='</div>';if(!item.hideName)gHTML+='<div class="d-label">'+(item.customName||'Folder')+'</div>';d.innerHTML=gHTML;d.onclick=function(ev){if(DragSystem.isDragMove)return;ev.stopPropagation();if(!this.classList.contains('expanded-folder')){closeAllFolders();expandFolder(this,item,idx);}};}else{var a=APPS[item.id];if(a){d.innerHTML='<img src="'+(item.customIcon||a.icon)+'" class="d-icon">'+(item.hideName?'':'<div class="d-label">'+(item.customName||a.title)+'</div>');d.ondblclick=function(ev){ev.stopPropagation();toggleApp(item.id);};}}d.onmousedown=function(ev){ev.stopPropagation();if(ev.button===0)DragSystem.start(ev,d,'desktop',idx);};d.oncontextmenu=function(ev){ev.preventDefault();ev.stopPropagation();hideAllCtx();var m=document.getElementById('app-context-menu');if(m){m.style.display='block';m.style.left=ev.pageX+'px';m.style.top=ev.pageY+'px';m.setAttribute('data-target-idx',idx);}};c.appendChild(d);});}
 function expandFolder(el,dat,idx){el.classList.add('expanded-folder');var h='<div class="folder-header">'+(dat.customName||'Folder')+' <i class="fas fa-times" onclick="closeAllFolders(event)"></i></div><div class="folder-grid-expanded">';dat.apps.forEach(function(aId){var info=APPS[aId];if(info)h+='<div class="f-app" onclick="event.stopPropagation();toggleApp(\''+aId+'\')"><img src="'+info.icon+'"><span>'+info.title+'</span></div>';});h+='</div>';el.innerHTML=h;setTimeout(function(){var rect=el.getBoundingClientRect();document.querySelectorAll('.desktop-app:not(.expanded-folder)').forEach(function(s){var sr=s.getBoundingClientRect();if(!(rect.right<sr.left||rect.left>sr.right||rect.bottom<sr.top||rect.top>sr.bottom)){s.style.transform='translateY('+(rect.bottom-sr.top+20)+'px)';s.setAttribute('data-pushed','true');}});},50);}
 function closeAllFolders(ev){if(ev)ev.stopPropagation();document.querySelectorAll('.expanded-folder').forEach(function(o){o.classList.remove('expanded-folder');});document.querySelectorAll('.desktop-app[data-pushed="true"]').forEach(function(j){j.style.transform='';j.removeAttribute('data-pushed');});setTimeout(loadDesktop,250);}
@@ -1187,9 +1282,11 @@ window.toggleDesktopSize=function(l){document.getElementById('desktop-area').cla
 var DragSystem={dragging:false,startPos:{x:0,y:0},sourceType:null,sourceEl:null,idx:null,appId:null,proxy:document.getElementById('drag-proxy'),pImg:document.getElementById('proxy-img'),badge:document.getElementById('folder-badge'),init:function(){window.addEventListener('mousemove',function(e){DragSystem.move(e);});window.addEventListener('mouseup',function(e){DragSystem.end(e);});},start:function(e,el,type,id){this.startPos={x:e.clientX,y:e.clientY};this.sourceType=type;this.sourceEl=el;this.isDragMove=false;if(type==='drawer'||type==='dock')this.appId=id;else if(type==='desktop'){this.idx=id;this.sourceEl.style.opacity='0.5';}},startWinDrag:function(e,id){this.startPos={x:e.clientX,y:e.clientY};this.sourceType='window';this.sourceEl=document.getElementById('win-'+id);this.isDragMove=false;},move:function(e){if(!this.sourceEl)return;var dx=Math.abs(e.clientX-this.startPos.x),dy=Math.abs(e.clientY-this.startPos.y);if(dx>3||dy>3){this.dragging=true;this.isDragMove=true;if(this.sourceType==='desktop'||this.sourceType==='drawer'||this.sourceType==='dock'){if(this.sourceType==='drawer')toggleAppDrawer();this.proxy.style.display='block';this.proxy.style.left=(e.clientX-25)+'px';this.proxy.style.top=(e.clientY-25)+'px';if(this.sourceType==='drawer'||this.sourceType==='dock'){if(APPS[this.appId])this.pImg.src=APPS[this.appId].icon;}else{var itm=desktopLayout[this.idx];if(itm.type==='app'&&APPS[itm.id])this.pImg.src=APPS[itm.id].icon;else{this.pImg.src='';this.badge.style.display='flex';this.badge.innerText=itm.apps.length;}}}}},end:function(e){if(!this.sourceEl)return;if(!this.isDragMove&&this.sourceType==='desktop'){this.reset();return;}if(!this.dragging){this.reset();return;}if(this.sourceType==='desktop'||this.sourceType==='drawer'||this.sourceType==='dock'){var nx=Math.round((e.clientX-40)/90)*90,ny=Math.round((e.clientY-40)/100)*100;if(e.clientY>window.innerHeight-80){if(this.sourceType==='desktop')desktopLayout.splice(this.idx,1);}else{var tIdx=-1;document.querySelectorAll('.desktop-app').forEach(function(a){if(a!==DragSystem.sourceEl){var r=a.getBoundingClientRect();if(e.clientX>r.left&&e.clientX<r.right&&e.clientY>r.top&&e.clientY<r.bottom)tIdx=a.dataset.idx;}});if(tIdx>-1){var targ=desktopLayout[tIdx],drp=(DragSystem.sourceType==='drawer'||DragSystem.sourceType==='dock')?[DragSystem.appId]:(desktopLayout[DragSystem.idx].type==='app'?[desktopLayout[DragSystem.idx].id]:desktopLayout[DragSystem.idx].apps);if(targ.type==='app'){targ.type='folder';targ.apps=[targ.id].concat(drp);delete targ.id;}else{targ.apps.push.apply(targ.apps,drp);}if(DragSystem.sourceType==='desktop')desktopLayout.splice(DragSystem.idx,1);}else{if(DragSystem.sourceType==='drawer'||DragSystem.sourceType==='dock')desktopLayout.push({type:'app',id:DragSystem.appId,x:nx,y:ny});else{desktopLayout[DragSystem.idx].x=nx;desktopLayout[DragSystem.idx].y=ny;}}}saveDesktop();}this.reset();},reset:function(){this.dragging=false;if(this.sourceEl)this.sourceEl.style.opacity='1';this.sourceEl=null;this.proxy.style.display='none';this.badge.style.display='none';}};
 DragSystem.init();
 
+// Dock hover handled by CSS only — no JS needed
+
 // ── SNOW ──────────────────────────────────────────────────────────────────────
 var cvsSnow=document.getElementById('snow-fx');
-if(cvsSnow){var ctxSnow=cvsSnow.getContext('2d');cvsSnow.width=window.innerWidth;cvsSnow.height=window.innerHeight;var flakes=[];for(var f=0;f<30;f++)flakes.push({x:Math.random()*cvsSnow.width,y:Math.random()*cvsSnow.height,r:Math.random()*2,s:Math.random()+0.5});(function ds(){if(isDesktopActive){ctxSnow.clearRect(0,0,cvsSnow.width,cvsSnow.height);ctxSnow.fillStyle="rgba(255,255,255,0.25)";for(var i=0;i<flakes.length;i++){var fl=flakes[i];ctxSnow.beginPath();ctxSnow.arc(fl.x,fl.y,fl.r,0,Math.PI*2);ctxSnow.fill();fl.y+=fl.s;if(fl.y>cvsSnow.height)fl.y=0;}}requestAnimationFrame(ds);})();}
+if(cvsSnow){var ctxSnow=cvsSnow.getContext('2d');cvsSnow.width=window.innerWidth;cvsSnow.height=window.innerHeight;var flakes=[];for(var f=0;f<30;f++)flakes.push({x:Math.random()*cvsSnow.width,y:Math.random()*cvsSnow.height,r:Math.random()*2,s:Math.random()+0.5});(function ds(){if(isDesktopActive){ctxSnow.clearRect(0,0,cvsSnow.width,cvsSnow.height);ctxSnow.fillStyle="rgba(255,255,255,0.25)";ctxSnow.beginPath();for(var i=0;i<flakes.length;i++){var fl=flakes[i];ctxSnow.moveTo(fl.x+fl.r,fl.y);ctxSnow.arc(fl.x,fl.y,fl.r,0,Math.PI*2);fl.y+=fl.s;if(fl.y>cvsSnow.height)fl.y=0;}ctxSnow.fill();}requestAnimationFrame(ds);})();}
 
 // ── CIRI ──────────────────────────────────────────────────────────────────────
 var isCiriActive=false,holdTimer=null,hasBootCiri=false;
@@ -1209,10 +1306,167 @@ if(cNoti){cNoti.addEventListener('mouseenter',function(){clearTimeout(nHide);});
 setInterval(function(){var fnd=null;document.querySelectorAll('audio,video').forEach(function(m){if(!m.paused&&!m.muted&&m.volume>0&&!['bg-video','lock-video','boot-video'].includes(m.id))fnd=m;});document.querySelectorAll('iframe').forEach(function(ifr){try{var idc=ifr.contentDocument||ifr.contentWindow.document;if(idc)idc.querySelectorAll('audio,video').forEach(function(m){if(!m.paused&&!m.muted&&m.volume>0)fnd=m;});}catch(e){}});isMediaPlaying=!!fnd;if(fnd!==aMedia){if(fnd){aMedia=fnd;setupM();showNoti();}else{aMedia=null;hideNoti();}}if(aMedia){var ct=document.getElementById('current-time');if(ct)ct.textContent=fmtT(aMedia.currentTime);if(isFinite(aMedia.duration)&&aMedia.duration>0){var pf=document.getElementById('progress-fill');if(pf)pf.style.width=((aMedia.currentTime/aMedia.duration)*100)+'%';var tt=document.getElementById('total-time');if(tt)tt.textContent=fmtT(aMedia.duration);}}},1000);
 function setupM(){if(!aMedia)return;var nt=document.getElementById('noti-title');if(nt)nt.innerText=aMedia.title||"Web Media Playing";var pp=document.getElementById('play-pause');if(pp)pp.onclick=function(){aMedia.paused?aMedia.play():aMedia.pause();resetNH();};aMedia.addEventListener('play',function(){document.getElementById('icon-play').classList.add('hidden-svg');document.getElementById('icon-pause').classList.add('visible-svg');showNoti();});aMedia.addEventListener('pause',function(){var ipl=document.getElementById('icon-play'),ipa=document.getElementById('icon-pause');if(ipl){ipl.classList.remove('hidden-svg');ipl.classList.add('visible-svg');}if(ipa){ipa.classList.remove('visible-svg');ipa.classList.add('hidden-svg');}});var sb=document.getElementById('skip-back');if(sb)sb.onclick=function(){if(isFinite(aMedia.currentTime))aMedia.currentTime=Math.max(0,aMedia.currentTime-15);resetNH();};var sf=document.getElementById('skip-forward');if(sf)sf.onclick=function(){if(isFinite(aMedia.duration)&&aMedia.duration>0)aMedia.currentTime=Math.min(aMedia.duration,aMedia.currentTime+15);resetNH();};var pha=document.getElementById('progress-hit-area');if(pha)pha.onclick=function(e){if(isFinite(aMedia.duration)&&aMedia.duration>0){var r=this.getBoundingClientRect();aMedia.currentTime=((e.clientX-r.left)/r.width)*aMedia.duration;}resetNH();};}
 function fmtT(s){if(isNaN(s)||!isFinite(s))return"0:00";return Math.floor(s/60)+":"+(Math.floor(s%60)).toString().padStart(2,'0');}
-(function drawFV(){requestAnimationFrame(drawFV);var cv=document.getElementById('visualizer');if(!cv)return;var cx=cv.getContext('2d');cv.width=cv.parentElement.clientWidth;cv.height=14;cx.clearRect(0,0,cv.width,cv.height);var bL=32,bW=(cv.width/bL)*2,xP=0;for(var i=0;i<bL;i++){var bH=aMedia&&!aMedia.paused?(Math.random()*cv.height):2;cx.fillStyle="#fff";cx.beginPath();try{cx.roundRect(xP,cv.height-bH,bW-1.5,bH,2);}catch(e){cx.rect(xP,cv.height-bH,bW-1.5,bH);}cx.fill();xP+=bW;}})();
+(function(){var cv=document.getElementById('visualizer');if(!cv)return;var cx=cv.getContext('2d');cv.height=14;var _vW=0;(function drawFV(){requestAnimationFrame(drawFV);if(!cv.parentElement)return;var nw=cv.parentElement.clientWidth;if(nw!==_vW){cv.width=nw;_vW=nw;}cx.clearRect(0,0,_vW,14);if(!(aMedia&&!aMedia.paused))return;var bL=32,bW=(_vW/bL)*2,xP=0;cx.fillStyle="#fff";cx.beginPath();for(var i=0;i<bL;i++){var bH=Math.random()*14;try{cx.roundRect(xP,14-bH,bW-1.5,bH,2);}catch(e){cx.rect(xP,14-bH,bW-1.5,bH);}xP+=bW;}cx.fill();})();})();
 
 // ── FPS ───────────────────────────────────────────────────────────────────────
 var fLT=performance.now(),fFr=0,fLC=0;
 (function chkFps(){requestAnimationFrame(chkFps);var nw=performance.now();fFr++;if(nw-fLT>=1000){var cFps=fFr,fv=document.getElementById('fps-val');if(fv)fv.innerText=cFps;if(cFps<=20){fLC++;if(fLC>=5&&!sysConfig.optBg){sysConfig.optBg=true;localStorage.setItem('intel_sys_config',JSON.stringify(sysConfig));showNotification("Performance","Background video paused to improve performance.");}}else{fLC=0;}fFr=0;fLT=nw;}})();
 
 window.onbeforeunload=function(e){if(sysConfig.redirectConfirm){var msg="Are you sure you want to leave this page?";e.returnValue=msg;return msg;}};
+
+// ── CLOCK ─────────────────────────────────────────────────────────────────────
+(function tickClock(){
+    var days=['SUN','MON','TUE','WED','THU','FRI','SAT'];
+    var months=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+    function update(){
+        var n=new Date();
+        var h=n.getHours().toString().padStart(2,'0');
+        var m=n.getMinutes().toString().padStart(2,'0');
+        var s=n.getSeconds().toString().padStart(2,'0');
+        var ct=document.getElementById('clock-time');
+        var cd=document.getElementById('clock-date');
+        if(ct)ct.textContent=h+':'+m+':'+s;
+        if(cd)cd.textContent=days[n.getDay()]+', '+months[n.getMonth()]+' '+n.getDate();
+    }
+    update();
+    setInterval(update,1000);
+})();
+
+// ── BLACK HOLE ────────────────────────────────────────────────────────────────
+(function(){
+    var canvas=document.getElementById('blackhole-canvas');
+    if(!canvas)return;
+    var ctx=canvas.getContext('2d');
+    var w,h,cx,cy,R,angle=0,stars=[];
+
+    function resize(){
+        w=canvas.width=window.innerWidth;
+        h=canvas.height=window.innerHeight;
+        cx=w/2; cy=h/2;
+        R=Math.min(w,h)*0.11;
+        stars=[];
+        for(var i=0;i<280;i++)stars.push({x:Math.random()*w,y:Math.random()*h,r:Math.random()*1.3+0.2,a:Math.random()*0.7+0.1,d:Math.random()*0.008-0.004});
+    }
+
+    function draw(){
+        requestAnimationFrame(draw);
+        if(canvas.style.display==='none')return;
+
+        // Space background
+        var bg=ctx.createRadialGradient(cx,cy,0,cx,cy,Math.max(w,h)*0.75);
+        bg.addColorStop(0,'#000c20');
+        bg.addColorStop(0.4,'#000510');
+        bg.addColorStop(1,'#000003');
+        ctx.fillStyle=bg;
+        ctx.fillRect(0,0,w,h);
+
+        // Stars
+        ctx.save();
+        for(var i=0;i<stars.length;i++){
+            var s=stars[i];
+            s.a+=s.d; if(s.a>0.9||s.a<0.05)s.d*=-1;
+            var dx=s.x-cx,dy=s.y-cy,dist=Math.sqrt(dx*dx+dy*dy);
+            var fade=Math.min(1,Math.max(0,(dist-R*2)/(R*5)));
+            ctx.globalAlpha=s.a*fade;
+            ctx.fillStyle='#b8d4ff';
+            ctx.beginPath();
+            ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+            ctx.fill();
+        }
+        ctx.globalAlpha=1;
+        ctx.restore();
+
+        // Outer nebula haze
+        var haze=ctx.createRadialGradient(cx,cy,R*2,cx,cy,R*14);
+        haze.addColorStop(0,'rgba(0,40,160,0.08)');
+        haze.addColorStop(0.4,'rgba(0,20,80,0.04)');
+        haze.addColorStop(1,'rgba(0,0,0,0)');
+        ctx.fillStyle=haze;
+        ctx.fillRect(0,0,w,h);
+
+        // Accretion disk rings
+        ctx.save();
+        ctx.translate(cx,cy);
+        ctx.rotate(angle*0.18);
+        var diskColors=[
+            ['rgba(200,225,255,0.55)','rgba(80,150,255,0.25)'],
+            ['rgba(60,130,255,0.45)','rgba(20,70,200,0.18)'],
+            ['rgba(30,90,220,0.30)','rgba(10,40,160,0.10)'],
+            ['rgba(15,60,180,0.18)','rgba(5,25,120,0.05)'],
+            ['rgba(8,40,140,0.10)','rgba(0,15,80,0.03)']
+        ];
+        for(var d=0;d<diskColors.length;d++){
+            var rIn=R*(1.25+d*0.6),rOut=R*(1.85+d*0.7);
+            ctx.save();
+            ctx.scale(1,0.24);
+            var dg=ctx.createRadialGradient(0,0,rIn,0,0,rOut);
+            dg.addColorStop(0,'rgba(0,0,0,0)');
+            dg.addColorStop(0.25,diskColors[d][0]);
+            dg.addColorStop(0.65,diskColors[d][1]);
+            dg.addColorStop(1,'rgba(0,0,0,0)');
+            ctx.beginPath();
+            ctx.arc(0,0,rOut,0,Math.PI*2);
+            ctx.fillStyle=dg;
+            ctx.fill();
+            ctx.restore();
+        }
+        ctx.restore();
+
+        // Gravitational shadow
+        var shadow=ctx.createRadialGradient(cx,cy,R*0.4,cx,cy,R*4.5);
+        shadow.addColorStop(0,'rgba(0,0,0,1)');
+        shadow.addColorStop(0.35,'rgba(0,4,18,0.96)');
+        shadow.addColorStop(0.65,'rgba(0,5,20,0.55)');
+        shadow.addColorStop(0.85,'rgba(0,4,15,0.20)');
+        shadow.addColorStop(1,'rgba(0,0,0,0)');
+        ctx.fillStyle=shadow;
+        ctx.beginPath();
+        ctx.arc(cx,cy,R*4.5,0,Math.PI*2);
+        ctx.fill();
+
+        // Event horizon
+        ctx.fillStyle='#000';
+        ctx.beginPath();
+        ctx.arc(cx,cy,R,0,Math.PI*2);
+        ctx.fill();
+
+        // Photon ring glow
+        var pg=ctx.createRadialGradient(cx,cy,R*0.9,cx,cy,R*1.35);
+        pg.addColorStop(0,'rgba(0,0,0,0)');
+        pg.addColorStop(0.5,'rgba(140,200,255,0.75)');
+        pg.addColorStop(0.7,'rgba(80,160,255,0.40)');
+        pg.addColorStop(1,'rgba(0,0,0,0)');
+        ctx.fillStyle=pg;
+        ctx.beginPath();
+        ctx.arc(cx,cy,R*1.35,0,Math.PI*2);
+        ctx.fill();
+
+        // Crisp photon ring line
+        ctx.beginPath();
+        ctx.arc(cx,cy,R*1.06,0,Math.PI*2);
+        ctx.strokeStyle='rgba(200,230,255,0.9)';
+        ctx.lineWidth=1.5;
+        ctx.stroke();
+
+        // Outer lensing rings
+        for(var lr=0;lr<4;lr++){
+            ctx.beginPath();
+            ctx.arc(cx,cy,R*(1.35+lr*0.38),0,Math.PI*2);
+            ctx.strokeStyle='rgba(40,110,255,'+(0.18-lr*0.04)+')';
+            ctx.lineWidth=1;
+            ctx.stroke();
+        }
+
+        // Re-stamp event horizon (ensure solid black center)
+        ctx.fillStyle='#000';
+        ctx.beginPath();
+        ctx.arc(cx,cy,R*0.99,0,Math.PI*2);
+        ctx.fill();
+
+        angle+=0.6;
+    }
+
+    window.addEventListener('resize',resize);
+    resize();
+    draw();
+})();
