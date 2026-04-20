@@ -1508,6 +1508,18 @@ window.onbeforeunload=function(e){if(sysConfig.redirectConfirm){var msg="Are you
       window.addEventListener('resize', () => {
         document.querySelectorAll('.window').forEach((w) => this.clampToViewport(w));
       });
+
+      document.addEventListener('mousedown', (ev) => {
+        if (ev.button !== 0) return;
+        const header = ev.target.closest ? ev.target.closest('.win-header') : null;
+        if (!header) return;
+        if (ev.target.closest('.win-btn')) return;
+        const win = header.closest('.window');
+        if (!win) return;
+        if (!win.dataset.wmUpgraded) this.upgrade(win);
+        this.focus(win);
+        this.startDrag(ev, win);
+      }, true);
     },
 
     upgrade(win) {
@@ -2306,7 +2318,7 @@ window.onbeforeunload=function(e){if(sysConfig.redirectConfirm){var msg="Are you
         WM.upgrade(win);
         WM.focus(win);
       }
-      if (id === MUSIC_APP_ID || id === 'music') {
+      if (id === MUSIC_APP_ID || id === 'music' || id === 'term') {
         if (win) setTimeout(() => renderMusicApp(win), 30);
       }
       return result;
