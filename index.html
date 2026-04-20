@@ -12,7 +12,18 @@
 
 <body id="desktop-area" role="application">
 
-<div id="fps-counter" aria-live="polite"><span id="fps-val">60</span> FPS</div>
+<canvas id="blackhole-canvas" aria-hidden="true"></canvas>
+
+<div id="sys-hud" aria-live="polite">
+  <span class="hud-live-dot"></span>
+  <span id="player-count">--</span><span class="hud-label"> online</span>
+  <span class="hud-sep"></span>
+  <span id="fps-val">60</span><span class="hud-label"> fps</span>
+</div>
+<div id="sys-clock">
+  <span id="clock-time">00:00:00</span>
+  <span id="clock-date">MON, JAN 1</span>
+</div>
 
 <dialog id="mobile-warning" aria-modal="true">
   <div class="mobile-box">
@@ -56,40 +67,50 @@
   <div class="hud-day" id="lbl-day">FRIDAY</div>
 </header>
 
-<aside id="right-sidebar" aria-label="Quick Access Widget">
+<aside id="right-sidebar" aria-label="Quick Access Panel">
+
   <section class="sidebar__section">
-    <h3 class="sidebar__title">Jump Back In!</h3>
+    <h3 class="sidebar__title"><i class="fas fa-history"></i> Recent</h3>
     <div class="sidebar__card" id="last-played-game" onclick="launchLastPlayed()" role="button" tabindex="0">
-      <img id="last-game-icon" src="https://cdn-icons-png.flaticon.com/512/732/732244.png" alt="Game Icon">
+      <div class="sidebar__thumb">
+        <img id="last-game-icon" src="" alt="" onerror="this.style.display='none'">
+        <div class="sidebar__thumb-fallback"><i class="fas fa-gamepad"></i></div>
+      </div>
       <div class="sidebar__info">
         <strong id="last-game-name">No Recent Game</strong>
-        <small>PS5 Emu</small>
+        <small><i class="fas fa-circle sidebar__status-dot"></i> Games</small>
       </div>
+      <i class="fas fa-play sidebar__action-icon" aria-hidden="true"></i>
     </div>
   </section>
 
   <section class="sidebar__section">
-    <h3 class="sidebar__title">Quick Play</h3>
+    <h3 class="sidebar__title"><i class="fas fa-music"></i> Now Playing</h3>
     <div class="sidebar__card" id="spotify-quick-play" onclick="resumeSpotify()" role="button" tabindex="0">
-      <img id="spotify-album-art" src="https://cdn.pixabay.com/photo/2016/10/22/00/15/spotify-1759471_1280.jpg" alt="Album Cover">
-      <div class="sidebar__info">
-        <strong id="spotify-track-name">Not Playing</strong>
-        <small>Spotify</small>
+      <div class="sidebar__thumb">
+        <img id="spotify-album-art" src="" alt="" onerror="this.style.display='none'">
+        <div class="sidebar__thumb-fallback"><i class="fas fa-headphones"></i></div>
       </div>
-      <i class="fas fa-play play-overlay" aria-hidden="true"></i>
+      <div class="sidebar__info">
+        <strong id="spotify-track-name">Nothing Playing</strong>
+        <small><i class="fas fa-circle sidebar__status-dot"></i> Audio</small>
+      </div>
+      <i class="fas fa-play sidebar__action-icon" aria-hidden="true"></i>
     </div>
   </section>
 
   <section class="sidebar__section">
-    <h3 class="sidebar__title">System Status</h3>
-    <div class="sidebar__card update-card" onclick="openUpdateLog()" role="button" tabindex="0">
+    <h3 class="sidebar__title"><i class="fas fa-bell"></i> System</h3>
+    <div class="sidebar__card sidebar__card--flat" onclick="openUpdateLog()" role="button" tabindex="0">
+      <div class="sidebar__icon-box"><i class="fas fa-list-ul"></i></div>
       <div class="sidebar__info">
-        <strong class="txt-highlight">Update Log</strong>
+        <strong>Update Log</strong>
         <small>View latest patches</small>
       </div>
       <i class="fas fa-chevron-right sidebar__chevron" aria-hidden="true"></i>
     </div>
   </section>
+
 </aside>
 
 <div id="drag-proxy" aria-hidden="true">
@@ -102,30 +123,46 @@
 
 <dialog id="wallpaper-menu" aria-label="Wallpaper Settings">
   <header class="wp-modal-header">
-    <h2>WALLPAPER PROTOCOLS</h2>
-    <i class="fas fa-times close-icon" role="button" tabindex="0" onclick="var menu = document.getElementById('wallpaper-menu'); menu.classList.remove('open'); if (menu.close) { menu.close(); }"></i>
+    <div class="wp-header-left">
+      <h2>WALLPAPERS</h2>
+      <div class="wp-target-row">
+        <button class="wp-target-btn active" data-target="both" onclick="setWpTarget(this,'both')">Both</button>
+        <button class="wp-target-btn" data-target="home" onclick="setWpTarget(this,'home')">Desktop</button>
+        <button class="wp-target-btn" data-target="lock" onclick="setWpTarget(this,'lock')">Lock Screen</button>
+      </div>
+    </div>
+    <i class="fas fa-times close-icon" role="button" tabindex="0" onclick="closeWallpaperMenu()"></i>
   </header>
-  
-  <div class="wp-controls-row">
-    <fieldset class="segmented-control">
-      <label><input type="radio" name="wpmd" value="both" checked onclick="window.wpMode='both'"><span>Both</span></label>
-      <label><input type="radio" name="wpmd" value="home" onclick="window.wpMode='home'"><span>Homescreen</span></label>
-      <label><input type="radio" name="wpmd" value="lock" onclick="window.wpMode='lock'"><span>Lockscreen</span></label>
-    </fieldset>
-    
-    <div class="loop-toggle-container">
-      <span class="loop-label">Loop Wallpaper</span>
-      <label class="switch wp-loop-switch">
-        <input type="checkbox" id="wp-loop-chk">
-        <span class="slider"></span>
-      </label>
+
+  <nav class="wp-tabs">
+    <button class="wp-tab active" data-tab="gallery" onclick="switchWpTab(this,'gallery')"><i class="fas fa-th-large"></i> Gallery</button>
+    <button class="wp-tab" data-tab="upload" onclick="switchWpTab(this,'upload')"><i class="fas fa-upload"></i> Upload</button>
+  </nav>
+
+  <div class="wp-tab-content active" id="wp-tab-gallery">
+    <div class="wp-grid-container">
+      <div id="wp-grid-unlocked" class="wp-grid"></div>
     </div>
   </div>
 
-  <div class="wp-grid-container">
-    <div id="wp-grid-unlocked" class="wp-grid"></div>
-    <h3 class="wp-section-title">Encrypted</h3>
-    <div id="wp-grid-locked" class="wp-grid"></div>
+  <div class="wp-tab-content" id="wp-tab-upload">
+    <div class="wp-upload-zone" id="wp-drop-zone">
+      <i class="fas fa-cloud-upload-alt wp-upload-icon-fa"></i>
+      <div class="wp-upload-text">Drop your image here</div>
+      <div class="wp-upload-sub">PNG, JPG, WEBP, GIF — up to 10MB</div>
+      <button class="wp-browse-btn" onclick="document.getElementById('wp-file-input').click()">
+        <i class="fas fa-folder-open"></i> Browse Files
+      </button>
+      <input type="file" id="wp-file-input" accept="image/*" style="display:none">
+    </div>
+    <div class="wp-url-section">
+      <div class="wp-url-label"><i class="fas fa-link"></i> Add from URL</div>
+      <div class="wp-url-inputs">
+        <input type="text" id="wp-url-name" class="wp-input" placeholder="Name">
+        <input type="text" id="wp-url-link" class="wp-input" placeholder="Image or video URL…">
+        <button class="wp-url-btn" onclick="addWpFromUrl()"><i class="fas fa-plus"></i></button>
+      </div>
+    </div>
   </div>
 </dialog>
 
@@ -139,9 +176,12 @@
   </header>
   <div class="pinned-grid" id="pinned-grid"></div>
   <footer class="start-footer">
-    <div class="user-profile">
-      <div class="user-avatar"><i class="fas fa-user" aria-hidden="true"></i></div>
-      <span class="user-role">Administrator</span>
+    <div class="user-profile" onclick="if(window.openAuthModal)window.openAuthModal()" role="button" tabindex="0" style="cursor:pointer" title="Account">
+      <div class="user-avatar" id="profile-avatar"><i class="fas fa-user" aria-hidden="true"></i></div>
+      <div class="user-info">
+        <span class="user-role" id="profile-name">Guest</span>
+        <span class="user-email" id="profile-email"></span>
+      </div>
     </div>
     <i class="fas fa-power-off power-btn" role="button" tabindex="0" onclick="location.reload()" aria-label="Restart OS"></i>
   </footer>
@@ -373,5 +413,402 @@
 </template>
 
 <script src="script.js"></script>
+
+<!-- ── AUTH MODAL ─────────────────────────────────────────────────────────── -->
+<div id="auth-modal" aria-modal="true" role="dialog" onclick="if(event.target===this)window.closeAuthModal()">
+  <div class="auth-card">
+    <button class="auth-x-btn" onclick="window.closeAuthModal()" aria-label="Close"><i class="fas fa-times"></i></button>
+
+    <!-- SIGNED OUT -->
+    <div id="auth-signed-out">
+      <div class="auth-brand">
+        <div class="auth-brand-icon"><i class="fas fa-microchip"></i></div>
+        <span class="auth-brand-name">INTELLECTUAL OS</span>
+      </div>
+      <h2 class="auth-title" id="auth-title">Welcome back</h2>
+      <p class="auth-sub" id="auth-sub">Sign in to sync your preferences</p>
+
+      <button class="auth-google-btn" onclick="window.authSignInGoogle()">
+        <svg width="18" height="18" viewBox="0 0 48 48" fill="none">
+          <path fill="#EA4335" d="M24 9.5c3.1 0 5.7 1.1 7.8 2.9l5.8-5.8C33.9 3.3 29.3 1.5 24 1.5 15.2 1.5 7.8 7 4.5 14.8l6.8 5.3C13 14 18.1 9.5 24 9.5z"/>
+          <path fill="#4285F4" d="M46 24.5c0-1.7-.2-3.3-.5-4.9H24v9.3h12.4c-.6 2.9-2.3 5.4-4.9 7.1l7.7 6C43.5 38 46 31.8 46 24.5z"/>
+          <path fill="#34A853" d="M10.5 28.5A14.6 14.6 0 0 1 9.5 24c0-1.6.3-3.1.8-4.6l-6.8-5.3A23.4 23.4 0 0 0 .5 24c0 3.8.9 7.3 2.5 10.5l7.5-6z"/>
+          <path fill="#FBBC05" d="M24 46.5c5.3 0 9.8-1.8 13-4.8l-7.7-6c-1.9 1.3-4.4 2-6.7 2a14.8 14.8 0 0 1-13.5-9.2l-7.5 6A23.5 23.5 0 0 0 24 46.5z"/>
+        </svg>
+        Continue with Google
+      </button>
+
+      <div class="auth-divider"><span>or</span></div>
+
+      <div id="auth-name-row" style="display:none">
+        <input class="auth-input" id="auth-name" type="text" placeholder="Display name" autocomplete="name">
+      </div>
+      <input class="auth-input" id="auth-email" type="email" placeholder="Email address" autocomplete="email" onkeydown="if(event.key==='Enter')document.getElementById('auth-password').focus()">
+      <input class="auth-input" id="auth-password" type="password" placeholder="Password" autocomplete="current-password" onkeydown="if(event.key==='Enter')window.authSubmit()">
+      <p class="auth-error" id="auth-error"></p>
+
+      <button class="auth-submit-btn" id="auth-submit-btn" onclick="window.authSubmit()">
+        <span id="auth-btn-label">Sign In</span>
+        <span class="auth-spinner" id="auth-spinner"></span>
+      </button>
+      <p class="auth-toggle" id="auth-toggle-text">
+        Don't have an account? <a onclick="window.toggleAuthMode()">Sign up</a>
+      </p>
+    </div>
+
+    <!-- SIGNED IN -->
+    <div id="auth-signed-in">
+      <div class="auth-pfp-wrap" onclick="window.triggerPfpUpload()" title="Change photo">
+        <div class="auth-avatar-lg" id="auth-user-avatar"></div>
+        <div class="auth-pfp-overlay"><i class="fas fa-camera"></i></div>
+      </div>
+      <input type="file" id="auth-pfp-input" accept="image/*" style="display:none" onchange="window.handlePfpUpload(event)">
+
+      <h2 class="auth-displayname" id="auth-user-name">User</h2>
+      <p class="auth-useremail" id="auth-user-email"></p>
+
+      <div class="auth-sync-pill">
+        <i class="fas fa-circle" style="font-size:6px"></i>&nbsp;Synced to cloud
+      </div>
+
+      <div class="auth-divider" style="margin:18px 0 14px"><span>Edit Profile</span></div>
+
+      <label class="auth-field-label">Display Name</label>
+      <input class="auth-input" id="auth-edit-name" type="text" placeholder="Your name">
+      <label class="auth-field-label">Username</label>
+      <input class="auth-input" id="auth-edit-username" type="text" placeholder="e.g. shadxw">
+      <p class="auth-error" id="auth-profile-error"></p>
+      <button class="auth-submit-btn" onclick="window.saveProfileChanges()" style="margin-bottom:12px">Save Changes</button>
+
+      <button class="auth-signout-btn" onclick="window.authSignOut();window.closeAuthModal()">Sign Out</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── FIREBASE ────────────────────────────────────────────────────────────── -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc, deleteDoc, serverTimestamp, collection, query, where, getDocs, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCMiRCGrxgcCvgtEt1Mg89STi05NNN6ngY",
+  authDomain: "intellectualos.firebaseapp.com",
+  projectId: "intellectualos",
+  storageBucket: "intellectualos.firebasestorage.app",
+  messagingSenderId: "184343097461",
+  appId: "1:184343097461:web:25172b4cebaee92c93883c"
+};
+
+const app  = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db   = getFirestore(app);
+const gp   = new GoogleAuthProvider();
+
+// ── PRESENCE ──────────────────────────────────────────────────────────────────
+const _sid = (crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2) + Date.now());
+const _presRef = doc(db, 'presence', _sid);
+setDoc(_presRef, { ts: serverTimestamp(), active: true }).catch(() => {});
+window.addEventListener('beforeunload', () => { deleteDoc(_presRef).catch(() => {}); });
+onSnapshot(collection(db, 'presence'), snap => {
+  const el = document.getElementById('player-count');
+  if (el) el.textContent = snap.size;
+}, () => {});
+
+let _saveTimer = null;
+let _customPhotoURL = '';
+let _username = '';
+
+// ── AVATAR HELPER ──────────────────────────────────────────────────────────
+function avatarHTML(photoSrc, name, size) {
+  if (photoSrc) return `<img src="${photoSrc}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+  const fs = size === 'lg' ? '26px' : '11px';
+  return `<span style="font-size:${fs};font-weight:800;color:#fff;">${(name||'G')[0].toUpperCase()}</span>`;
+}
+
+// ── PROFILE UI ─────────────────────────────────────────────────────────────
+function updateProfileUI(user) {
+  const nameEl   = document.getElementById('profile-name');
+  const emailEl  = document.getElementById('profile-email');
+  const avatarEl = document.getElementById('profile-avatar');
+  if (!nameEl) return;
+  if (user) {
+    const name = user.displayName || user.email.split('@')[0];
+    nameEl.textContent  = name;
+    emailEl.textContent = user.email;
+    avatarEl.innerHTML  = avatarHTML(_customPhotoURL || user.photoURL, name, 'sm');
+    avatarEl.style.background = '#222';
+  } else {
+    nameEl.textContent  = 'Guest';
+    emailEl.textContent = '';
+    avatarEl.innerHTML  = '<i class="fas fa-user"></i>';
+    avatarEl.style.background = '';
+  }
+}
+
+// ── SAVE TO CLOUD (debounced 2 s) ──────────────────────────────────────────
+window.saveToCloud = async function() {
+  const user = auth.currentUser;
+  if (!user) return;
+  clearTimeout(_saveTimer);
+  _saveTimer = setTimeout(async () => {
+    try {
+      await setDoc(doc(db, 'users', user.uid), {
+        displayName:      user.displayName || '',
+        email:            user.email || '',
+        username:         _username,
+        lastSeen:         serverTimestamp(),
+        sysConfig:        JSON.parse(localStorage.getItem('intel_sys_config')  || '{}'),
+        pins:             JSON.parse(localStorage.getItem('intel_pins_v2')     || '{}'),
+        desktopLayout:    JSON.parse(localStorage.getItem('intel_desktop_v2')  || '[]'),
+        customWallpapers: JSON.parse(localStorage.getItem('intel_custom_wp')   || '{}'),
+        musicCache:       JSON.parse(localStorage.getItem('intel_music_cache') || '{}')
+      }, { merge: true });
+    } catch(e) { console.warn('[IOS] Cloud save failed:', e.message); }
+  }, 2000);
+};
+
+// ── LOAD FROM CLOUD & APPLY ────────────────────────────────────────────────
+async function loadFromCloud(user) {
+  try {
+    const snap = await getDoc(doc(db, 'users', user.uid));
+    if (!snap.exists()) return;
+    const d = snap.data();
+
+    if (d.sysConfig)         localStorage.setItem('intel_sys_config',  JSON.stringify(d.sysConfig));
+    if (d.pins)              localStorage.setItem('intel_pins_v2',     JSON.stringify(d.pins));
+    if (d.desktopLayout)     localStorage.setItem('intel_desktop_v2',  JSON.stringify(d.desktopLayout));
+    if (d.customWallpapers)  localStorage.setItem('intel_custom_wp',   JSON.stringify(d.customWallpapers));
+    if (d.musicCache)        localStorage.setItem('intel_music_cache', JSON.stringify(d.musicCache));
+    if (d.username)          _username = d.username;
+
+    if (d.customPhotoURL) {
+      _customPhotoURL = d.customPhotoURL;
+      updateProfileUI(user);
+    }
+
+    if (d.sysConfig && window.sysConfig) Object.assign(window.sysConfig, d.sysConfig);
+    if (d.sysConfig?.accentColor && window.applyAccentColor) window.applyAccentColor(d.sysConfig.accentColor);
+    if (d.sysConfig?.homeWallpaper && window.wallpaperRegistry && window.applyWallpaperCSS) {
+      const wp = window.wallpaperRegistry[d.sysConfig.homeWallpaper];
+      if (wp) window.applyWallpaperCSS(wp, 'home');
+    }
+    if (d.sysConfig?.lockWallpaper && window.wallpaperRegistry && window.applyWallpaperCSS) {
+      const wp = window.wallpaperRegistry[d.sysConfig.lockWallpaper];
+      if (wp) window.applyWallpaperCSS(wp, 'lock');
+    }
+    if (d.pins && window.APPS) {
+      for (const k in d.pins) { if (window.APPS[k]) window.APPS[k].pinned = d.pins[k]; }
+      if (window.renderUI) window.renderUI();
+    }
+    if (d.desktopLayout && window.desktopLayout) {
+      window.desktopLayout = d.desktopLayout;
+      if (window.loadDesktop) window.loadDesktop();
+    }
+    if (d.customWallpapers && window.wallpaperRegistry) Object.assign(window.wallpaperRegistry, d.customWallpapers);
+  } catch(e) { console.warn('[IOS] Cloud load failed:', e.message); }
+}
+
+// ── AUTH STATE ─────────────────────────────────────────────────────────────
+onAuthStateChanged(auth, user => {
+  updateProfileUI(user);
+  if (user) {
+    loadFromCloud(user);
+    setTimeout(() => {
+      if (window.showNotification)
+        window.showNotification('Signed in', `Welcome back, ${user.displayName || user.email}!`);
+    }, 800);
+  }
+});
+
+// ── HELPERS ────────────────────────────────────────────────────────────────
+function setLoading(on) {
+  const btn = document.getElementById('auth-submit-btn');
+  const sp  = document.getElementById('auth-spinner');
+  const lbl = document.getElementById('auth-btn-label');
+  if (btn) btn.disabled = on;
+  if (sp)  sp.style.display = on ? 'inline-block' : 'none';
+  if (lbl) lbl.style.display = on ? 'none' : 'inline';
+}
+function setSignInError(msg) {
+  const el = document.getElementById('auth-error');
+  if (el) el.textContent = msg;
+}
+function friendlyError(code) {
+  return ({
+    'auth/invalid-email':          'Invalid email address.',
+    'auth/user-not-found':         'No account with that email.',
+    'auth/wrong-password':         'Incorrect password.',
+    'auth/invalid-credential':     'Incorrect email or password.',
+    'auth/email-already-in-use':   'That email is already registered.',
+    'auth/weak-password':          'Password must be at least 6 characters.',
+    'auth/too-many-requests':      'Too many attempts — try again later.',
+    'auth/network-request-failed': 'Network error. Check your connection.',
+    'auth/popup-closed-by-user':   '',
+    'auth/cancelled-popup-request':''
+  })[code] || 'Something went wrong. Please try again.';
+}
+
+// ── PHOTO UPLOAD ───────────────────────────────────────────────────────────
+window.triggerPfpUpload = () => document.getElementById('auth-pfp-input')?.click();
+
+window.handlePfpUpload = async (evt) => {
+  const file = evt.target.files?.[0];
+  if (!file || !auth.currentUser) return;
+  const canvas = document.createElement('canvas');
+  const size = 150;
+  canvas.width = canvas.height = size;
+  const ctx = canvas.getContext('2d');
+  const img = new Image();
+  const blobUrl = URL.createObjectURL(file);
+  await new Promise(res => { img.onload = res; img.src = blobUrl; });
+  URL.revokeObjectURL(blobUrl);
+  const s = Math.min(img.width, img.height);
+  ctx.drawImage(img, (img.width-s)/2, (img.height-s)/2, s, s, 0, 0, size, size);
+  const dataUrl = canvas.toDataURL('image/jpeg', 0.82);
+  try {
+    await setDoc(doc(db, 'users', auth.currentUser.uid), { customPhotoURL: dataUrl }, { merge: true });
+    _customPhotoURL = dataUrl;
+    updateProfileUI(auth.currentUser);
+    const av = document.getElementById('auth-user-avatar');
+    if (av) av.innerHTML = avatarHTML(dataUrl, '', 'lg');
+    if (window.showNotification) window.showNotification('Photo updated', 'Your profile picture has been saved.');
+  } catch(e) { console.warn('Photo save failed:', e.message); }
+  evt.target.value = '';
+};
+
+// ── PROFILE EDIT ───────────────────────────────────────────────────────────
+window.saveProfileChanges = async () => {
+  const user = auth.currentUser;
+  if (!user) return;
+  const newName = document.getElementById('auth-edit-name')?.value.trim();
+  const rawUser = document.getElementById('auth-edit-username')?.value.trim();
+  const newUsername = rawUser.replace(/^@/,'').replace(/\s+/g,'').toLowerCase();
+  const errEl = document.getElementById('auth-profile-error');
+  if (!newName) { if (errEl) errEl.textContent = 'Display name cannot be empty.'; return; }
+  if (errEl) errEl.textContent = '';
+  try {
+    if (newUsername) {
+      const q = query(collection(db, 'users'), where('username', '==', newUsername));
+      const existing = await getDocs(q);
+      const taken = existing.docs.some(d => d.id !== user.uid);
+      if (taken) { if (errEl) errEl.textContent = '@' + newUsername + ' is already taken.'; return; }
+    }
+    await updateProfile(user, { displayName: newName });
+    await setDoc(doc(db, 'users', user.uid), { displayName: newName, username: newUsername }, { merge: true });
+    _username = newUsername;
+    updateProfileUI(user);
+    const nm = document.getElementById('auth-user-name');
+    if (nm) nm.textContent = newName;
+    if (window.showNotification) window.showNotification('Profile saved', 'Your changes have been applied.');
+  } catch(e) {
+    if (errEl) errEl.textContent = 'Failed to save. Try again.';
+  }
+};
+
+// ── EXPOSED GLOBALS ────────────────────────────────────────────────────────
+window.authSignInGoogle = async () => {
+  setLoading(true); setSignInError('');
+  try { await signInWithPopup(auth, gp); closeModal(); }
+  catch(e) { setSignInError(friendlyError(e.code)); }
+  finally { setLoading(false); }
+};
+
+window.authSubmit = async () => {
+  const modal = document.getElementById('auth-modal');
+  const mode  = modal?.dataset.mode || 'signin';
+  const email = document.getElementById('auth-email')?.value.trim();
+  const pass  = document.getElementById('auth-password')?.value;
+  const name  = document.getElementById('auth-name')?.value.trim();
+  if (!email || !pass) { setSignInError('Please fill in all fields.'); return; }
+  setLoading(true); setSignInError('');
+  try {
+    if (mode === 'signup') {
+      const c = await createUserWithEmailAndPassword(auth, email, pass);
+      if (name) await updateProfile(c.user, { displayName: name });
+    } else {
+      await signInWithEmailAndPassword(auth, email, pass);
+    }
+    closeModal();
+  } catch(e) { setSignInError(friendlyError(e.code)); }
+  finally { setLoading(false); }
+};
+
+window.authSignOut = async () => {
+  _customPhotoURL = ''; _username = '';
+  try {
+    await signOut(auth);
+    if (window.showNotification) window.showNotification('Signed out', 'See you next time!');
+  } catch(e) {}
+};
+
+window.toggleAuthMode = () => {
+  const modal    = document.getElementById('auth-modal');
+  const cur      = modal?.dataset.mode || 'signin';
+  const next     = cur === 'signin' ? 'signup' : 'signin';
+  if (modal) modal.dataset.mode = next;
+  const isSignup = next === 'signup';
+  const el = id => document.getElementById(id);
+  if (el('auth-title'))       el('auth-title').textContent     = isSignup ? 'Create account'        : 'Welcome back';
+  if (el('auth-sub'))         el('auth-sub').textContent       = isSignup ? 'Join Intellectual OS'  : 'Sign in to sync your preferences';
+  if (el('auth-btn-label'))   el('auth-btn-label').textContent = isSignup ? 'Create Account'        : 'Sign In';
+  if (el('auth-name-row'))    el('auth-name-row').style.display = isSignup ? 'block' : 'none';
+  if (el('auth-toggle-text')) el('auth-toggle-text').innerHTML = isSignup
+    ? `Already have an account? <a onclick="window.toggleAuthMode()">Sign in</a>`
+    : `Don't have an account? <a onclick="window.toggleAuthMode()">Sign up</a>`;
+  setSignInError('');
+};
+
+function closeModal() {
+  const m = document.getElementById('auth-modal');
+  if (!m) return;
+  m.classList.remove('auth-open');
+  setTimeout(() => { m.style.display = 'none'; }, 240);
+}
+window.closeAuthModal = closeModal;
+
+window.openAuthModal = () => {
+  const m    = document.getElementById('auth-modal');
+  const user = auth.currentUser;
+  if (!m) return;
+
+  // Close start menu
+  document.getElementById('start-menu')?.classList.remove('open');
+
+  const out = document.getElementById('auth-signed-out');
+  const inn = document.getElementById('auth-signed-in');
+
+  if (user) {
+    if (out) out.style.display = 'none';
+    if (inn) inn.style.display = 'flex';
+    const nm = user.displayName || user.email.split('@')[0];
+    const av = document.getElementById('auth-user-avatar');
+    if (av) av.innerHTML = avatarHTML(_customPhotoURL || user.photoURL, nm, 'lg');
+    const un = document.getElementById('auth-user-name');
+    const ue = document.getElementById('auth-user-email');
+    if (un) un.textContent = nm;
+    if (ue) ue.textContent = user.email;
+    const en = document.getElementById('auth-edit-name');
+    const eu = document.getElementById('auth-edit-username');
+    if (en) en.value = user.displayName || '';
+    if (eu) eu.value = _username ? '@' + _username : '';
+    const pe = document.getElementById('auth-profile-error');
+    if (pe) pe.textContent = '';
+  } else {
+    if (out) out.style.display = 'flex';
+    if (inn) inn.style.display = 'none';
+    if (m)   m.dataset.mode = 'signin';
+    setSignInError('');
+    const e = document.getElementById('auth-email');
+    const p = document.getElementById('auth-password');
+    if (e) e.value = ''; if (p) p.value = '';
+    const nr = document.getElementById('auth-name-row');
+    if (nr) nr.style.display = 'none';
+  }
+
+  m.style.display = 'flex';
+  requestAnimationFrame(() => requestAnimationFrame(() => m.classList.add('auth-open')));
+};
+</script>
 </body>
 </html>
