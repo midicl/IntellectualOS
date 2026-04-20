@@ -29,7 +29,7 @@ var wallpaperRegistry = {
 };
 
 var sysConfig = JSON.parse(localStorage.getItem('intel_sys_config'))||{};
-if(sysConfig.optBg===undefined)sysConfig.optBg=false;
+if(sysConfig.optBg===undefined)sysConfig.optBg=true;
 if(sysConfig.shortBoot===undefined)sysConfig.shortBoot=false;
 if(sysConfig.wpLoop===undefined)sysConfig.wpLoop=false;
 if(sysConfig.idleLock===undefined)sysConfig.idleLock=false;
@@ -1286,7 +1286,7 @@ DragSystem.init();
 
 // ── SNOW ──────────────────────────────────────────────────────────────────────
 var cvsSnow=document.getElementById('snow-fx');
-if(cvsSnow){var ctxSnow=cvsSnow.getContext('2d');cvsSnow.width=window.innerWidth;cvsSnow.height=window.innerHeight;var flakes=[];for(var f=0;f<30;f++)flakes.push({x:Math.random()*cvsSnow.width,y:Math.random()*cvsSnow.height,r:Math.random()*2,s:Math.random()+0.5});(function ds(){if(isDesktopActive){ctxSnow.clearRect(0,0,cvsSnow.width,cvsSnow.height);ctxSnow.fillStyle="rgba(255,255,255,0.25)";ctxSnow.beginPath();for(var i=0;i<flakes.length;i++){var fl=flakes[i];ctxSnow.moveTo(fl.x+fl.r,fl.y);ctxSnow.arc(fl.x,fl.y,fl.r,0,Math.PI*2);fl.y+=fl.s;if(fl.y>cvsSnow.height)fl.y=0;}ctxSnow.fill();}requestAnimationFrame(ds);})();}
+if(cvsSnow){var ctxSnow=cvsSnow.getContext('2d');cvsSnow.width=window.innerWidth;cvsSnow.height=window.innerHeight;var flakes=[];for(var f=0;f<30;f++)flakes.push({x:Math.random()*cvsSnow.width,y:Math.random()*cvsSnow.height,r:Math.random()*2,s:Math.random()+0.5});(function ds(){setTimeout(function(){requestAnimationFrame(ds);},sysConfig.optBg?500:16);if(sysConfig.optBg||cvsSnow.style.display==='none')return;if(isDesktopActive){ctxSnow.clearRect(0,0,cvsSnow.width,cvsSnow.height);ctxSnow.fillStyle="rgba(255,255,255,0.25)";ctxSnow.beginPath();for(var i=0;i<flakes.length;i++){var fl=flakes[i];ctxSnow.moveTo(fl.x+fl.r,fl.y);ctxSnow.arc(fl.x,fl.y,fl.r,0,Math.PI*2);fl.y+=fl.s;if(fl.y>cvsSnow.height)fl.y=0;}ctxSnow.fill();}})();}
 
 // ── CIRI ──────────────────────────────────────────────────────────────────────
 var isCiriActive=false,holdTimer=null,hasBootCiri=false;
@@ -1349,6 +1349,7 @@ window.onbeforeunload=function(e){if(sysConfig.redirectConfirm){var msg="Are you
     }
 
     function draw(){
+        if(sysConfig.optBg){setTimeout(function(){requestAnimationFrame(draw);},500);return;}
         requestAnimationFrame(draw);
         if(canvas.style.display==='none')return;
 
@@ -1807,9 +1808,18 @@ window.onbeforeunload=function(e){if(sysConfig.redirectConfirm){var msg="Are you
       });
       const bh = document.getElementById('blackhole-canvas');
       const snow = document.getElementById('snow-fx');
+      const body = document.body;
+      body.classList.remove('perf-low', 'perf-balanced', 'perf-max');
+      body.classList.add('perf-' + mode);
       if (mode === 'low') {
         if (bh) bh.style.display = 'none';
         if (snow) snow.style.display = 'none';
+        if (window.sysConfig) { window.sysConfig.optBg = true; localStorage.setItem('intel_sys_config', JSON.stringify(window.sysConfig)); }
+        if (typeof applySystemSettings === 'function') applySystemSettings();
+      } else if (mode === 'max') {
+        if (snow) snow.style.display = '';
+        if (window.sysConfig) { window.sysConfig.optBg = false; localStorage.setItem('intel_sys_config', JSON.stringify(window.sysConfig)); }
+        if (typeof applySystemSettings === 'function') applySystemSettings();
       } else {
         if (snow) snow.style.display = '';
       }
@@ -2291,8 +2301,12 @@ window.onbeforeunload=function(e){if(sysConfig.redirectConfirm){var msg="Are you
   if (typeof origOpenWindow === 'function') {
     window.openWindow = function (id) {
       const result = origOpenWindow.apply(this, arguments);
+      const win = document.getElementById('win-' + id);
+      if (win) {
+        WM.upgrade(win);
+        WM.focus(win);
+      }
       if (id === MUSIC_APP_ID || id === 'music') {
-        const win = document.getElementById('win-' + id);
         if (win) setTimeout(() => renderMusicApp(win), 30);
       }
       return result;
