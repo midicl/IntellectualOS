@@ -637,15 +637,39 @@ async function loadFromCloud(user) {
 }
 
 // ── AUTH STATE ─────────────────────────────────────────────────────────────
-onAuthStateChanged(auth, user => {
-  updateProfileUI(user);
-  if (user) {
-    loadFromCloud(user);
-    setTimeout(() => {
-      if (window.showNotification)
-        window.showNotification('Signed in', `Welcome back, ${user.displayName || user.email}!`);
-    }, 800);
+async function checkBlacklist(email) {
+  const botUrl = localStorage.getItem('botUrl') || 'http://localhost:3000';
+  try {
+    const r = await fetch(botUrl + '/login-check', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ email }),
+      mode: 'cors'
+    });
+    const data = await r.json().catch(() => ({}));
+    return !!(data && data.blacklisted);
+  } catch (e) {
+    // Bot unreachable — fail open so the site stays usable when bot is offline.
+    console.warn('[blacklist] check failed, allowing:', e.message);
+    return false;
   }
+}
+
+onAuthStateChanged(auth, async user => {
+  updateProfileUI(user);
+  if (!user) return;
+
+  if (await checkBlacklist(user.email)) {
+    await signOut(auth);
+    alert('This account has been blocked from Intellectual OS. Contact an administrator if you believe this is a mistake.');
+    return;
+  }
+
+  loadFromCloud(user);
+  setTimeout(() => {
+    if (window.showNotification)
+      window.showNotification('Signed in', `Welcome back, ${user.displayName || user.email}!`);
+  }, 800);
 });
 
 // ── HELPERS ────────────────────────────────────────────────────────────────

@@ -1415,7 +1415,7 @@ body{background:radial-gradient(ellipse at 50% 55%,#1a0a3a 0%,#08080f 45%,#000 7
 </div>
 <iframe id="dc-frame" allow="autoplay;fullscreen;clipboard-write;camera;microphone"></iframe>
 <script>
-(function(){var fb='';try{fb=window.parent.location.origin;}catch(e){}document.getElementById('pr-in').value=localStorage.getItem('intel_proxy_url')||fb||'';})();
+document.getElementById('pr-in').value=localStorage.getItem('intel_proxy_url')||'${location.origin}';
 function loadApp(){
   var p=document.getElementById('pr-in').value.trim();
   var f=document.getElementById('dc-frame');
@@ -3969,7 +3969,7 @@ body{background:radial-gradient(ellipse at 50% 55%,#1a0a3a 0%,#08080f 45%,#000 7
 </div>
 <iframe id="dc-frame" allow="autoplay;fullscreen;clipboard-write;camera;microphone"></iframe>
 <script>
-(function(){var fb='';try{fb=window.parent.location.origin;}catch(e){}document.getElementById('pr-in').value=localStorage.getItem('intel_proxy_url')||fb||'';})();
+document.getElementById('pr-in').value=localStorage.getItem('intel_proxy_url')||'${location.origin}';
 function loadApp(){
   var p=document.getElementById('pr-in').value.trim();
   var f=document.getElementById('dc-frame');
