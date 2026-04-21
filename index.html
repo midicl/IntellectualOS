@@ -663,18 +663,24 @@ function setSignInError(msg) {
   if (el) el.textContent = msg;
 }
 function friendlyError(code) {
+  console.warn('[IOS Auth] error code:', code);
   return ({
-    'auth/invalid-email':          'Invalid email address.',
-    'auth/user-not-found':         'No account with that email.',
-    'auth/wrong-password':         'Incorrect password.',
-    'auth/invalid-credential':     'Incorrect email or password.',
-    'auth/email-already-in-use':   'That email is already registered.',
-    'auth/weak-password':          'Password must be at least 6 characters.',
-    'auth/too-many-requests':      'Too many attempts — try again later.',
-    'auth/network-request-failed': 'Network error. Check your connection.',
-    'auth/popup-closed-by-user':   '',
-    'auth/cancelled-popup-request':''
-  })[code] || 'Something went wrong. Please try again.';
+    'auth/invalid-email':            'Invalid email address.',
+    'auth/user-not-found':           'No account with that email.',
+    'auth/wrong-password':           'Incorrect password.',
+    'auth/invalid-credential':       'Incorrect email or password.',
+    'auth/email-already-in-use':     'That email is already registered.',
+    'auth/weak-password':            'Password must be at least 6 characters.',
+    'auth/too-many-requests':        'Too many attempts — try again later.',
+    'auth/network-request-failed':   'Network error. Check your connection.',
+    'auth/popup-closed-by-user':     '',
+    'auth/cancelled-popup-request':  '',
+    'auth/operation-not-allowed':    'This sign-in method is not enabled. Enable it in the Firebase console.',
+    'auth/unauthorized-domain':      'This domain is not authorized. Add it in Firebase → Auth → Settings → Authorized domains.',
+    'auth/configuration-not-found':  'Firebase Auth is not configured. Enable Authentication in the Firebase console.',
+    'auth/app-not-authorized':       'App not authorized. Check your Firebase API key restrictions.',
+    'auth/internal-error':           'Firebase internal error. Check the browser console for details.',
+  })[code] || `Error: ${code || 'unknown'}. Check the browser console (F12) for details.`;
 }
 
 // ── PHOTO UPLOAD ───────────────────────────────────────────────────────────
