@@ -114,6 +114,7 @@ var APPS = {
     'youtube': {title:'YouTube', internal:true, pinned:false, icon:'https://upload.wikimedia.org/wikipedia/commons/0/09/YouTube_full-color_icon_%282017%29.svg'},
     'ciniai': {title:'Intellectual AI', internal:true, pinned:false, icon: _ico('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect width="48" height="48" rx="12" fill="#080e1c"/><circle cx="24" cy="24" r="7" fill="#1e3060" stroke="#4060b0" stroke-width="1.5"/><circle cx="24" cy="24" r="3" fill="#6090e0"/><circle cx="24" cy="9" r="3.5" fill="#3050a0" opacity="0.85"/><circle cx="24" cy="39" r="3.5" fill="#3050a0" opacity="0.85"/><circle cx="9" cy="24" r="3.5" fill="#3050a0" opacity="0.85"/><circle cx="39" cy="24" r="3.5" fill="#3050a0" opacity="0.85"/><circle cx="13.5" cy="13.5" r="2.5" fill="#2040a0" opacity="0.6"/><circle cx="34.5" cy="13.5" r="2.5" fill="#2040a0" opacity="0.6"/><circle cx="13.5" cy="34.5" r="2.5" fill="#2040a0" opacity="0.6"/><circle cx="34.5" cy="34.5" r="2.5" fill="#2040a0" opacity="0.6"/><line x1="24" y1="17" x2="24" y2="12.5" stroke="#4060b0" stroke-width="1.5" opacity="0.8"/><line x1="24" y1="31" x2="24" y2="35.5" stroke="#4060b0" stroke-width="1.5" opacity="0.8"/><line x1="17" y1="24" x2="12.5" y2="24" stroke="#4060b0" stroke-width="1.5" opacity="0.8"/><line x1="31" y1="24" x2="35.5" y2="24" stroke="#4060b0" stroke-width="1.5" opacity="0.8"/></svg>')},
     'Geforce': {title:'GeForce NOW', internal:true, pinned:false, icon:'https://play-lh.googleusercontent.com/_-b_HQXrVyyhZSHj_BoE9u_-cxkcHDH_yLX5rDjJsFMIfsCNQs9F3QP4JvEFcWaSIz0=w240-h480-rw'},
+    'anime': {title:'Anime', internal:true, pinned:false, icon: _ico('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect width="48" height="48" rx="12" fill="#0d0a18"/><circle cx="18" cy="22" r="3.2" fill="#fff"/><circle cx="30" cy="22" r="3.2" fill="#fff"/><circle cx="18" cy="22" r="1.4" fill="#0d0a18"/><circle cx="30" cy="22" r="1.4" fill="#0d0a18"/><path d="M14 30 Q24 38 34 30" stroke="#ff5d8f" stroke-width="2.2" stroke-linecap="round" fill="none"/><path d="M9 16 Q14 11 19 14 M29 14 Q34 11 39 16" stroke="#ff5d8f" stroke-width="2" stroke-linecap="round" fill="none"/></svg>')},
 };
 
 var savedPins = localStorage.getItem('intel_pins_v2');
@@ -1425,13 +1426,8 @@ function loadApp(){
   f.style.display='block';
 }
 function joinServer(){
-  var p=document.getElementById('pr-in').value.trim();
-  var url='https://discord.gg/Sduv8uDjxF';
-  var f=document.getElementById('dc-frame');
-  f.src=p?p.replace(/\/$/,'')+'/service/'+btoa(url):'/service/'+btoa(url);
-  document.getElementById('card').style.display='none';
-  document.getElementById('top').style.display='none';
-  f.style.display='block';
+  // Invite pages render fine without a proxy on every network — open directly.
+  window.open('https://discord.gg/Sduv8uDjxF','_blank','noopener,noreferrer');
 }
 </script>` + T; }
 
@@ -1449,6 +1445,11 @@ function joinServer(){
      GEFORCE NOW — proxy through built-in server
   ===================================================================== */
   if (id === 'Geforce') { return H + `<style>body{overflow:hidden}#r{height:100vh;display:flex;flex-direction:column}#h{padding:9px 14px;background:#0a0a0a;border-bottom:1px solid #111;display:flex;align-items:center;gap:9px;flex-shrink:0}.t{font-family:'Space Grotesk',sans-serif;font-size:.8rem;font-weight:700}#f{flex:1;border:none}</style><div id="r"><div id="h"><div class="t">GeForce Now</div><span style="font-size:11px;color:#333;margin-left:8px">Routing through built-in proxy</span></div><iframe id="f" src="" allow="autoplay;fullscreen;gamepad"></iframe></div><script>document.getElementById("f").src="/service/"+btoa("https://play.geforcenow.com");<\/script>` + T; }
+
+  /* =====================================================================
+     ANIME — 9animetv.to via built-in proxy
+  ===================================================================== */
+  if (id === 'anime') { return H + `<style>body{overflow:hidden}#r{height:100vh;display:flex;flex-direction:column}#h{padding:9px 14px;background:#0a0a0a;border-bottom:1px solid #111;display:flex;align-items:center;gap:9px;flex-shrink:0}.t{font-family:'Space Grotesk',sans-serif;font-size:.8rem;font-weight:700}#f{flex:1;border:none;background:#000}</style><div id="r"><div id="h"><div class="t">Anime</div><span style="font-size:11px;color:#333;margin-left:8px">9animetv.to · routing through built-in proxy</span></div><iframe id="f" src="" allow="autoplay;fullscreen;encrypted-media;picture-in-picture"></iframe></div><script>document.getElementById("f").src="/service/"+btoa("https://9animetv.to/home");<\/script>` + T; }
 
   /* =====================================================================
      AI
@@ -2688,6 +2689,7 @@ var APPS = {
     'youtube': {title:'YouTube', internal:true, pinned:false, icon:'https://upload.wikimedia.org/wikipedia/commons/0/09/YouTube_full-color_icon_%282017%29.svg'},
     'ciniai': {title:'Intellectual AI', internal:true, pinned:false, icon: _ico('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect width="48" height="48" rx="12" fill="#080e1c"/><circle cx="24" cy="24" r="7" fill="#1e3060" stroke="#4060b0" stroke-width="1.5"/><circle cx="24" cy="24" r="3" fill="#6090e0"/><circle cx="24" cy="9" r="3.5" fill="#3050a0" opacity="0.85"/><circle cx="24" cy="39" r="3.5" fill="#3050a0" opacity="0.85"/><circle cx="9" cy="24" r="3.5" fill="#3050a0" opacity="0.85"/><circle cx="39" cy="24" r="3.5" fill="#3050a0" opacity="0.85"/><circle cx="13.5" cy="13.5" r="2.5" fill="#2040a0" opacity="0.6"/><circle cx="34.5" cy="13.5" r="2.5" fill="#2040a0" opacity="0.6"/><circle cx="13.5" cy="34.5" r="2.5" fill="#2040a0" opacity="0.6"/><circle cx="34.5" cy="34.5" r="2.5" fill="#2040a0" opacity="0.6"/><line x1="24" y1="17" x2="24" y2="12.5" stroke="#4060b0" stroke-width="1.5" opacity="0.8"/><line x1="24" y1="31" x2="24" y2="35.5" stroke="#4060b0" stroke-width="1.5" opacity="0.8"/><line x1="17" y1="24" x2="12.5" y2="24" stroke="#4060b0" stroke-width="1.5" opacity="0.8"/><line x1="31" y1="24" x2="35.5" y2="24" stroke="#4060b0" stroke-width="1.5" opacity="0.8"/></svg>')},
     'Geforce': {title:'GeForce NOW', internal:true, pinned:false, icon:'https://play-lh.googleusercontent.com/_-b_HQXrVyyhZSHj_BoE9u_-cxkcHDH_yLX5rDjJsFMIfsCNQs9F3QP4JvEFcWaSIz0=w240-h480-rw'},
+    'anime': {title:'Anime', internal:true, pinned:false, icon: _ico('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect width="48" height="48" rx="12" fill="#0d0a18"/><circle cx="18" cy="22" r="3.2" fill="#fff"/><circle cx="30" cy="22" r="3.2" fill="#fff"/><circle cx="18" cy="22" r="1.4" fill="#0d0a18"/><circle cx="30" cy="22" r="1.4" fill="#0d0a18"/><path d="M14 30 Q24 38 34 30" stroke="#ff5d8f" stroke-width="2.2" stroke-linecap="round" fill="none"/><path d="M9 16 Q14 11 19 14 M29 14 Q34 11 39 16" stroke="#ff5d8f" stroke-width="2" stroke-linecap="round" fill="none"/></svg>')},
 };
 
 var savedPins = localStorage.getItem('intel_pins_v2');
@@ -3979,13 +3981,8 @@ function loadApp(){
   f.style.display='block';
 }
 function joinServer(){
-  var p=document.getElementById('pr-in').value.trim();
-  var url='https://discord.gg/Sduv8uDjxF';
-  var f=document.getElementById('dc-frame');
-  f.src=p?p.replace(/\/$/,'')+'/service/'+btoa(url):'/service/'+btoa(url);
-  document.getElementById('card').style.display='none';
-  document.getElementById('top').style.display='none';
-  f.style.display='block';
+  // Invite pages render fine without a proxy on every network — open directly.
+  window.open('https://discord.gg/Sduv8uDjxF','_blank','noopener,noreferrer');
 }
 </script>` + T; }
 
@@ -4003,6 +4000,11 @@ function joinServer(){
      GEFORCE NOW — proxy through built-in server
   ===================================================================== */
   if (id === 'Geforce') { return H + `<style>body{overflow:hidden}#r{height:100vh;display:flex;flex-direction:column}#h{padding:9px 14px;background:#0a0a0a;border-bottom:1px solid #111;display:flex;align-items:center;gap:9px;flex-shrink:0}.t{font-family:'Space Grotesk',sans-serif;font-size:.8rem;font-weight:700}#f{flex:1;border:none}</style><div id="r"><div id="h"><div class="t">GeForce Now</div><span style="font-size:11px;color:#333;margin-left:8px">Routing through built-in proxy</span></div><iframe id="f" src="" allow="autoplay;fullscreen;gamepad"></iframe></div><script>document.getElementById("f").src="/service/"+btoa("https://play.geforcenow.com");<\/script>` + T; }
+
+  /* =====================================================================
+     ANIME — 9animetv.to via built-in proxy
+  ===================================================================== */
+  if (id === 'anime') { return H + `<style>body{overflow:hidden}#r{height:100vh;display:flex;flex-direction:column}#h{padding:9px 14px;background:#0a0a0a;border-bottom:1px solid #111;display:flex;align-items:center;gap:9px;flex-shrink:0}.t{font-family:'Space Grotesk',sans-serif;font-size:.8rem;font-weight:700}#f{flex:1;border:none;background:#000}</style><div id="r"><div id="h"><div class="t">Anime</div><span style="font-size:11px;color:#333;margin-left:8px">9animetv.to · routing through built-in proxy</span></div><iframe id="f" src="" allow="autoplay;fullscreen;encrypted-media;picture-in-picture"></iframe></div><script>document.getElementById("f").src="/service/"+btoa("https://9animetv.to/home");<\/script>` + T; }
 
   /* =====================================================================
      AI
