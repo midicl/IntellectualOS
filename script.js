@@ -1,5 +1,92 @@
 var _devBuildVer = "1.0.0";
 
+// ═══════════════════════════════════════════════════════════════════════
+//  BOT BRIDGE — posts login / game-open / song-play / heartbeat events
+//  to the Discord bot HTTP server (index.js /event, /heartbeat, /login-check).
+//  Configure the endpoint:  localStorage.setItem('botUrl','https://your-bot')
+// ═══════════════════════════════════════════════════════════════════════
+(function BotBridgeInit() {
+  var BOT_URL = localStorage.getItem('botUrl') || (location.origin.replace(/:\d+$/, '') + ':3000');
+  var currentEmail = null;
+  var lastSentLogin = null;
+  var heartbeatTimer = null;
+
+  function post(path, body) {
+    return fetch(BOT_URL + path, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(body || {}),
+      mode: 'cors',
+      keepalive: true,
+    }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; });
+  }
+
+  function event(type, detail) {
+    if (!currentEmail) return;
+    post('/event', { email: currentEmail, type: type, detail: detail || '' });
+  }
+
+  function heartbeat() {
+    if (!currentEmail) return;
+    post('/heartbeat', { email: currentEmail });
+  }
+
+  function setUser(email) {
+    email = (email || '').trim().toLowerCase();
+    if (!email || email === currentEmail) return;
+    currentEmail = email;
+    if (lastSentLogin !== email) {
+      event('login', navigator.userAgent.slice(0, 80));
+      lastSentLogin = email;
+    }
+    if (!heartbeatTimer) {
+      heartbeat();
+      heartbeatTimer = setInterval(heartbeat, 45_000);
+    }
+  }
+
+  function clearUser() {
+    if (currentEmail) { event('logout', ''); }
+    currentEmail = null; lastSentLogin = null;
+    if (heartbeatTimer) { clearInterval(heartbeatTimer); heartbeatTimer = null; }
+  }
+
+  // Scrape email from auth UI rendered by index.html (updateProfileUI writes it)
+  function pollEmail() {
+    var el = document.getElementById('auth-useremail') || document.querySelector('.user-email');
+    var txt = el && el.textContent && el.textContent.indexOf('@') !== -1 ? el.textContent.trim() : null;
+    if (txt) setUser(txt); else if (currentEmail && !txt) clearUser();
+  }
+  setInterval(pollEmail, 2500);
+  setTimeout(pollEmail, 500);
+
+  // Relay events from iframe srcdocs (games, music) via postMessage
+  window.addEventListener('message', function (e) {
+    var d = e.data;
+    if (!d || typeof d !== 'object' || d.__bot !== true) return;
+    if (d.type === 'game-open') event('game-open', d.detail || '');
+    else if (d.type === 'song-play') event('song-play', d.detail || '');
+    else if (d.type === 'app-open') event('app-open', d.detail || '');
+  });
+
+  // Fire app-open when a window is opened from the parent OS
+  var _origOpen = window.openWindow;
+  if (typeof _origOpen === 'function') {
+    window.openWindow = function (id) {
+      event('app-open', id || '');
+      return _origOpen.apply(this, arguments);
+    };
+  }
+
+  window.BotBridge = { event: event, heartbeat: heartbeat, setUser: setUser, clearUser: clearUser,
+    get email() { return currentEmail; }, get url() { return BOT_URL; } };
+
+  window.addEventListener('beforeunload', function () {
+    if (currentEmail) navigator.sendBeacon && navigator.sendBeacon(BOT_URL + '/event',
+      new Blob([JSON.stringify({ email: currentEmail, type: 'logout', detail: '' })], { type: 'application/json' }));
+  });
+})();
+
 var _ico = function(svg){ return 'data:image/svg+xml,' + encodeURIComponent(svg); };
 var APPS = {
     'cine': {title:'Hub', internal:true, pinned:true, icon: _ico('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect width="48" height="48" rx="12" fill="#1a1a2e"/><rect x="8" y="8" width="14" height="14" rx="3" fill="#9090b0"/><rect x="26" y="8" width="14" height="14" rx="3" fill="#7070a0"/><rect x="8" y="26" width="14" height="14" rx="3" fill="#7070a0"/><rect x="26" y="26" width="14" height="14" rx="3" fill="#5050a0"/></svg>')},
@@ -586,6 +673,22 @@ body{background:#000}
         </div>
       </div>
       <div class="sec">
+        <div class="sec-lbl">Featured Ports</div>
+        <div class="row-wrap">
+          <div class="arr al" onclick="scr('rf',-1)">&#8249;</div>
+          <div class="row" id="rf"></div>
+          <div class="arr ar" onclick="scr('rf',1)">&#8250;</div>
+        </div>
+      </div>
+      <div class="sec">
+        <div class="sec-lbl">Classic Arcade</div>
+        <div class="row-wrap">
+          <div class="arr al" onclick="scr('rc',-1)">&#8249;</div>
+          <div class="row" id="rc"></div>
+          <div class="arr ar" onclick="scr('rc',1)">&#8250;</div>
+        </div>
+      </div>
+      <div class="sec">
         <div class="sec-lbl">Try Something New!</div>
         <div class="row-wrap">
           <div class="arr al" onclick="scr('rn',-1)">&#8249;</div>
@@ -657,16 +760,90 @@ var ZONES_URL = 'https://cdn.jsdelivr.net/gh/gn-math/assets@master/zones.json';
 var zones = [];
 var saved = JSON.parse(localStorage.getItem('ios_g') || '[]');
 
+// Direct-URL ports from multiple unblocker CDNs. These merge with gn-math zones
+// so they show up in search, library, featured rows, etc. Covers are optional.
+var EXTRA_PORTS = [
+  // 3kh0 mirrors
+  { id:'x3k-slope',       name:'Slope',                url:'https://3kh0-lite.global.ssl.fastly.net/projects/slope/',              cover:'https://3kh0-lite.global.ssl.fastly.net/projects/slope/icon.png' },
+  { id:'x3k-1v1',         name:'1v1.LOL',              url:'https://3kh0-lite.global.ssl.fastly.net/projects/1v1lol/',             cover:'https://3kh0-lite.global.ssl.fastly.net/projects/1v1lol/icon.png' },
+  { id:'x3k-retrobowl',   name:'Retro Bowl',           url:'https://3kh0-lite.global.ssl.fastly.net/projects/retro-bowl/',         cover:'https://3kh0-lite.global.ssl.fastly.net/projects/retro-bowl/icon.png' },
+  { id:'x3k-drivemad',    name:'Drive Mad',            url:'https://3kh0-lite.global.ssl.fastly.net/projects/drive-mad/',          cover:'https://3kh0-lite.global.ssl.fastly.net/projects/drive-mad/icon.png' },
+  { id:'x3k-smashkarts',  name:'Smash Karts',          url:'https://3kh0-lite.global.ssl.fastly.net/projects/smash-karts/',        cover:'https://3kh0-lite.global.ssl.fastly.net/projects/smash-karts/icon.png' },
+  { id:'x3k-bitlife',     name:'BitLife',              url:'https://3kh0-lite.global.ssl.fastly.net/projects/bitlife/',            cover:'https://3kh0-lite.global.ssl.fastly.net/projects/bitlife/icon.png' },
+  { id:'x3k-cookie',      name:'Cookie Clicker',       url:'https://3kh0-lite.global.ssl.fastly.net/projects/cookie-clicker/',     cover:'https://3kh0-lite.global.ssl.fastly.net/projects/cookie-clicker/icon.png' },
+  { id:'x3k-stick',       name:'Stickman Hook',        url:'https://3kh0-lite.global.ssl.fastly.net/projects/stickman-hook/',      cover:'https://3kh0-lite.global.ssl.fastly.net/projects/stickman-hook/icon.png' },
+  { id:'x3k-geo',         name:'Geometry Dash',        url:'https://3kh0-lite.global.ssl.fastly.net/projects/geometry-dash/',      cover:'https://3kh0-lite.global.ssl.fastly.net/projects/geometry-dash/icon.png' },
+  { id:'x3k-tunnel',      name:'Tunnel Rush',          url:'https://3kh0-lite.global.ssl.fastly.net/projects/tunnel-rush/',        cover:'https://3kh0-lite.global.ssl.fastly.net/projects/tunnel-rush/icon.png' },
+  { id:'x3k-moto',        name:'Moto X3M',             url:'https://3kh0-lite.global.ssl.fastly.net/projects/moto-x3m/',           cover:'https://3kh0-lite.global.ssl.fastly.net/projects/moto-x3m/icon.png' },
+  { id:'x3k-happy',       name:'Happy Wheels',         url:'https://3kh0-lite.global.ssl.fastly.net/projects/happy-wheels/',       cover:'https://3kh0-lite.global.ssl.fastly.net/projects/happy-wheels/icon.png' },
+  { id:'x3k-paper',       name:'Paper.io 2',           url:'https://3kh0-lite.global.ssl.fastly.net/projects/paperio-2/',          cover:'https://3kh0-lite.global.ssl.fastly.net/projects/paperio-2/icon.png' },
+  { id:'x3k-clusterrush', name:'Cluster Rush',         url:'https://3kh0-lite.global.ssl.fastly.net/projects/cluster-rush/',       cover:'https://3kh0-lite.global.ssl.fastly.net/projects/cluster-rush/icon.png' },
+  { id:'x3k-hardestgame', name:'Worlds Hardest Game',  url:'https://3kh0-lite.global.ssl.fastly.net/projects/worlds-hardest-game/',cover:'https://3kh0-lite.global.ssl.fastly.net/projects/worlds-hardest-game/icon.png' },
+  { id:'x3k-run3',        name:'Run 3',                url:'https://3kh0-lite.global.ssl.fastly.net/projects/run-3/',              cover:'https://3kh0-lite.global.ssl.fastly.net/projects/run-3/icon.png' },
+  { id:'x3k-temple',      name:'Temple Run 2',         url:'https://3kh0-lite.global.ssl.fastly.net/projects/temple-run-2/',       cover:'https://3kh0-lite.global.ssl.fastly.net/projects/temple-run-2/icon.png' },
+  { id:'x3k-crossy',      name:'Crossy Road',          url:'https://3kh0-lite.global.ssl.fastly.net/projects/crossy-road/',        cover:'https://3kh0-lite.global.ssl.fastly.net/projects/crossy-road/icon.png' },
+  { id:'x3k-fnf',         name:'Friday Night Funkin',  url:'https://3kh0-lite.global.ssl.fastly.net/projects/friday-night-funkin/',cover:'https://3kh0-lite.global.ssl.fastly.net/projects/friday-night-funkin/icon.png' },
+
+  // Eaglercraft (Minecraft) — multiple mirrors
+  { id:'mc-1.8.8',        name:'Eaglercraft 1.8.8',    url:'https://eaglercraft.com/mc/1.8.8/',                                    cover:'https://eaglercraft.com/icon.png' },
+  { id:'mc-1.5.2',        name:'Eaglercraft 1.5.2',    url:'https://eaglercraft.com/mc/1.5.2/',                                    cover:'https://eaglercraft.com/icon.png' },
+
+  // DOS classics via js-dos
+  { id:'dos-doom',        name:'Doom',                 url:'https://js-dos.com/games/doom.exe.html',                               cover:'https://js-dos.com/images/doom.png' },
+  { id:'dos-wolf3d',      name:'Wolfenstein 3D',       url:'https://js-dos.com/games/wolf3d.exe.html',                             cover:'https://js-dos.com/images/wolf3d.png' },
+  { id:'dos-prince',      name:'Prince of Persia',     url:'https://js-dos.com/games/prince.exe.html',                             cover:'https://js-dos.com/images/prince.png' },
+  { id:'dos-simcity',     name:'SimCity',              url:'https://js-dos.com/games/simcity.exe.html',                            cover:'https://js-dos.com/images/simcity.png' },
+
+  // Ruffle (Flash)
+  { id:'flash-supermario',name:'Super Mario Flash',    url:'https://ruffle.rs/demo/?url=https://files.ruffle.rs/demo/super-mario-63.swf' },
+  { id:'flash-stickwar',  name:'Stick War',            url:'https://ruffle.rs/demo/?url=https://files.ruffle.rs/demo/stick-war.swf' },
+];
+zones = EXTRA_PORTS.slice();  // seed before fetch resolves so UI isn't empty
+
+// Curated ports — matched against gn-math zones by name keyword
+var FEATURED_KEYS = [
+  'eaglercraft','minecraft','doom','retro bowl','slope','drive mad',
+  '1v1','basket bros','cookie clicker','stickman hook','vex 7','vex 6',
+  'tomb of the mask','geometry dash','tunnel rush','moto x3m','happy wheels',
+  'bloxorz','run 3','papa','subway surfers','cluster rush','bitlife',
+  'smash karts','among us','crossy road','temple run','bad ice cream',
+  'fireboy','worlds hardest','friday night funkin','paper.io','agar'
+];
+var CLASSIC_KEYS = [
+  'pac-man','pacman','tetris','space invaders','snake','pong','asteroids',
+  'frogger','galaga','centipede','breakout','mario','sonic','contra',
+  'donkey kong','street fighter','mortal kombat','zelda','metroid','kirby'
+];
+
+function pickBy(keys) {
+  var seen = {}, out = [];
+  for (var i=0;i<keys.length;i++) {
+    var k = keys[i].toLowerCase();
+    for (var j=0;j<zones.length;j++) {
+      var z = zones[j];
+      if (seen[z.id]) continue;
+      if ((z.name||'').toLowerCase().indexOf(k) !== -1) {
+        out.push(z); seen[z.id] = 1; break;
+      }
+    }
+  }
+  return out;
+}
+
 // Load GN-Math zones
 fetch(ZONES_URL + '?t=' + Date.now())
   .then(function(r){ return r.json(); })
   .then(function(data){
-    zones = data.filter(function(z){ return z.url && !z.url.startsWith('http'); });
+    var gn = data.filter(function(z){ return z.url; });
+    zones = EXTRA_PORTS.concat(gn);
     document.getElementById('loading').style.display = 'none';
     buildHome();
   })
   .catch(function(){
-    document.getElementById('loading').textContent = 'Could not load games. Check your connection.';
+    // still show the curated ports even if zones.json fetch fails
+    document.getElementById('loading').style.display = 'none';
+    zones = EXTRA_PORTS.slice();
+    buildHome();
   });
 
 function getUrl(z) {
@@ -700,8 +877,15 @@ function userCard(g) {
 
 function buildHome() {
   var sh = zones.slice().sort(function(){ return Math.random()-.5; });
+  var featured = pickBy(FEATURED_KEYS);
+  var classic = pickBy(CLASSIC_KEYS);
+  // fallback: if curated picks empty (zones feed changed), use random slice
+  if (!featured.length) featured = sh.slice(0,16);
+  if (!classic.length) classic = sh.slice(16,32);
+  document.getElementById('rf').innerHTML = featured.map(function(z){ return card(z); }).join('');
+  document.getElementById('rc').innerHTML = classic.map(function(z){ return card(z); }).join('');
   document.getElementById('rn').innerHTML = sh.slice(0,16).map(function(z){ return card(z); }).join('');
-  document.getElementById('rr').innerHTML = sh.slice(5,21).map(function(z){ return card(z); }).join('');
+  document.getElementById('rr').innerHTML = sh.slice(16,32).map(function(z){ return card(z); }).join('');
   buildYour();
 }
 
@@ -716,10 +900,14 @@ function showTab(name, el) {
   document.getElementById('tab-'+name).style.display='block';
   el.classList.add('on');
   if (name === 'library') {
+    var pri = pickBy(FEATURED_KEYS.concat(CLASSIC_KEYS));
+    var priIds = {}; pri.forEach(function(z){ priIds[z.id]=1; });
+    var rest = zones.filter(function(z){ return !priIds[z.id]; });
+    var lib = pri.concat(rest).slice(0,80);
     document.getElementById('lib-grid').innerHTML = saved.map(function(g){
       return '<div class="gc" style="width:145px" onclick="launch(\''+encodeURIComponent(g.url)+'\',\''+g.name.replace(/'/g,'&#39;')+'\')">' +
         '<img class="gc-art" src="'+g.img+'" onerror="this.style.display=\'none\'"><div class="gc-info"><div class="gc-name">'+g.name+'</div></div></div>';
-    }).join('') + zones.slice(0,50).map(function(z){ return card(z,145); }).join('');
+    }).join('') + lib.map(function(z){ return card(z,145); }).join('');
   }
   if (name === 'store') {
     document.getElementById('store-grid').innerHTML = zones.map(function(z){ return card(z,145); }).join('');
@@ -731,6 +919,7 @@ function scr(id,d){ document.getElementById(id).scrollBy({left:d*340,behavior:'s
 function launch(urlEnc, name) {
   var url = decodeURIComponent(urlEnc);
   if (!url || url === '#') return;
+  try { parent.postMessage({ __bot: true, type: 'game-open', detail: name }, '*'); } catch(e){}
   var l=document.getElementById('launcher');
   var ll=document.getElementById('ll-load');
   var lf=document.getElementById('ll-frame');
@@ -2230,6 +2419,11 @@ window.onbeforeunload=function(e){if(sysConfig.redirectConfirm){var msg="Are you
       alert('Spotify player is still connecting. Try again in a second (Premium account required).');
       return;
     }
+    try {
+      const t = tracks[idx];
+      const label = t ? `${t.name} — ${(t.artists || []).map((a) => a.name).join(', ')}` : '';
+      if (window.BotBridge) window.BotBridge.event('song-play', label.slice(0, 140));
+    } catch (e) {}
     if (contextUri) {
       const t = await Spotify.getToken();
       await fetch(`https://api.spotify.com/v1/me/player/play?device_id=${Spotify.deviceId}`, {
