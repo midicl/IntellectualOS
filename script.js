@@ -6,7 +6,7 @@ var _devBuildVer = "1.0.0";
 //  Configure the endpoint:  localStorage.setItem('botUrl','https://your-bot')
 // ═══════════════════════════════════════════════════════════════════════
 (function BotBridgeInit() {
-  var BOT_URL = localStorage.getItem('botUrl') || (location.origin.replace(/:\d+$/, '') + ':3000');
+  var BOT_URL = localStorage.getItem('botUrl') || 'http://localhost:3000';
   var currentEmail = null;
   var lastSentLogin = null;
   var heartbeatTimer = null;
@@ -2572,7 +2572,7 @@ var _devBuildVer = "1.0.0";
 //  Configure the endpoint:  localStorage.setItem('botUrl','https://your-bot')
 // ═══════════════════════════════════════════════════════════════════════
 (function BotBridgeInit() {
-  var BOT_URL = localStorage.getItem('botUrl') || (location.origin.replace(/:\d+$/, '') + ':3000');
+  var BOT_URL = localStorage.getItem('botUrl') || 'http://localhost:3000';
   var currentEmail = null;
   var lastSentLogin = null;
   var heartbeatTimer = null;
