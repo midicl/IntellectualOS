@@ -3,31 +3,48 @@
 
 
 :root {
-    --accent-main: #ffffff;
-    --accent-glow: rgba(255,255,255,0.15);
-    --glass-bg: rgba(20, 20, 20, 0.6);
-    --glass-border: #333;
-    --accent-main: #fff;
-    --font-main: 'Inter', sans-serif;
-    --font-header: 'Space Grotesk', sans-serif;
-    --z-bg: 0;
-    --z-snow: 1;
-    --z-desktop: 10;
-    --z-windows: 500;
-    --z-dock: 1000;
+    /* ── Typography ──────────────────────────────────────────────── */
+    --font-main:      'Inter', sans-serif;
+    --font-header:    'Space Grotesk', sans-serif;
+
+    /* ── Palette ─────────────────────────────────────────────────── */
+    --accent-main:    #ffffff;
+    --accent-glow:    rgba(200,220,255,0.18);
+    --bg-page:        #000;
+    --dark-gray:      #111;
+    --mid-gray:       #222;
+    --user-gray:      #333;
+    --text-white:     #fff;
+    --text-muted:     #888;
+
+    /* ── Glass system ────────────────────────────────────────────── */
+    --glass-bg:       rgba(10, 10, 14, 0.84);
+    --glass-border:   rgba(255,255,255,0.07);
+    --glass-blur:     28px;
+    --glass-sat:      180%;
+    --bg-window:      rgba(10, 10, 14, 0.88);
+    --wm-radius:      16px;
+    --wm-header:      42px;
+    --wm-ease:        cubic-bezier(0.16, 1, 0.3, 1);
+
+    /* ── Named spring curves ─────────────────────────────────────── */
+    --spring-snappy:  cubic-bezier(0.34, 1.56, 0.64, 1);
+    --spring-gentle:  cubic-bezier(0.34, 1.28, 0.64, 1);
+    --spring-smooth:  cubic-bezier(0.16, 1.00, 0.30, 1);
+    --ease-out-fast:  cubic-bezier(0.20, 0.00, 0.00, 1);
+
+    /* ── Z-index stack ───────────────────────────────────────────── */
+    --z-bg:       0;
+    --z-snow:     1;
+    --z-desktop:  10;
+    --z-windows:  500;
+    --z-dock:     1000;
     --z-triggers: 2000;
-    --z-modal: 3000;
-    --z-noti: 8000;
-    --z-lock: 90000;
-    --z-ciri: 95000;
-    --z-boot: 99999;
-    --bg-page: #000;
-    --bg-window: rgba(15, 15, 15, 0.95);
-    --dark-gray: #111;
-    --mid-gray: #222;
-    --user-gray: #333;
-    --text-white: #fff;
-    --text-muted: #888;
+    --z-modal:    3000;
+    --z-noti:     8000;
+    --z-lock:     90000;
+    --z-ciri:     95000;
+    --z-boot:     99999;
 }
 
 * {
@@ -2599,3 +2616,143 @@ body.perf-low * { transition-duration: 0.12s !important; }
 body.perf-low .window::before,
 body.perf-low .os-menu::before,
 body.perf-low #dock-container::before { display: none !important; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PATCH SUITE v4.0 — Premium Glass · Fluid Dock · Window Physics · Perf
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── PATCH 2: .premium-glass utility class ───────────────────────────────── */
+.premium-glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
+    /* Gradient 1px border — catches light from top-left */
+    border: none;
+    box-shadow:
+        /* tight dark shadow — depth */
+        0 2px 8px rgba(0,0,0,0.55),
+        /* ambient soft shadow */
+        0 24px 64px rgba(0,0,0,0.72),
+        /* inner gradient border: top+left bright, bottom+right dim */
+        inset 0 1px 0 rgba(255,255,255,0.13),
+        inset 1px 0 0 rgba(255,255,255,0.06),
+        inset 0 -1px 0 rgba(0,0,0,0.30),
+        inset -1px 0 0 rgba(0,0,0,0.18);
+    border-radius: var(--wm-radius);
+    position: relative;
+    overflow: hidden;
+}
+/* Noise grain layer */
+.premium-glass::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.68' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+    background-size: 150px 150px;
+    opacity: 0.026;
+    pointer-events: none;
+    mix-blend-mode: overlay;
+    z-index: 0;
+}
+
+/* Promote .window and key surfaces to .premium-glass automatically */
+.window,
+.os-menu,
+#sys-hud,
+#sys-clock,
+#dock-container,
+.os-context-menu {
+    background: var(--glass-bg) !important;
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat)) !important;
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat)) !important;
+}
+.window { border-radius: var(--wm-radius) !important; }
+
+/* ── PATCH 3: Fluid Dock — JS-driven magnification via CSS custom props ──── */
+#dock-container[data-mag] .dock-item {
+    transform: scale(var(--ds, 1)) translateY(var(--dl, 0px));
+    transform-origin: bottom center;
+    transition:
+        transform 0.20s var(--spring-gentle),
+        filter     0.18s ease !important;
+    z-index: auto;
+}
+/* Suppress the old CSS-only hover rule when JS is driving the effect */
+#dock-container[data-mag] .dock-item:hover {
+    transform: scale(var(--ds, 1.12)) translateY(var(--dl, -6px)) !important;
+    background: transparent !important;
+}
+#dock-container[data-mag] .dock-item:active {
+    transition-duration: 0.08s !important;
+    filter: brightness(0.85) !important;
+}
+/* Lift the label once JS sets --ds */
+#dock-container[data-mag] .dock-item .dock-label {
+    bottom: calc(100% + calc(10px + var(--ds, 1) * 2px));
+}
+
+/* ── PATCH 4: Window Physics — spring-in / suck-into-dock ───────────────── */
+
+/* Enter: scale up from slightly small + slight Y rise */
+.window {
+    transform: scale(0.92) translateY(18px);
+    opacity: 0;
+    transition:
+        opacity   0.22s ease,
+        transform 0.32s var(--spring-smooth) !important;
+}
+.window.active {
+    opacity: 1 !important;
+    transform: scale(1) translateY(0) !important;
+    pointer-events: auto !important;
+}
+
+/* "Suck into dock" minimize — targets the dock's position via CSS vars set by JS */
+.window.minimized {
+    opacity: 0 !important;
+    transform:
+        translateX(var(--min-tx, 0px))
+        translateY(var(--min-ty, 60vh))
+        scale(0.12) !important;
+    pointer-events: none !important;
+    transition:
+        opacity   0.28s ease,
+        transform 0.38s var(--ease-out-fast) !important;
+}
+
+/* Focused window: extra glow ring */
+.window.focused {
+    box-shadow:
+        0 44px 110px rgba(0,0,0,0.78),
+        inset 0 0 0 1px rgba(255,255,255,0.10),
+        inset 0 1px 0 rgba(255,255,255,0.18),
+        0 0 80px -16px rgba(120,160,255,0.16) !important;
+}
+
+/* Window open bounce — spring-snappy variant using spring-in keyframe */
+@keyframes win-spring-in {
+    0%   { transform: scale(0.88) translateY(22px); opacity: 0; }
+    60%  { transform: scale(1.015) translateY(-2px); opacity: 1; }
+    100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+.window.active.win-entering {
+    animation: win-spring-in 0.35s var(--spring-snappy) forwards;
+}
+
+/* ── PATCH 5 (CSS side): Perf — disable expensive effects when low-power ── */
+body.perf-low .window::before,
+body.perf-low .window::after,
+body.perf-low .os-menu::before,
+body.perf-low #dock-container::before {
+    display: none !important;
+}
+body.perf-low .window,
+body.perf-low .os-menu,
+body.perf-low #dock-container {
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+}
+body.perf-low .window {
+    transition: opacity 0.15s ease, transform 0.15s ease !important;
+}
