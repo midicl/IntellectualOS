@@ -1529,12 +1529,13 @@ window.onbeforeunload=function(e){if(sysConfig.redirectConfirm){var msg="Are you
     var months=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
     function update(){
         var n=new Date();
-        var h=n.getHours().toString().padStart(2,'0');
+        var raw=n.getHours();
+        var ampm=raw>=12?'PM':'AM';
+        var h=raw%12||12;
         var m=n.getMinutes().toString().padStart(2,'0');
-        var s=n.getSeconds().toString().padStart(2,'0');
         var ct=document.getElementById('clock-time');
         var cd=document.getElementById('clock-date');
-        if(ct)ct.textContent=h+':'+m+':'+s;
+        if(ct)ct.textContent=h+':'+m+' '+ampm;
         if(cd)cd.textContent=days[n.getDay()]+', '+months[n.getMonth()]+' '+n.getDate();
     }
     update();
@@ -1552,9 +1553,9 @@ window.onbeforeunload=function(e){if(sysConfig.redirectConfirm){var msg="Are you
         w=canvas.width=window.innerWidth;
         h=canvas.height=window.innerHeight;
         cx=w/2; cy=h/2;
-        R=Math.min(w,h)*0.11;
+        R=Math.min(w,h)*0.145;
         stars=[];
-        for(var i=0;i<280;i++)stars.push({x:Math.random()*w,y:Math.random()*h,r:Math.random()*1.3+0.2,a:Math.random()*0.7+0.1,d:Math.random()*0.008-0.004});
+        for(var i=0;i<340;i++)stars.push({x:Math.random()*w,y:Math.random()*h,r:Math.random()*1.5+0.2,a:Math.random()*0.8+0.1,d:Math.random()*0.006-0.003});
     }
 
     function draw(){
@@ -4064,12 +4065,13 @@ window.onbeforeunload=function(e){if(sysConfig.redirectConfirm){var msg="Are you
     var months=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
     function update(){
         var n=new Date();
-        var h=n.getHours().toString().padStart(2,'0');
+        var raw=n.getHours();
+        var ampm=raw>=12?'PM':'AM';
+        var h=raw%12||12;
         var m=n.getMinutes().toString().padStart(2,'0');
-        var s=n.getSeconds().toString().padStart(2,'0');
         var ct=document.getElementById('clock-time');
         var cd=document.getElementById('clock-date');
-        if(ct)ct.textContent=h+':'+m+':'+s;
+        if(ct)ct.textContent=h+':'+m+' '+ampm;
         if(cd)cd.textContent=days[n.getDay()]+', '+months[n.getMonth()]+' '+n.getDate();
     }
     update();
@@ -4087,9 +4089,9 @@ window.onbeforeunload=function(e){if(sysConfig.redirectConfirm){var msg="Are you
         w=canvas.width=window.innerWidth;
         h=canvas.height=window.innerHeight;
         cx=w/2; cy=h/2;
-        R=Math.min(w,h)*0.11;
+        R=Math.min(w,h)*0.145;
         stars=[];
-        for(var i=0;i<280;i++)stars.push({x:Math.random()*w,y:Math.random()*h,r:Math.random()*1.3+0.2,a:Math.random()*0.7+0.1,d:Math.random()*0.008-0.004});
+        for(var i=0;i<340;i++)stars.push({x:Math.random()*w,y:Math.random()*h,r:Math.random()*1.5+0.2,a:Math.random()*0.8+0.1,d:Math.random()*0.006-0.003});
     }
 
     function draw(){
