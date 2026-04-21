@@ -441,7 +441,27 @@ setInterval(updateSidebarData,5000);
 window.launchLastPlayed=function(){toggleApp('files');};window.resumeSpotify=function(){toggleApp('term');};window.openUpdateLog=function(){var u=document.getElementById('update-modal');if(u&&u.showModal)u.showModal();else if(u)u.style.display='flex';};
 
 // ── UI RENDER ─────────────────────────────────────────────────────────────────
-function renderUI(){var dock=document.getElementById('dock-container'),dHTML='<div class="dock-item" onclick="toggleStartMenu()"><img src="https://missionsupport.archden.org/wp-content/uploads/2022/02/windows11-icon.png"></div><div class="dock-sep"></div><div class="dock-item" onclick="toggleAppDrawer()"><svg width="24" height="24" viewBox="0 0 24 24" fill="#aaa"><path d="M4 4h4v4H4zm6 0h4v4h-4zm6 0h4v4h-4zM4 10h4v4H4zm6 0h4v4h-4zm6 0h4v4h-4zM4 16h4v4H4zm6 0h4v4h-4zm6 0h4v4h-4z"/></svg></div><div class="dock-sep"></div>',pHTML='';for(var id in APPS){if(APPS[id].pinned){dHTML+='<div class="dock-item" data-id="'+id+'" onmousedown="DragSystem.start(event,this,\'dock\',\''+id+'\')" onclick="toggleApp(\''+id+'\')" oncontextmenu="openDockCtx(event,\''+id+'\')"><img src="'+APPS[id].icon+'"></div>';pHTML+='<div class="pinned-item" onclick="toggleApp(\''+id+'\')"><img src="'+APPS[id].icon+'"><span>'+APPS[id].title+'</span></div>';}}dock.innerHTML=dHTML;document.getElementById('pinned-grid').innerHTML=pHTML;populateDrawer();}
+function renderUI(){
+  var dock=document.getElementById('dock-container');
+  var _startSVG='<svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="1" y="1" width="8" height="8" rx="1.5" fill="rgba(255,255,255,0.78)"/><rect x="11" y="1" width="8" height="8" rx="1.5" fill="rgba(255,255,255,0.52)"/><rect x="1" y="11" width="8" height="8" rx="1.5" fill="rgba(255,255,255,0.52)"/><rect x="11" y="11" width="8" height="8" rx="1.5" fill="rgba(255,255,255,0.30)"/></svg>';
+  var _gridSVG='<svg width="17" height="17" viewBox="0 0 24 24" fill="rgba(255,255,255,0.45)"><path d="M4 4h4v4H4zm6 0h4v4h-4zm6 0h4v4h-4zM4 10h4v4H4zm6 0h4v4h-4zm6 0h4v4h-4zM4 16h4v4H4zm6 0h4v4h-4zm6 0h4v4h-4z"/></svg>';
+  var dHTML='<div class="dock-item dock-start" onclick="toggleStartMenu()"><div class="dock-icon-wrap">'+_startSVG+'</div><span class="dock-label">Start</span></div><div class="dock-sep"></div><div class="dock-item" onclick="toggleAppDrawer()"><div class="dock-icon-wrap">'+_gridSVG+'</div><span class="dock-label">All Apps</span></div><div class="dock-sep"></div>';
+  var pHTML='';
+  for(var id in APPS){if(APPS[id].pinned){dHTML+='<div class="dock-item" data-id="'+id+'" onmousedown="DragSystem.start(event,this,\'dock\',\''+id+'\')" onclick="toggleApp(\''+id+'\')" oncontextmenu="openDockCtx(event,\''+id+'\')"><div class="dock-icon-wrap"><img src="'+APPS[id].icon+'"></div><span class="dock-label">'+APPS[id].title+'</span></div>';pHTML+='<div class="pinned-item" onclick="toggleApp(\''+id+'\')"><img src="'+APPS[id].icon+'"><span>'+APPS[id].title+'</span></div>';}}
+  dock.innerHTML=dHTML;document.getElementById('pinned-grid').innerHTML=pHTML;populateDrawer();
+}
+
+window.openCreditsModal=function(){
+  var m=document.getElementById('credits-modal');if(!m)return;
+  m.style.display='flex';
+  requestAnimationFrame(function(){requestAnimationFrame(function(){m.classList.add('open');});});
+  var sm=document.getElementById('start-menu');
+  if(sm){sm.classList.remove('open');setTimeout(function(){sm.style.display='none';},300);}
+};
+window.closeCreditsModal=function(){
+  var m=document.getElementById('credits-modal');if(!m)return;
+  m.classList.remove('open');setTimeout(function(){m.style.display='none';},220);
+};
 function openDockCtx(e,id){e.preventDefault();e.stopPropagation();hideAllCtx();activeCtxId=id;var m=document.getElementById('dock-ctx-menu');if(m){m.style.display='block';m.style.left=e.pageX+'px';m.style.top=e.pageY+'px';}}
 function openDrawerCtx(e,id){e.preventDefault();e.stopPropagation();hideAllCtx();activeCtxId=id;var m=document.getElementById('drawer-ctx-menu');if(m){m.style.display='block';m.style.left=e.pageX+'px';m.style.top=e.pageY+'px';}}
 document.getElementById('ctx-pin-app').onclick=function(){if(activeCtxId&&APPS[activeCtxId]){APPS[activeCtxId].pinned=true;syncPins();renderUI();}hideAllCtx();};
@@ -1538,8 +1558,11 @@ window.onbeforeunload=function(e){if(sysConfig.redirectConfirm){var msg="Are you
     }
 
     function draw(){
-        if(sysConfig.optBg){setTimeout(function(){requestAnimationFrame(draw);},500);return;}
-        requestAnimationFrame(draw);
+        if(sysConfig.optBg){
+            setTimeout(function(){requestAnimationFrame(draw);},500);
+        } else {
+            requestAnimationFrame(draw);
+        }
         if(canvas.style.display==='none')return;
 
         // Space background

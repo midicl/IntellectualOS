@@ -184,7 +184,10 @@
         <span class="user-email" id="profile-email"></span>
       </div>
     </div>
-    <i class="fas fa-power-off power-btn" role="button" tabindex="0" onclick="location.reload()" aria-label="Restart OS"></i>
+    <div class="start-footer-actions">
+      <button class="footer-btn" onclick="window.openCreditsModal()" title="About"><i class="fas fa-info"></i></button>
+      <button class="footer-btn" onclick="location.reload()" title="Restart"><i class="fas fa-power-off"></i></button>
+    </div>
   </footer>
 </aside>
 
@@ -412,6 +415,27 @@
     </div>
   </div>
 </template>
+
+<!-- ── CREDITS MODAL ─────────────────────────────────────────────────────── -->
+<div id="credits-modal" onclick="if(event.target===this)window.closeCreditsModal()">
+  <div class="credits-card">
+    <button class="credits-close-btn" onclick="window.closeCreditsModal()" aria-label="Close"><i class="fas fa-times"></i></button>
+    <div class="credits-icon"><i class="fas fa-microchip"></i></div>
+    <div class="credits-name-os">Intellectual OS</div>
+    <div class="credits-ver">Version 2.0 &nbsp;·&nbsp; Intellectual Softwares</div>
+    <div class="credits-sep"></div>
+    <div class="credits-entry">
+      <div class="credits-role-label">Owner &amp; Director</div>
+      <div class="credits-handle">MID</div>
+    </div>
+    <div class="credits-entry">
+      <div class="credits-role-label">Developer &amp; Engineer</div>
+      <div class="credits-handle">Shxdow</div>
+    </div>
+    <div class="credits-sep"></div>
+    <div class="credits-tagline">Built with passion for the community.</div>
+  </div>
+</div>
 
 <script src="script.js"></script>
 
