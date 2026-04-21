@@ -149,7 +149,9 @@ function applyCloak(){var k=sysConfig.cloak||'none',sel=cloaks[k],icons=document
 
 var isDesktopActive=false,bootActive=true,enterCount=0,highestZ=500,activeWindowId=null,isMediaPlaying=false,activeCtxId=null;
 var isMobile=/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-if(isMobile){var mw=document.getElementById('mobile-warning');if(mw&&mw.showModal)mw.showModal();else if(mw)mw.style.display='flex';var lastTap=0;document.addEventListener('touchstart',function(e){var t=new Date().getTime(),tl=t-lastTap;if(tl<500&&tl>0){if(mw&&mw.close)mw.close();else if(mw)mw.style.display='none';}lastTap=t;});}
+// Mobile / ChromeOS access enabled — warning suppressed. Hide the modal if the
+// HTML left it visible. Add a `mobile` body class so CSS can adapt where needed.
+(function(){var mw=document.getElementById('mobile-warning');if(mw){if(mw.close)try{mw.close();}catch(e){}mw.style.display='none';}if(isMobile)document.body.classList.add('mobile');})();
 
 document.addEventListener("DOMContentLoaded",function(){
     var _bi=document.getElementById('bg-img');if(_bi)_bi.style.display='none';
@@ -1413,7 +1415,7 @@ body{background:radial-gradient(ellipse at 50% 55%,#1a0a3a 0%,#08080f 45%,#000 7
 </div>
 <iframe id="dc-frame" allow="autoplay;fullscreen;clipboard-write;camera;microphone"></iframe>
 <script>
-document.getElementById('pr-in').value=localStorage.getItem('intel_proxy_url')||window.parent.location.origin;
+(function(){var fb='';try{fb=window.parent.location.origin;}catch(e){}document.getElementById('pr-in').value=localStorage.getItem('intel_proxy_url')||fb||'';})();
 function loadApp(){
   var p=document.getElementById('pr-in').value.trim();
   var f=document.getElementById('dc-frame');
@@ -2721,7 +2723,9 @@ function applyCloak(){var k=sysConfig.cloak||'none',sel=cloaks[k],icons=document
 
 var isDesktopActive=false,bootActive=true,enterCount=0,highestZ=500,activeWindowId=null,isMediaPlaying=false,activeCtxId=null;
 var isMobile=/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-if(isMobile){var mw=document.getElementById('mobile-warning');if(mw&&mw.showModal)mw.showModal();else if(mw)mw.style.display='flex';var lastTap=0;document.addEventListener('touchstart',function(e){var t=new Date().getTime(),tl=t-lastTap;if(tl<500&&tl>0){if(mw&&mw.close)mw.close();else if(mw)mw.style.display='none';}lastTap=t;});}
+// Mobile / ChromeOS access enabled — warning suppressed. Hide the modal if the
+// HTML left it visible. Add a `mobile` body class so CSS can adapt where needed.
+(function(){var mw=document.getElementById('mobile-warning');if(mw){if(mw.close)try{mw.close();}catch(e){}mw.style.display='none';}if(isMobile)document.body.classList.add('mobile');})();
 
 document.addEventListener("DOMContentLoaded",function(){
     var _bi=document.getElementById('bg-img');if(_bi)_bi.style.display='none';
@@ -3965,7 +3969,7 @@ body{background:radial-gradient(ellipse at 50% 55%,#1a0a3a 0%,#08080f 45%,#000 7
 </div>
 <iframe id="dc-frame" allow="autoplay;fullscreen;clipboard-write;camera;microphone"></iframe>
 <script>
-document.getElementById('pr-in').value=localStorage.getItem('intel_proxy_url')||window.parent.location.origin;
+(function(){var fb='';try{fb=window.parent.location.origin;}catch(e){}document.getElementById('pr-in').value=localStorage.getItem('intel_proxy_url')||fb||'';})();
 function loadApp(){
   var p=document.getElementById('pr-in').value.trim();
   var f=document.getElementById('dc-frame');
