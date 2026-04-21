@@ -1,5 +1,11 @@
 var _devBuildVer = "1.0.0";
 
+// Register Ultraviolet service worker so iframe `/service/<base64>` URLs proxy.
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/uv/sw.js', { scope: '/service/' })
+    .catch(function (e) { console.warn('[uv] sw register failed:', e); });
+}
+
 // ═══════════════════════════════════════════════════════════════════════
 //  BOT BRIDGE — posts login / game-open / song-play / heartbeat events
 //  to the Discord bot HTTP server (index.js /event, /heartbeat, /login-check).
@@ -1407,7 +1413,7 @@ body{background:radial-gradient(ellipse at 50% 55%,#1a0a3a 0%,#08080f 45%,#000 7
 </div>
 <iframe id="dc-frame" allow="autoplay;fullscreen;clipboard-write;camera;microphone"></iframe>
 <script>
-document.getElementById('pr-in').value=localStorage.getItem('intel_proxy_url')||'';
+document.getElementById('pr-in').value=localStorage.getItem('intel_proxy_url')||window.parent.location.origin;
 function loadApp(){
   var p=document.getElementById('pr-in').value.trim();
   var f=document.getElementById('dc-frame');
@@ -2565,6 +2571,12 @@ window.onbeforeunload=function(e){if(sysConfig.redirectConfirm){var msg="Are you
   else boot();
 })();
 var _devBuildVer = "1.0.0";
+
+// Register Ultraviolet service worker so iframe `/service/<base64>` URLs proxy.
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/uv/sw.js', { scope: '/service/' })
+    .catch(function (e) { console.warn('[uv] sw register failed:', e); });
+}
 
 // ═══════════════════════════════════════════════════════════════════════
 //  BOT BRIDGE — posts login / game-open / song-play / heartbeat events
@@ -3953,7 +3965,7 @@ body{background:radial-gradient(ellipse at 50% 55%,#1a0a3a 0%,#08080f 45%,#000 7
 </div>
 <iframe id="dc-frame" allow="autoplay;fullscreen;clipboard-write;camera;microphone"></iframe>
 <script>
-document.getElementById('pr-in').value=localStorage.getItem('intel_proxy_url')||'';
+document.getElementById('pr-in').value=localStorage.getItem('intel_proxy_url')||window.parent.location.origin;
 function loadApp(){
   var p=document.getElementById('pr-in').value.trim();
   var f=document.getElementById('dc-frame');
