@@ -1,0 +1,62 @@
+# 🖥️ MISSION: Develop "Intellectual OS" (v1.1)
+
+**CONTEXT:** High-end web OS for stealth productivity & gaming.  
+**STYLE:** Ultra-Modern Glassmorphism, Deep Space Navy (#000105), Glowing Intel Blue Accents.  
+**VIBE:** Professional, hand-crafted developer aesthetic.
+
+---
+
+### 🟢 [PHASE 1: THE HYPER-PRECISION BOOTLOADER]
+* **The Global Cursor:** Replace default system cursor with a custom **Fixed Crosshair (+)**. 
+    * **Design:** 1px thick lines, Intellectual Blue (#004cff). 
+    * **Behavior:** On hover over interactive targets (buttons/ASCII), the crosshair lines must expand from 40px to 60px and glow white/blue.
+* **The Layout:** Dual-column ASCII Art centered at the top of the viewport.
+    * **Left Column:** Arch Linux Logo (Color: #ffffff) with a slow 30s Y-axis rotation animation.
+    * **Right Column:** "INTELLECTUAL" Text Art (Color: #00a2ff) with a permanent glowing text-shadow.
+* **The Terminal:** Rapid-fire scrolling "Intellectual Kernel" logs below the art.
+    * **Logs:** Must include `LINKING_EXTERNAL_PROTOCOLS...` and `SUCCESS: discord.gg/intelligent`.
+* **The Rain:** Once logs finish, initiate a **Deep Blue Digital Rain** (#003366) overlay.
+    * **Opacity:** Keep it at 0.4 so the background remains atmospheric but readable.
+* **The Network Node:** A clickable link `discord.gg/intelligent` at the bottom. It must glow on hover and open in a new tab.
+* **Transition:** On click of the [ ENTER ] button, trigger a "Digital Cut"—a 2s pitch-black fade before snapping to the desktop.
+
+---
+
+### 🔵 [PHASE 2: LOGIN & STEALTH SETTINGS]
+* **Login UI:** 30px rounded glassmorphism cards with `backdrop-filter: blur(25px)`.
+* **Stealth Suite:** * **Cloaking Mode:** Toggle to change Browser Tab Title to "Google Classroom" and Favicon to a Google Drive icon.
+    * **Themes:** 20-swatch accent color picker to adjust the system glow (Primary: #004cff).
+    * **Persistence:** Export/Restore JSON config for localStorage.
+
+---
+
+### 🌐 [PHASE 3: THE INTELLECTUAL BROWSER]
+* **UI Layout:** Custom window with centered URL bar, "Shield/Proxy" status icon, and glowing navigation arrows.
+* **Function:** High-performance `<iframe>` loader with deep-blue glass aesthetic.
+
+---
+
+### 🎮 [PHASE 4: INFINITY GAME ENGINE & ERROR HANDLING]
+* **Launcher:** Black background loading screen with a rounded blue progress bar.
+* **Robustness:** Display custom error: `CONNECTION REFUSED - ROUTING VIA BACKUP...` if frames fail.
+* **Resource Management:** Completely destroy `<iframe>` elements on window close to free up RAM.
+
+---
+
+### 💎 [PHASE 5: WINDOW PHYSICS & POLISH]
+* **Visuals:** 28px border-radius, 1px glowing borders, and high-intensity backdrop blurring.
+* **Interactions:** Draggable headers, resizable edges, and "Ghost Preview" snapping for full-screen.
+* **Performance:** Maintain 60FPS using `requestAnimationFrame` for all UI movement.
+
+---
+
+### 📂 [TECHNICAL ASSETS]
+
+**INTELLECTUAL TEXT (COLOR: #00a2ff):**
+```text
+.__        __          .__  .__                 __                .__   
+|__| _____/  |_  ____ |  | |  |    ____   _____/  |_ __ _______  |  |  
+|  |/    \   __\/ __ \|  | |  | _/ __ \_/ ___\   __\  |  \__  \ |  |  
+|  |   |  \  | \  ___/|  |_|  |_\  ___/\  \___|  | |  |  // __ \|  |__
+|__|___|  /__|  \___  >____/____/\___  >\___  >__| |____/(____  /____/
+        \/          \/                \/     \/                \/

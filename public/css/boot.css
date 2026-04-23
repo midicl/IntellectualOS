@@ -1,0 +1,185 @@
+/* Phase 1 — Hyper-precision bootloader */
+
+#boot {
+    position: fixed; inset: 0;
+    background: var(--bg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 60px 40px 40px;
+    z-index: 50;
+    overflow: hidden;
+}
+
+#boot.fade-out { animation: bootFade 0.8s ease forwards; }
+@keyframes bootFade { to { opacity: 0; filter: brightness(0); } }
+
+#rainCanvas {
+    position: fixed; inset: 0;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 2s ease;
+    z-index: 1;
+}
+#rainCanvas.on { opacity: 0.4; }
+
+.brand-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 80px;
+    padding: 40px 80px;
+    border: 1px solid var(--border);
+    background: rgba(0, 5, 15, 0.5);
+    backdrop-filter: blur(14px);
+    border-radius: 2px;
+    margin-bottom: 40px;
+    opacity: 0;
+    transform: translateY(-12px);
+    transition: opacity 1.2s var(--bezier), transform 1.2s var(--bezier);
+    z-index: 5;
+}
+#boot.ready .brand-container { opacity: 1; transform: translateY(0); }
+
+.arch-logo {
+    white-space: pre;
+    font-family: var(--font-mono);
+    font-size: 8px;
+    line-height: 1;
+    color: var(--arch-white);
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.35));
+    animation: slowSpin 30s linear infinite;
+    transform-style: preserve-3d;
+}
+@keyframes slowSpin {
+    from { transform: rotateY(0deg); }
+    to   { transform: rotateY(360deg); }
+}
+
+.intel-ascii {
+    white-space: pre;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    line-height: 1.05;
+    color: var(--intel-blue);
+    text-shadow:
+        0 0 8px rgba(0, 162, 255, 0.8),
+        0 0 22px rgba(0, 162, 255, 0.5),
+        0 0 48px rgba(0, 76, 255, 0.3);
+}
+
+.terminal {
+    width: min(820px, 92vw);
+    max-height: 300px;
+    overflow: hidden;
+    background: rgba(0, 2, 8, 0.88);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 18px 22px;
+    opacity: 0;
+    transition: opacity 0.6s ease;
+    font-family: var(--font-mono);
+    z-index: 5;
+    box-shadow: inset 0 0 40px rgba(0, 76, 255, 0.08);
+}
+#boot.ready .terminal { opacity: 1; }
+
+.terminal .line {
+    display: flex;
+    gap: 10px;
+    font-size: 12px;
+    line-height: 1.7;
+    color: #cbd5e1;
+    animation: logIn 0.25s ease;
+}
+.terminal .prompt { color: var(--intel-blue); flex-shrink: 0; }
+.terminal .line.ok .text::after { content: ' ✓'; color: #22c55e; }
+.terminal .line.warn { color: #fbbf24; }
+.terminal .line.success { color: #86efac; }
+
+@keyframes logIn {
+    from { opacity: 0; transform: translateX(-6px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+.network-footer {
+    margin-top: 28px;
+    opacity: 0;
+    transition: opacity 0.8s ease;
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+}
+#boot.done .network-footer { opacity: 1; }
+
+.discord-link {
+    font-family: var(--font-mono);
+    color: var(--intel-blue);
+    font-size: 14px;
+    letter-spacing: 2px;
+    padding: 8px 16px;
+    transition: 0.3s var(--bezier);
+    position: relative;
+}
+.discord-link::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 4px;
+    background: radial-gradient(circle, rgba(0, 162, 255, 0.2) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+.discord-link:hover {
+    color: #fff;
+    text-shadow: 0 0 24px var(--intel-blue);
+    letter-spacing: 4px;
+}
+.discord-link:hover::before { opacity: 1; }
+
+#enter-btn {
+    font-family: var(--font-mono);
+    background: transparent;
+    border: 1px solid var(--accent);
+    color: #fff;
+    padding: 14px 56px;
+    letter-spacing: 14px;
+    text-transform: uppercase;
+    font-size: 13px;
+    transition: 0.4s var(--bezier);
+    position: relative;
+    overflow: hidden;
+}
+#enter-btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(0, 162, 255, 0.4), transparent);
+    transform: translateX(-100%);
+    transition: transform 0.7s ease;
+}
+#enter-btn:hover {
+    background: var(--accent);
+    box-shadow: 0 0 60px var(--accent), inset 0 0 20px rgba(255,255,255,0.2);
+    letter-spacing: 18px;
+}
+#enter-btn:hover::after { transform: translateX(100%); }
+
+/* scanline overlay for atmosphere */
+#boot::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+        0deg,
+        transparent 0,
+        transparent 2px,
+        rgba(0, 76, 255, 0.02) 3px,
+        transparent 4px
+    );
+    pointer-events: none;
+    z-index: 3;
+}

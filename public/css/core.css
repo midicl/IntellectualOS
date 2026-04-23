@@ -1,0 +1,125 @@
+/* Intellectual OS — core tokens, cursor, base reset */
+
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;700&family=Space+Grotesk:wght@400;500;700&display=swap');
+
+:root {
+    --bg: #000105;
+    --bg-2: #02060f;
+    --bg-3: #050a18;
+    --accent: #004cff;
+    --accent-soft: rgba(0, 76, 255, 0.35);
+    --accent-faint: rgba(0, 76, 255, 0.12);
+    --intel-blue: #00a2ff;
+    --arch-white: #ffffff;
+    --text: #cbd5e1;
+    --text-dim: #64748b;
+    --border: rgba(0, 76, 255, 0.2);
+    --border-strong: rgba(0, 162, 255, 0.4);
+    --font-mono: 'Fira Code', monospace;
+    --font-sans: 'Space Grotesk', sans-serif;
+    --bezier: cubic-bezier(0.16, 1, 0.3, 1);
+    --radius: 28px;
+    --radius-sm: 16px;
+    --radius-pill: 999px;
+    --glow: 0 0 24px var(--accent-soft);
+    --glow-strong: 0 0 40px rgba(0, 76, 255, 0.55);
+}
+
+*, *::before, *::after {
+    box-sizing: border-box;
+    cursor: none !important;
+}
+
+html, body {
+    margin: 0; padding: 0;
+    width: 100%; height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-sans);
+    overflow: hidden;
+    user-select: none;
+    -webkit-font-smoothing: antialiased;
+}
+
+button, input, textarea, select {
+    font: inherit;
+    color: inherit;
+    background: transparent;
+    border: none;
+    outline: none;
+}
+
+a { color: var(--intel-blue); text-decoration: none; }
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--accent-soft); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+/* ── Global crosshair cursor ─────────────────────────────────── */
+#cross-cursor {
+    position: fixed;
+    top: 0; left: 0;
+    width: 40px; height: 40px;
+    pointer-events: none;
+    z-index: 99999;
+    transform: translate(-50%, -50%);
+    transition: width 0.25s var(--bezier), height 0.25s var(--bezier);
+    will-change: transform;
+}
+#cross-cursor .v-line,
+#cross-cursor .h-line {
+    position: absolute;
+    background: var(--accent);
+    transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+#cross-cursor .v-line {
+    width: 1px; height: 100%;
+    left: 50%; transform: translateX(-50%);
+}
+#cross-cursor .h-line {
+    width: 100%; height: 1px;
+    top: 50%; transform: translateY(-50%);
+}
+body.cursor-hover #cross-cursor {
+    width: 60px; height: 60px;
+}
+body.cursor-hover #cross-cursor .v-line,
+body.cursor-hover #cross-cursor .h-line {
+    background: #ffffff;
+    box-shadow: 0 0 18px var(--intel-blue);
+}
+body.cursor-click #cross-cursor {
+    width: 30px; height: 30px;
+}
+
+/* ── Utility ──────────────────────────────────────────────────── */
+.hidden { display: none !important; }
+.fade-enter { opacity: 0; transition: opacity 0.6s ease; }
+.fade-enter.in { opacity: 1; }
+
+.glass {
+    background: rgba(0, 5, 15, 0.45);
+    backdrop-filter: blur(25px) saturate(140%);
+    -webkit-backdrop-filter: blur(25px) saturate(140%);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+
+.glow-text {
+    text-shadow: 0 0 18px var(--accent-soft);
+}
+
+/* ── Blackout transition ─────────────────────────────────────── */
+#blackout {
+    position: fixed; inset: 0;
+    background: #000;
+    z-index: 100000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 2s ease;
+}
+#blackout.on {
+    opacity: 1;
+    pointer-events: auto;
+}
