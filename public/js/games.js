@@ -49,48 +49,101 @@ export const GAMES = [
     { name: 'Yume Nikki',              slug: 'yume-nikki',             tag: 'RPG' },
 ];
 
-function glyphFor(name) {
-    const map = { HORROR: '▲', ACTION: '▣', RPG: '◆', ARCADE: '●', RACING: '▷', SANDBOX: '⚙', RAGE: '☠', SURVIVE: '△', CASUAL: '○', STORY: '❋', PACK: '◉' };
-    return map[name] || '◇';
-}
+const CATEGORIES = {
+    HORROR:  { color: '#ef4444', glyph: '▲' },
+    ACTION:  { color: '#f97316', glyph: '▣' },
+    RPG:     { color: '#a855f7', glyph: '◆' },
+    ARCADE:  { color: '#22c55e', glyph: '●' },
+    RACING:  { color: '#0ea5e9', glyph: '▷' },
+    SANDBOX: { color: '#eab308', glyph: '⚙' },
+    RAGE:    { color: '#dc2626', glyph: '☠' },
+    SURVIVE: { color: '#14b8a6', glyph: '△' },
+    CASUAL:  { color: '#ec4899', glyph: '○' },
+    STORY:   { color: '#6366f1', glyph: '❋' },
+    PACK:    { color: '#94a3b8', glyph: '◉' },
+};
 
 export function buildGamesPanel() {
     const root = document.createElement('div');
     root.className = 'app-games';
+
+    // Distinct categories sorted by frequency for natural ordering
+    const catCounts = {};
+    GAMES.forEach((g) => { catCounts[g.tag] = (catCounts[g.tag] || 0) + 1; });
+    const cats = Object.keys(catCounts).sort((a, b) => catCounts[b] - catCounts[a]);
+
     root.innerHTML = `
         <div class="games-header">
-            <h2>Infinity · ${GAMES.length} titles</h2>
-            <input class="games-search hover-target" placeholder="Search library…" />
+            <div class="row">
+                <h2>Infinity</h2>
+                <input class="games-search hover-target" placeholder="Search library…" />
+            </div>
+            <div class="row" style="gap:12px">
+                <div class="games-chips" id="chips"></div>
+                <span class="counter" id="counter">${GAMES.length} TITLES</span>
+            </div>
         </div>
         <div class="games-grid" id="games-grid"></div>
     `;
 
     const grid = root.querySelector('#games-grid');
     const search = root.querySelector('.games-search');
+    const chipsEl = root.querySelector('#chips');
+    const counter = root.querySelector('#counter');
 
-    function render(filter = '') {
-        const q = filter.trim().toLowerCase();
+    // Build chips
+    let activeCat = 'ALL';
+    const chipNames = ['ALL', ...cats];
+    chipNames.forEach((cat) => {
+        const chip = document.createElement('button');
+        chip.className = 'games-chip hover-target' + (cat === 'ALL' ? ' on' : '');
+        chip.dataset.cat = cat;
+        const count = cat === 'ALL' ? GAMES.length : catCounts[cat];
+        chip.innerHTML = `${cat}<span class="count">${count}</span>`;
+        if (cat !== 'ALL') chip.style.setProperty('--cat-color', CATEGORIES[cat]?.color || 'var(--accent)');
+        chip.addEventListener('click', () => {
+            chipsEl.querySelectorAll('.games-chip').forEach((c) => c.classList.remove('on'));
+            chip.classList.add('on');
+            activeCat = cat;
+            render();
+        });
+        chipsEl.appendChild(chip);
+    });
+
+    function render() {
+        const q = search.value.trim().toLowerCase();
         grid.innerHTML = '';
-        const filtered = q
-            ? GAMES.filter((g) => g.name.toLowerCase().includes(q) || g.tag.toLowerCase().includes(q))
-            : GAMES;
+        const filtered = GAMES.filter((g) => {
+            if (activeCat !== 'ALL' && g.tag !== activeCat) return false;
+            if (!q) return true;
+            return g.name.toLowerCase().includes(q) || g.tag.toLowerCase().includes(q);
+        });
+        counter.textContent = `${filtered.length} / ${GAMES.length}`;
+
+        if (!filtered.length) {
+            grid.innerHTML = `<div class="games-empty">NO TITLES FOUND</div>`;
+            return;
+        }
+
         filtered.forEach((g) => {
+            const cat = CATEGORIES[g.tag] || { color: 'var(--accent)', glyph: '◇' };
             const tile = document.createElement('button');
             tile.className = 'game-tile hover-target';
+            tile.style.setProperty('--cat-color', cat.color);
             tile.innerHTML = `
-                <span class="glyph">${glyphFor(g.tag)} ${g.tag}</span>
+                <div class="tile-top">
+                    <span class="tag">${g.tag}</span>
+                    <span class="glyph">${cat.glyph}</span>
+                </div>
                 <div class="name">${g.name}</div>
-                <div class="tag">LAUNCH →</div>
+                <div class="play">LAUNCH</div>
             `;
             tile.addEventListener('click', () => launchGame(g));
             grid.appendChild(tile);
         });
-        if (!filtered.length) {
-            grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;color:var(--text-dim);font-family:var(--font-mono);padding:40px">No titles match "${filter}"</div>`;
-        }
     }
     render();
-    search.addEventListener('input', () => render(search.value));
+    search.addEventListener('input', render);
 
     return root;
 }

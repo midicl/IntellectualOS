@@ -3,7 +3,7 @@
 import './cursor.js';
 import { startBoot, onEnter, bootFadeOut, bootFadeIn } from './boot.js';
 import { loadConfig, saveConfig, getConfig, buildSettingsPanel } from './settings.js';
-import { createWindow } from './windows.js';
+import { createWindow, listWindows } from './windows.js';
 import { buildGamesPanel } from './games.js';
 import { openBrowser } from './browser.js';
 import { loginCheck, setEmail, startHeartbeat, sendEvent, fetchOnlineCount } from './app-bus.js';
@@ -83,7 +83,7 @@ function enterDesktop() {
     document.getElementById('desktop').classList.add('on');
 }
 
-// Dock wiring
+// Dock wiring — click opens app; active dot reflects any open windows of that app
 document.querySelectorAll('#dock .dock-btn').forEach((btn) => {
     btn.addEventListener('click', () => {
         const app = btn.dataset.app;
@@ -95,12 +95,28 @@ document.querySelectorAll('#dock .dock-btn').forEach((btn) => {
 
 function openGames() {
     const panel = buildGamesPanel();
-    createWindow({ id: 'games', title: 'INFINITY', icon: '◈', width: 960, height: 640, content: panel });
+    createWindow({ id: 'games', title: 'INFINITY', icon: '◈', width: 1040, height: 680, content: panel });
+    updateDockActive();
 }
 function openSettings() {
     const panel = buildSettingsPanel();
-    createWindow({ id: 'settings', title: 'SETTINGS', icon: '⚙', width: 720, height: 520, content: panel });
+    createWindow({ id: 'settings', title: 'SETTINGS', icon: '⚙', width: 760, height: 560, content: panel });
+    updateDockActive();
 }
+
+// Refresh dock active-state every 500ms (cheap; checks if app windows exist)
+function updateDockActive() {
+    const ids = new Set(listWindows().map((w) => w.id));
+    document.querySelectorAll('#dock .dock-btn').forEach((btn) => {
+        const app = btn.dataset.app;
+        const has =
+            (app === 'games'    && ids.has('games')) ||
+            (app === 'settings' && ids.has('settings')) ||
+            (app === 'browser'  && [...ids].some((id) => id.startsWith('browser-')));
+        btn.classList.toggle('active', has);
+    });
+}
+setInterval(updateDockActive, 500);
 
 // ── Keyboard shortcuts ─────────────────────────────────────────
 document.addEventListener('keydown', (e) => {
