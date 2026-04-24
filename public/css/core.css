@@ -1,6 +1,6 @@
 /* Intellectual OS — core tokens, cursor, base reset */
 
-@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;700&family=Space+Grotesk:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;700&family=Chakra+Petch:wght@400;500;600;700&display=swap');
 
 :root {
     --bg: #000105;
@@ -15,14 +15,19 @@
     --text-dim: #64748b;
     --border: rgba(0, 76, 255, 0.2);
     --border-strong: rgba(0, 162, 255, 0.4);
-    --font-mono: 'Fira Code', monospace;
-    --font-sans: 'Space Grotesk', sans-serif;
+    --font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, monospace;
+    --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+    --font-display: 'Chakra Petch', 'Inter', sans-serif;
     --bezier: cubic-bezier(0.16, 1, 0.3, 1);
     --radius: 28px;
     --radius-sm: 16px;
     --radius-pill: 999px;
     --glow: 0 0 24px var(--accent-soft);
     --glow-strong: 0 0 40px rgba(0, 76, 255, 0.55);
+    /* Layered shadow stacks (Chapter per your brief) */
+    --shadow-card: 0 2px 6px rgba(0,0,0,0.35), 0 16px 40px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.04);
+    --shadow-window: 0 4px 12px rgba(0,0,0,0.4), 0 30px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.03), inset 0 1px 0 rgba(255,255,255,0.05);
+    --shadow-dock: 0 10px 30px rgba(0,0,0,0.5), 0 30px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06);
 }
 
 *, *::before, *::after {
@@ -64,8 +69,9 @@ a { color: var(--intel-blue); text-decoration: none; }
     pointer-events: none;
     z-index: 99999;
     transform: translate(-50%, -50%);
-    transition: width 0.25s var(--bezier), height 0.25s var(--bezier);
+    transition: width 0.2s var(--bezier), height 0.2s var(--bezier), opacity 0.15s;
     will-change: transform;
+    contain: layout paint size;
 }
 #cross-cursor .v-line,
 #cross-cursor .h-line {

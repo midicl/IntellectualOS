@@ -49,12 +49,31 @@ export const WALLPAPERS = [
     { id: 'sunset',   name: 'Sunset',    preview: 'linear-gradient(180deg, #1a0a2e 0%, #4a1040 50%, #c73866 100%)' },
 ];
 
+// Console / terminal themes — affect boot screen + any .terminal-surface element.
+// Each theme defines CSS vars consumed by the terminal styles.
+export const CONSOLE_THEMES = {
+    intel:    { name: 'Intel',      fg: '#cbd5e1', accent: '#00a2ff', bg: 'rgba(0,2,8,0.92)',  prompt: '#00a2ff', ok: '#22c55e', warn: '#fbbf24', font: 'JetBrains Mono' },
+    matrix:   { name: 'Matrix',     fg: '#7ee787', accent: '#22c55e', bg: 'rgba(0,8,2,0.96)',  prompt: '#22c55e', ok: '#86efac', warn: '#fbbf24', font: 'JetBrains Mono' },
+    amber:    { name: 'Amber CRT',  fg: '#fbbf24', accent: '#f97316', bg: 'rgba(10,5,0,0.96)', prompt: '#f97316', ok: '#fde68a', warn: '#ef4444', font: 'JetBrains Mono' },
+    crimson:  { name: 'Crimson',    fg: '#fecaca', accent: '#ef4444', bg: 'rgba(8,0,0,0.95)',  prompt: '#ef4444', ok: '#fca5a5', warn: '#fbbf24', font: 'JetBrains Mono' },
+    vapor:    { name: 'Vaporwave',  fg: '#fce7f3', accent: '#ec4899', bg: 'rgba(8,0,12,0.95)', prompt: '#d946ef', ok: '#86efac', warn: '#fbbf24', font: 'Chakra Petch' },
+    mono:     { name: 'Mono',       fg: '#e2e8f0', accent: '#94a3b8', bg: 'rgba(12,12,14,0.96)', prompt: '#cbd5e1', ok: '#94a3b8', warn: '#d4d4d8', font: 'Fira Code' },
+    ibm:      { name: 'IBM 3270',   fg: '#7dd3fc', accent: '#38bdf8', bg: 'rgba(0,5,15,0.97)', prompt: '#38bdf8', ok: '#7dd3fc', warn: '#fbbf24', font: 'JetBrains Mono' },
+    paper:    { name: 'Paper',      fg: '#1e293b', accent: '#334155', bg: 'rgba(245,245,244,0.96)', prompt: '#1e293b', ok: '#15803d', warn: '#a16207', font: 'JetBrains Mono' },
+};
+export const CONSOLE_FONTS = [
+    'JetBrains Mono', 'Fira Code', 'Chakra Petch', 'Inter',
+];
+
 const DEFAULTS = {
     accent: '#004cff',
     cloak: 'off',
     email: '',
     wallpaper: 'aurora',
-    customWallpaper: null,   // data URL when wallpaper === 'custom'
+    customWallpaper: null,
+    consoleTheme: 'intel',
+    consoleFont: 'JetBrains Mono',
+    consoleScanlines: true,
 };
 
 let config = { ...DEFAULTS };
@@ -127,9 +146,23 @@ function applyWallpaper() {
     layer.style.background = w ? w.preview : '#000105';
 }
 
+function applyConsole() {
+    const t = CONSOLE_THEMES[config.consoleTheme] || CONSOLE_THEMES.intel;
+    const root = document.documentElement;
+    root.style.setProperty('--con-fg', t.fg);
+    root.style.setProperty('--con-accent', t.accent);
+    root.style.setProperty('--con-bg', t.bg);
+    root.style.setProperty('--con-prompt', t.prompt);
+    root.style.setProperty('--con-ok', t.ok);
+    root.style.setProperty('--con-warn', t.warn);
+    root.style.setProperty('--con-font', `'${config.consoleFont || t.font}', 'JetBrains Mono', monospace`);
+    document.body.classList.toggle('con-scanlines', !!config.consoleScanlines);
+}
+
 function applyConfig() {
     applyPalette(config.accent);
     applyWallpaper();
+    applyConsole();
 
     const cloak = CLOAKS[config.cloak] || CLOAKS.off;
     document.getElementById('page-title').textContent = cloak.title;
@@ -152,6 +185,7 @@ export function buildSettingsPanel() {
             <button class="tab on hover-target" data-tab="stealth">Stealth</button>
             <button class="tab hover-target" data-tab="appearance">Appearance</button>
             <button class="tab hover-target" data-tab="wallpaper">Wallpaper</button>
+            <button class="tab hover-target" data-tab="console">Console</button>
             <button class="tab hover-target" data-tab="persistence">Data</button>
             <button class="tab hover-target" data-tab="about">About</button>
         </nav>
@@ -204,6 +238,32 @@ export function buildSettingsPanel() {
                     <button class="btn-primary hover-target" id="wallpaper-upload">Choose Image</button>
                 </div>
                 <input type="file" id="wallpaper-file" accept="image/*" style="display:none" />
+            </div>
+
+            <div data-panel="console" hidden>
+                <h3>Console Theme</h3>
+                <p>Changes the boot terminal and any console-styled surface.</p>
+                <div class="console-themes" id="con-themes"></div>
+                <div class="row" style="margin-top:22px">
+                    <div>
+                        <div class="label">Font</div>
+                        <div class="desc">Monospaced for ASCII alignment, display for expressive branding.</div>
+                    </div>
+                    <select class="select-native hover-target" id="con-font"></select>
+                </div>
+                <div class="row">
+                    <div>
+                        <div class="label">CRT Scanlines</div>
+                        <div class="desc">Adds subtle horizontal scanline texture over terminal surfaces.</div>
+                    </div>
+                    <button class="toggle hover-target" id="con-scan"></button>
+                </div>
+                <div class="console-preview" id="con-preview">
+                    <div class="line"><span class="p">::</span> BOOT_LOADER v4.0.2 // INTELLECTUAL SYSTEMS</div>
+                    <div class="line ok"><span class="p">::</span> CPU: Intel(R) Core(TM) i9-16900K @ 6.20GHz</div>
+                    <div class="line warn"><span class="p">::</span> NOTICE: filter watchdog engaged</div>
+                    <div class="line ok"><span class="p">::</span> SYSTEM_STABLE.</div>
+                </div>
             </div>
 
             <div data-panel="persistence" hidden>
@@ -327,6 +387,45 @@ export function buildSettingsPanel() {
             });
         };
         r.readAsDataURL(f);
+    });
+
+    // Console theme
+    const conThemes = root.querySelector('#con-themes');
+    const conFont = root.querySelector('#con-font');
+    const conScan = root.querySelector('#con-scan');
+    Object.entries(CONSOLE_THEMES).forEach(([id, t]) => {
+        const tile = document.createElement('button');
+        tile.className = 'console-theme hover-target' + (config.consoleTheme === id ? ' on' : '');
+        tile.style.setProperty('--ct-bg', t.bg);
+        tile.style.setProperty('--ct-fg', t.fg);
+        tile.style.setProperty('--ct-accent', t.accent);
+        tile.innerHTML = `
+            <div class="ct-preview">
+                <span class="ct-p">::</span>
+                <span class="ct-text">${t.name}</span>
+            </div>
+            <div class="ct-label">${t.name}</div>
+        `;
+        tile.addEventListener('click', () => {
+            saveConfig({ consoleTheme: id, consoleFont: t.font });
+            conThemes.querySelectorAll('.console-theme').forEach((x) => x.classList.remove('on'));
+            tile.classList.add('on');
+            conFont.value = t.font;
+        });
+        conThemes.appendChild(tile);
+    });
+    CONSOLE_FONTS.forEach((f) => {
+        const opt = document.createElement('option');
+        opt.value = f; opt.textContent = f;
+        conFont.appendChild(opt);
+    });
+    conFont.value = config.consoleFont;
+    conFont.addEventListener('change', () => saveConfig({ consoleFont: conFont.value }));
+    if (config.consoleScanlines) conScan.classList.add('on');
+    conScan.addEventListener('click', () => {
+        const on = !conScan.classList.contains('on');
+        conScan.classList.toggle('on', on);
+        saveConfig({ consoleScanlines: on });
     });
 
     // Persistence

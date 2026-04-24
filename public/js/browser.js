@@ -2,30 +2,43 @@
 import { createWindow } from './windows.js';
 import { sendEvent } from './app-bus.js';
 
+// Iframe-friendly URLs (no X-Frame-Options blockers)
 const QUICK = [
-    { name: 'Google',    url: 'https://www.google.com/webhp?igu=1' },
-    { name: 'YouTube',   url: 'https://www.youtube.com/embed/' },
-    { name: 'Wikipedia', url: 'https://en.wikipedia.org/wiki/Main_Page' },
-    { name: 'Maps',      url: 'https://www.openstreetmap.org/' },
-    { name: 'Duck',      url: 'https://duckduckgo.com/' },
-    { name: 'Reddit',    url: 'https://old.reddit.com/' },
+    { name: 'Google',     url: 'https://www.google.com/webhp?igu=1',           icon: '◉' },
+    { name: 'Wikipedia',  url: 'https://en.wikipedia.org/wiki/Main_Page',      icon: '📖' },
+    { name: 'Maps',       url: 'https://www.openstreetmap.org/',               icon: '◇' },
+    { name: 'Archive',    url: 'https://archive.org/',                         icon: '▤' },
+    { name: 'Hacker News',url: 'https://news.ycombinator.com/',                icon: '▲' },
+    { name: 'MDN Docs',   url: 'https://developer.mozilla.org/en-US/',         icon: '◈' },
+    { name: 'Khan',       url: 'https://www.khanacademy.org/',                 icon: '⟐' },
+    { name: 'Quizlet',    url: 'https://quizlet.com/',                         icon: '❖' },
 ];
 
 function normalize(input) {
     let v = input.trim();
     if (!v) return '';
-    // search if no dot / no scheme
     if (!v.includes('://')) {
-        if (!/\.[a-z]{2,}/i.test(v)) {
-            return `https://duckduckgo.com/?q=${encodeURIComponent(v)}`;
+        // Treat space-containing or non-domain input as a search query
+        if (!/^[a-z0-9][a-z0-9-.]*\.[a-z]{2,}/i.test(v) || v.includes(' ')) {
+            return `https://duckduckgo.com/?q=${encodeURIComponent(v)}&kae=d&kp=-2`;
         }
         v = 'https://' + v;
     }
     return v;
 }
 
+// Refuse to load the site inside itself — that's what was causing the "takes you
+// to the loading screen" bug when the backend proxy fetched our own origin.
+function isSelfReferential(target) {
+    try {
+        const u = new URL(target);
+        if (u.host === window.location.host) return true;
+        if (['localhost', '127.0.0.1', '0.0.0.0'].includes(u.hostname)) return true;
+    } catch { return true; }
+    return false;
+}
+
 function proxyUrl(target) {
-    // Backend route (index.js /proxy) returns the upstream HTML through a Webshare exit.
     return `/proxy?url=${encodeURIComponent(target)}`;
 }
 
@@ -44,15 +57,18 @@ export function openBrowser(initialUrl = '') {
             <button class="nav reload hover-target" title="Reload">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 12a9 9 0 11-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>
             </button>
+            <button class="nav home hover-target" title="Home">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 10l9-7 9 7v11a2 2 0 01-2 2h-4v-7h-6v7H5a2 2 0 01-2-2V10z"/></svg>
+            </button>
 
             <div class="url-wrap">
                 <div class="shield direct" title="Direct">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l8 4v6c0 5-3.5 9.2-8 10-4.5-.8-8-5-8-10V6l8-4z"/></svg>
                 </div>
-                <input class="url hover-target" placeholder="Enter URL or search…" />
+                <input class="url hover-target" placeholder="Search DuckDuckGo or enter URL…" spellcheck="false" />
             </div>
 
-            <div class="mode-toggle" title="Toggle routing through Webshare proxy pool">
+            <div class="mode-toggle" title="Route through Webshare proxy pool">
                 <button class="mode-direct on hover-target">DIRECT</button>
                 <button class="mode-proxy hover-target">PROXY</button>
             </div>
@@ -67,23 +83,28 @@ export function openBrowser(initialUrl = '') {
     const backBtn = body.querySelector('.back');
     const fwdBtn = body.querySelector('.fwd');
     const reloadBtn = body.querySelector('.reload');
+    const homeBtn = body.querySelector('.home');
     const modeDirect = body.querySelector('.mode-direct');
     const modeProxy = body.querySelector('.mode-proxy');
 
     let iframe = null;
-    let mode = 'direct';        // 'direct' | 'proxy'
+    let mode = 'direct';
     let history = [];
     let histIdx = -1;
     let currentTitle = 'NEW TAB';
 
     function renderEmpty() {
-        if (iframe) { iframe.remove(); iframe = null; }
+        if (iframe) { try { iframe.src = 'about:blank'; } catch {} iframe.remove(); iframe = null; }
+        urlInput.value = '';
+        setStatus('direct');
         view.innerHTML = `
             <div class="browser-empty">
                 <h2>INTELLECTUAL · BROWSER</h2>
-                <div class="hint">TYPE A URL, OR PICK A SHORTCUT</div>
+                <div class="hint">Type a URL or pick a shortcut below</div>
                 <div class="quick">
-                    ${QUICK.map((q) => `<a href="#" data-url="${q.url}" class="hover-target">${q.name}</a>`).join('')}
+                    ${QUICK.map((q) =>
+                        `<a href="#" data-url="${q.url}" class="hover-target"><span class="qi">${q.icon}</span>${q.name}</a>`
+                    ).join('')}
                 </div>
             </div>
         `;
@@ -106,30 +127,35 @@ export function openBrowser(initialUrl = '') {
         const target = normalize(rawUrl);
         if (!target) return renderEmpty();
 
+        if (isSelfReferential(target)) {
+            showError(`Refusing to load ${target} — that's this site itself.`, { blockSelf: true });
+            return;
+        }
+
         urlInput.value = target;
         const src = mode === 'proxy' ? proxyUrl(target) : target;
 
-        // Destroy previous iframe (free RAM)
         if (iframe) { try { iframe.src = 'about:blank'; } catch {} iframe.remove(); iframe = null; }
         view.innerHTML = '';
 
         iframe = document.createElement('iframe');
-        iframe.src = src;
         iframe.referrerPolicy = 'no-referrer';
         iframe.setAttribute('allowfullscreen', '');
-        iframe.allow = 'autoplay; fullscreen; clipboard-read; clipboard-write';
-        iframe.sandbox = 'allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox allow-presentation';
+        iframe.allow = 'autoplay; fullscreen; clipboard-read; clipboard-write; camera; microphone; gamepad';
+        iframe.sandbox = 'allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox allow-presentation allow-downloads allow-modals';
+        iframe.style.cssText = 'width:100%;height:100%;border:0;background:#fff;display:block';
         view.appendChild(iframe);
+        iframe.src = src;
 
         setStatus(mode === 'proxy' ? 'proxied' : 'direct');
 
         const status = document.createElement('div');
         status.className = 'browser-status on';
-        status.textContent = `Loading ${target}`;
+        status.textContent = `Loading ${new URL(target).hostname}…`;
         view.appendChild(status);
 
         let loaded = false;
-        const failTimer = setTimeout(() => { if (!loaded) showError('Timeout — the site did not respond.'); }, 15_000);
+        const failTimer = setTimeout(() => { if (!loaded) showError('Timeout — the site did not respond in 15s.'); }, 15_000);
 
         iframe.addEventListener('load', () => {
             loaded = true;
@@ -137,7 +163,6 @@ export function openBrowser(initialUrl = '') {
             status.classList.remove('on');
             setTimeout(() => status.remove(), 300);
             try {
-                // Many sites block framing; this will throw. We fall back to the URL host.
                 const t = iframe.contentDocument?.title;
                 currentTitle = t || new URL(target).hostname;
             } catch {
@@ -145,8 +170,7 @@ export function openBrowser(initialUrl = '') {
             }
             win.setTitle(currentTitle.toUpperCase().slice(0, 40));
         });
-
-        iframe.addEventListener('error', () => showError('iframe error'));
+        iframe.addEventListener('error', () => showError('iframe failed to load.'));
 
         if (pushHistory) {
             history = history.slice(0, histIdx + 1);
@@ -157,18 +181,20 @@ export function openBrowser(initialUrl = '') {
         sendEvent('browse', target);
     }
 
-    function showError(detail) {
+    function showError(detail, { blockSelf = false } = {}) {
         if (iframe) { iframe.remove(); iframe = null; }
+        const nextMode = mode === 'direct' ? 'PROXY' : 'DIRECT';
         view.innerHTML = `
             <div class="browser-error">
-                <h2>CONNECTION REFUSED</h2>
-                <div class="detail">ROUTING VIA BACKUP…</div>
+                <h2>${blockSelf ? 'BLOCKED' : 'CONNECTION REFUSED'}</h2>
+                <div class="detail">${blockSelf ? 'Self-referential URL rejected.' : 'ROUTING VIA BACKUP…'}</div>
                 <div class="detail">${detail}</div>
-                <button class="hover-target">Retry via ${mode === 'direct' ? 'proxy' : 'direct'}</button>
+                ${blockSelf ? '' : `<button class="hover-target">Retry via ${nextMode}</button>`}
             </div>
         `;
         setStatus('error');
-        view.querySelector('button').addEventListener('click', () => {
+        const retry = view.querySelector('button');
+        if (retry) retry.addEventListener('click', () => {
             setMode(mode === 'direct' ? 'proxy' : 'direct');
             navigate(urlInput.value, { pushHistory: false });
         });
@@ -185,13 +211,17 @@ export function openBrowser(initialUrl = '') {
         modeProxy.classList.toggle('on', m === 'proxy');
     }
 
-    // Events
     urlInput.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') navigate(urlInput.value);
     });
+    urlInput.addEventListener('focus', () => urlInput.select());
     backBtn.addEventListener('click', () => { if (histIdx > 0) { histIdx--; navigate(history[histIdx], { pushHistory: false }); } });
     fwdBtn.addEventListener('click', () => { if (histIdx < history.length - 1) { histIdx++; navigate(history[histIdx], { pushHistory: false }); } });
-    reloadBtn.addEventListener('click', () => { if (iframe) iframe.src = iframe.src; else if (urlInput.value) navigate(urlInput.value, { pushHistory: false }); });
+    reloadBtn.addEventListener('click', () => {
+        if (iframe && iframe.src) { const s = iframe.src; iframe.src = 'about:blank'; requestAnimationFrame(() => { iframe.src = s; }); }
+        else if (urlInput.value) navigate(urlInput.value, { pushHistory: false });
+    });
+    homeBtn.addEventListener('click', renderEmpty);
     modeDirect.addEventListener('click', () => setMode('direct'));
     modeProxy.addEventListener('click', () => setMode('proxy'));
 

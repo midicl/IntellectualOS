@@ -1,0 +1,16 @@
+{
+  "name": "intellectual-os",
+  "version": "1.1.0",
+  "description": "Intellectual OS — web shell with integrated Discord bot + Webshare proxy pool.",
+  "main": "index.js",
+  "engines": {
+    "node": ">=18.17"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "deploy-commands": "node deploy-commands.js"
+  },
+  "dependencies": {
+    "discord.js": "^14.16.3"
+  }
+}

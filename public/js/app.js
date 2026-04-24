@@ -93,10 +93,19 @@ document.querySelectorAll('#dock .dock-btn').forEach((btn) => {
     });
 });
 
-function openGames() {
-    const panel = buildGamesPanel();
-    createWindow({ id: 'games', title: 'INFINITY', icon: '◈', width: 1040, height: 680, content: panel });
+async function openGames() {
+    // Open the window immediately with a placeholder so the user gets feedback,
+    // then swap in the real panel once the manifest lands.
+    const placeholder = document.createElement('div');
+    placeholder.className = 'app-games';
+    placeholder.innerHTML = `<div class="games-empty" style="margin:auto">FETCHING MANIFEST…</div>`;
+    const win = createWindow({ id: 'games', title: 'INFINITY', icon: '◈', width: 1100, height: 720, content: placeholder });
     updateDockActive();
+    const panel = await buildGamesPanel();
+    placeholder.replaceWith(panel);
+    // Ensure the new panel is inside the existing win-body
+    win.body.innerHTML = '';
+    win.body.appendChild(panel);
 }
 function openSettings() {
     const panel = buildSettingsPanel();
