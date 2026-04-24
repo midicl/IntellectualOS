@@ -12,7 +12,27 @@ const dns = require("dns");
 const dnsp = dns.promises;
 const { URL } = require("url");
 
-const { token, guildId: LOCKED_GUILD, logChannelId: LOG_CHANNEL } = require("./config.json");
+// ─── config (optional) ────────────────────────────────────────
+// On Render (web-only deployment), there's no config.json — the Discord bot
+// runs elsewhere. Fall back to env vars; if none present, we boot web-only.
+let token = null, LOCKED_GUILD = null, LOG_CHANNEL = null;
+try {
+  const cfg = require("./config.json");
+  token = cfg.token;
+  LOCKED_GUILD = cfg.guildId;
+  LOG_CHANNEL = cfg.logChannelId;
+} catch (_) {
+  // No config.json — that's fine on Render
+}
+token       = token       || process.env.DISCORD_TOKEN || null;
+LOCKED_GUILD = LOCKED_GUILD || process.env.GUILD_ID || null;
+LOG_CHANNEL = LOG_CHANNEL || process.env.LOG_CHANNEL_ID || null;
+
+// Optional Discord webhook — if the site runs on Render with no bot token but
+// a webhook URL, /event posts reach Discord via the webhook instead of the bot.
+const DISCORD_WEBHOOK = process.env.DISCORD_WEBHOOK || null;
+
+const BOT_ENABLED = Boolean(token);
 
 const DATA_PATH = path.join(__dirname, "data.json");
 const SITE_PORT = Number(process.env.PORT || process.env.SITE_PORT || 3000);
@@ -104,8 +124,26 @@ function getLogChannel(guildId) {
 }
 
 async function sendSiteLog(embed) {
-  const ch = getLogChannel(LOCKED_GUILD);
-  if (ch) { try { await ch.send({ embeds: [embed] }); } catch (e) { console.warn(`[log] ${e.message}`); } }
+  // Prefer bot → channel if the bot is running in-process
+  if (BOT_ENABLED) {
+    const ch = getLogChannel(LOCKED_GUILD);
+    if (ch) { try { await ch.send({ embeds: [embed] }); return; } catch (e) { console.warn(`[log] ${e.message}`); } }
+  }
+  // Otherwise, post through a Discord webhook (no bot needed)
+  if (DISCORD_WEBHOOK) {
+    try {
+      const body = JSON.stringify({ embeds: [embed.toJSON ? embed.toJSON() : embed] });
+      const u = new URL(DISCORD_WEBHOOK);
+      const req = https.request({
+        method: "POST", hostname: u.hostname, path: u.pathname + u.search,
+        headers: { "content-type": "application/json", "content-length": Buffer.byteLength(body) },
+        timeout: 8000,
+      });
+      req.on("error", (e) => console.warn(`[webhook] ${e.message}`));
+      req.on("timeout", () => req.destroy());
+      req.end(body);
+    } catch (e) { console.warn(`[webhook] ${e.message}`); }
+  }
 }
 
 // ─── URL filter detection ─────────────────────────────────────
@@ -937,4 +975,8 @@ client.once("ready", () => {
   setInterval(() => pollGithub().catch(() => {}), GITHUB_POLL_MS);
 });
 
-client.login(token);
+if (BOT_ENABLED) {
+  client.login(token).catch((e) => console.warn(`[discord] login failed: ${e.message} — falling back to web-only`));
+} else {
+  console.log(`[discord] no token present → running in web-only mode${DISCORD_WEBHOOK ? " (webhook forwarding enabled)" : ""}`);
+}
