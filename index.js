@@ -15,18 +15,22 @@ const { URL } = require("url");
 // ─── config (optional) ────────────────────────────────────────
 // On Render (web-only deployment), there's no config.json — the Discord bot
 // runs elsewhere. Fall back to env vars; if none present, we boot web-only.
-let token = null, LOCKED_GUILD = null, LOG_CHANNEL = null;
+let token = null, LOCKED_GUILD = null, LOG_CHANNEL = null, NGROK_AUTHTOKEN = null, NGROK_DOMAIN = null;
 try {
   const cfg = require("./config.json");
   token = cfg.token;
   LOCKED_GUILD = cfg.guildId;
   LOG_CHANNEL = cfg.logChannelId;
+  NGROK_AUTHTOKEN = cfg.ngrokAuthtoken;
+  NGROK_DOMAIN = cfg.ngrokDomain;
 } catch (_) {
   // No config.json — that's fine on Render
 }
 token       = token       || process.env.DISCORD_TOKEN || null;
 LOCKED_GUILD = LOCKED_GUILD || process.env.GUILD_ID || null;
 LOG_CHANNEL = LOG_CHANNEL || process.env.LOG_CHANNEL_ID || null;
+NGROK_AUTHTOKEN = NGROK_AUTHTOKEN || process.env.NGROK_AUTHTOKEN || null;
+NGROK_DOMAIN = NGROK_DOMAIN || process.env.NGROK_DOMAIN || null;
 
 // Optional Discord webhook — if the site runs on Render with no bot token but
 // a webhook URL, /event posts reach Discord via the webhook instead of the bot.
@@ -526,27 +530,38 @@ function serveStatic(req, res) {
 //   OPENAI_API_KEY     → OpenAI  (model: OPENAI_MODEL, default gpt-4o-mini)
 //   GROQ_API_KEY       → Groq    (model: GROQ_MODEL, default llama-3.3-70b-versatile)
 //   OPENROUTER_API_KEY → OpenRouter (model: OPENROUTER_MODEL, default openai/gpt-4o-mini)
-// Note: hardcoded API keys cannot be committed to GitHub — secret scanning
-// rejects the push, and Anthropic auto-revokes leaked keys. Set the key as
-// an environment variable on your host instead (Render → Environment).
+// Read API keys from env vars OR config.json (gitignored). Hardcoding keys
+// in source breaks GitHub secret-scanning and gets the key auto-revoked.
+function loadKey(envName, configKey) {
+  if (process.env[envName]) return process.env[envName];
+  try {
+    const cfg = require("./config.json");
+    return cfg[configKey] || null;
+  } catch { return null; }
+}
+
 function aiProviderConfig() {
-  if (process.env.ANTHROPIC_API_KEY) return {
-    name: "anthropic", key: process.env.ANTHROPIC_API_KEY,
+  const anthropicKey = loadKey("ANTHROPIC_API_KEY", "anthropicApiKey");
+  if (anthropicKey) return {
+    name: "anthropic", key: anthropicKey,
     endpoint: "https://api.anthropic.com/v1/messages",
     model: process.env.ANTHROPIC_MODEL || "claude-sonnet-4-5-20250929",
   };
-  if (process.env.GROQ_API_KEY) return {
-    name: "groq", key: process.env.GROQ_API_KEY,
+  const groqKey = loadKey("GROQ_API_KEY", "groqApiKey");
+  if (groqKey) return {
+    name: "groq", key: groqKey,
     endpoint: "https://api.groq.com/openai/v1/chat/completions",
     model: process.env.GROQ_MODEL || "llama-3.3-70b-versatile",
   };
-  if (process.env.OPENAI_API_KEY) return {
-    name: "openai", key: process.env.OPENAI_API_KEY,
+  const openaiKey = loadKey("OPENAI_API_KEY", "openaiApiKey");
+  if (openaiKey) return {
+    name: "openai", key: openaiKey,
     endpoint: "https://api.openai.com/v1/chat/completions",
     model: process.env.OPENAI_MODEL || "gpt-4o-mini",
   };
-  if (process.env.OPENROUTER_API_KEY) return {
-    name: "openrouter", key: process.env.OPENROUTER_API_KEY,
+  const orKey = loadKey("OPENROUTER_API_KEY", "openrouterApiKey");
+  if (orKey) return {
+    name: "openrouter", key: orKey,
     endpoint: "https://openrouter.ai/api/v1/chat/completions",
     model: process.env.OPENROUTER_MODEL || "openai/gpt-4o-mini",
   };
@@ -777,7 +792,102 @@ const server = http.createServer(async (req, res) => {
   return sendJson(res, 404, { ok: false, error: "not found" });
 });
 
-server.listen(SITE_PORT, () => console.log(`[http] bridge + static UI on :${SITE_PORT}`));
+server.listen(SITE_PORT, () => {
+  console.log(`[http] bridge + static UI on :${SITE_PORT}`);
+  startNgrokTunnel().catch((e) => console.warn(`[ngrok] startup failed: ${e.message}`));
+});
+
+// ─── ngrok auto-tunnel ────────────────────────────────────────
+// Optional: if @ngrok/ngrok is installed AND we have an authtoken (config.json
+// or env var), spin up a public HTTPS tunnel and post the URL to Discord.
+async function startNgrokTunnel() {
+  if (!NGROK_AUTHTOKEN) return;  // user opted out — no token, no tunnel
+
+  let ngrok;
+  try {
+    ngrok = require("@ngrok/ngrok");
+  } catch (_) {
+    console.log("[ngrok] @ngrok/ngrok not installed — skipping tunnel.");
+    console.log("        run: npm install @ngrok/ngrok");
+    return;
+  }
+
+  console.log("[ngrok] starting tunnel…");
+  const forwardOpts = {
+    addr: SITE_PORT,
+    authtoken: NGROK_AUTHTOKEN,
+    domain: NGROK_DOMAIN || undefined,
+  };
+
+  let listener;
+  try {
+    listener = await ngrok.forward(forwardOpts);
+  } catch (e) {
+    // ERR_NGROK_334: the static domain is held by another running agent.
+    // Kill the stale process and retry once.
+    if (String(e.message || "").includes("ERR_NGROK_334") || /already online/i.test(e.message || "")) {
+      console.warn("[ngrok] static domain is held by another agent — killing orphan process and retrying…");
+      const { exec } = require("child_process");
+      const isWin = process.platform === "win32";
+      await new Promise((resolve) => {
+        exec(isWin ? "taskkill /F /IM ngrok.exe" : "pkill -f ngrok", () => resolve());
+      });
+      await new Promise((r) => setTimeout(r, 1500));
+      try {
+        listener = await ngrok.forward(forwardOpts);
+      } catch (e2) {
+        console.warn(`[ngrok] retry failed: ${e2.message}`);
+        console.warn("        Manual fix: close any other terminal running 'ngrok http' or 'node index.js',");
+        console.warn(isWin ? "        then run:  taskkill /F /IM ngrok.exe" : "        then run:  pkill -f ngrok");
+        return;
+      }
+    } else {
+      console.warn(`[ngrok] forward() failed: ${e.message}`);
+      return;
+    }
+  }
+
+  const url = listener.url();
+  data.ngrokUrl = url;
+  saveData(data);
+  console.log(`[ngrok] ✅ public URL: ${url}`);
+
+  // Auto-update any /setstatus monitors so they ping the live tunnel
+  let updatedStatus = false;
+  for (const guildId of Object.keys(data.status || {})) {
+    if (data.status[guildId]) {
+      data.status[guildId].url = url;
+      updatedStatus = true;
+    }
+  }
+  if (updatedStatus) saveData(data);
+
+  // Post the URL to Discord. Wait for the client if it isn't ready yet.
+  const announce = () => {
+    if (!BOT_ENABLED || !client.isReady?.()) return;
+    const embed = new EmbedBuilder()
+      .setColor(COLORS.green)
+      .setTitle("🌐 tunnel up")
+      .setDescription(`**Intellectual OS** is live at:\n${url}`)
+      .addFields(
+        { name: "Port", value: `\`${SITE_PORT}\``, inline: true },
+        { name: "Domain", value: NGROK_DOMAIN ? "static" : "rotating", inline: true },
+      )
+      .setFooter({ text: "ngrok" })
+      .setTimestamp();
+    sendSiteLog(embed);
+  };
+  if (BOT_ENABLED && client.isReady?.()) announce();
+  else if (BOT_ENABLED) client.once("ready", announce);
+
+  // Clean up on shutdown
+  const shutdown = async () => {
+    try { await ngrok.disconnect(); console.log("[ngrok] tunnel closed."); } catch {}
+    process.exit(0);
+  };
+  process.once("SIGINT", shutdown);
+  process.once("SIGTERM", shutdown);
+}
 
 // ─── slash commands ───────────────────────────────────────────
 async function handle(interaction) {
@@ -951,6 +1061,23 @@ async function handle(interaction) {
       embed.setDescription(summary);
 
       return interaction.editReply({ embeds: [embed] });
+    }
+
+    // ── /tunnel — show the current ngrok URL ──
+    if (commandName === "tunnel") {
+      if (!data.ngrokUrl) {
+        return interaction.reply({
+          content: "no tunnel running. set `ngrokAuthtoken` in config.json (or `NGROK_AUTHTOKEN` env), `npm i @ngrok/ngrok`, then restart the bot.",
+          ephemeral: true,
+        });
+      }
+      const embed = new EmbedBuilder()
+        .setTitle("🌐 intellectual os tunnel")
+        .setColor(COLORS.green)
+        .setDescription(`**Live at:** ${data.ngrokUrl}\n[click to open](${data.ngrokUrl})`)
+        .setFooter({ text: "ngrok" })
+        .setTimestamp();
+      return interaction.reply({ embeds: [embed] });
     }
 
     // ── /maskurl ──

@@ -95,9 +95,9 @@
     width: 220px;
     padding: 14px 16px;
     z-index: 20;
-    background: rgba(0, 5, 15, 0.55);
-    backdrop-filter: blur(22px) saturate(140%);
-    -webkit-backdrop-filter: blur(22px) saturate(140%);
+    background: rgba(0, 5, 15, 0.78);
+    backdrop-filter: blur(14px) saturate(130%);
+    -webkit-backdrop-filter: blur(14px) saturate(130%);
     border: 1px solid var(--border);
     border-radius: 14px;
     box-shadow: 0 12px 36px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.04);
@@ -105,6 +105,7 @@
     font-size: 11px;
     color: var(--text);
     user-select: none;
+    contain: layout paint;
 }
 #sys-widget .sw-clock-wrap { text-align: center; padding: 4px 0 8px; }
 #sys-widget .sw-time {
@@ -218,15 +219,16 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background: rgba(0, 2, 8, 0.55);
-    backdrop-filter: blur(22px) saturate(130%);
-    -webkit-backdrop-filter: blur(22px) saturate(130%);
+    background: rgba(0, 2, 8, 0.72);
+    backdrop-filter: blur(14px) saturate(130%);
+    -webkit-backdrop-filter: blur(14px) saturate(130%);
     border-bottom: 1px solid var(--border);
     font-family: var(--font-mono);
     font-size: 11px;
     letter-spacing: 1px;
     color: var(--text);
     z-index: 50;
+    contain: layout paint;
 }
 #topbar .left  { display: flex; gap: 18px; align-items: center; }
 #topbar .right { display: flex; gap: 10px; align-items: center; }
@@ -265,12 +267,13 @@
     display: flex;
     gap: 10px;
     padding: 10px 14px;
-    background: rgba(0, 2, 8, 0.55);
-    backdrop-filter: blur(26px) saturate(140%);
-    -webkit-backdrop-filter: blur(26px) saturate(140%);
+    background: rgba(0, 2, 8, 0.7);
+    backdrop-filter: blur(18px) saturate(140%);
+    -webkit-backdrop-filter: blur(18px) saturate(140%);
     border: 1px solid var(--border-strong);
     border-radius: 24px;
     z-index: 40;
+    contain: layout paint;
     box-shadow:
         0 20px 60px rgba(0, 0, 0, 0.6),
         0 0 0 1px rgba(255, 255, 255, 0.02),
@@ -353,9 +356,10 @@
     position: absolute;
     min-width: 420px;
     min-height: 300px;
-    background: rgba(0, 5, 15, 0.75);
-    backdrop-filter: blur(32px) saturate(160%);
-    -webkit-backdrop-filter: blur(32px) saturate(160%);
+    /* Slightly more opaque + lower blur radius — visually similar but ~2x cheaper to paint. */
+    background: rgba(2, 7, 18, 0.86);
+    backdrop-filter: blur(20px) saturate(140%);
+    -webkit-backdrop-filter: blur(20px) saturate(140%);
     border: 1px solid var(--border);
     border-radius: var(--radius);
     display: flex;
@@ -365,6 +369,7 @@
         0 30px 80px rgba(0, 0, 0, 0.65),
         0 0 0 1px rgba(255, 255, 255, 0.03),
         inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    contain: layout paint;          /* isolate this window's compositing */
     will-change: transform;
     animation: winOpen 0.42s var(--bezier);
 }
@@ -378,8 +383,8 @@
     border-color: var(--border-strong);
     box-shadow:
         0 40px 90px rgba(0, 0, 0, 0.75),
-        0 0 0 1px var(--intel-blue),
-        0 0 60px var(--accent-soft),
+        0 0 0 1px color-mix(in srgb, var(--intel-blue) 60%, transparent),
+        0 0 40px var(--accent-soft),
         inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 .win.maximized {

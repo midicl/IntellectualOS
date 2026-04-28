@@ -18,32 +18,41 @@ let manifest = null;
 let commitHash = null;
 let manifestLoaded = null;     // Promise
 
-async function loadManifest() {
-    if (manifestLoaded) return manifestLoaded;
+let lastError = null;
+async function loadManifest(force = false) {
+    if (manifestLoaded && !force) return manifestLoaded;
+    if (force) { manifestLoaded = null; manifest = null; commitHash = null; }
     manifestLoaded = (async () => {
         try {
-            const [zonesRes, hashRes] = await Promise.all([
+            const [zonesRes, hashRes] = await Promise.allSettled([
                 fetch(MANIFEST_URL, { cache: 'default' }),
                 fetch(HASH_URL, { cache: 'no-store' }),
             ]);
-            const zones = await zonesRes.json();
-            commitHash = (await hashRes.text()).trim();
-            // Skip the fake id=-1 discord-suggest entry at the top
+            if (zonesRes.status !== 'fulfilled' || !zonesRes.value.ok) {
+                throw new Error(`Manifest fetch failed (${zonesRes.value?.status || zonesRes.reason?.message || 'network'})`);
+            }
+            const zones = await zonesRes.value.json();
+            // Hash is best-effort — without it, games still launch via @main
+            if (hashRes.status === 'fulfilled' && hashRes.value.ok) {
+                commitHash = (await hashRes.value.text()).trim();
+            }
             manifest = zones.filter((g) => Number(g.id) >= 0);
-            // Cover + url resolution
             manifest.forEach((g) => {
                 g.cover = (g.cover || '').replace('{COVER_URL}', COVERS_BASE);
                 g._slug = (g.url || '').replace('{HTML_URL}/', '').replace('.html', '');
             });
+            lastError = null;
             return manifest;
         } catch (e) {
             console.error('[games] manifest load failed', e);
+            lastError = e;
             manifest = [];
             return manifest;
         }
     })();
     return manifestLoaded;
 }
+export function getLastGamesError() { return lastError; }
 
 function gameUrl(game) {
     if (!commitHash) return game.url?.replace('{HTML_URL}', `${HTML_BASE}@main`);
@@ -109,8 +118,37 @@ export async function buildGamesPanel() {
     const data = await loadManifest();
 
     if (!data.length) {
-        grid.innerHTML = `<div class="games-empty">COULD NOT REACH GN-MATH NETWORK.<br/>Check your connection.</div>`;
+        const reason = lastError ? lastError.message : 'unknown';
+        grid.innerHTML = `
+            <div class="games-empty" style="line-height:2">
+                <div style="color:#ef4444;font-weight:700;margin-bottom:8px">COULDN'T REACH GN-MATH NETWORK</div>
+                <div style="font-size:11px;color:var(--text-dim)">${reason}</div>
+                <div style="margin-top:14px;font-size:11px;color:var(--text-dim);max-width:520px;margin-left:auto;margin-right:auto">
+                    Most likely jsdelivr or gn-math.dev is unreachable from this network — your school filter probably blocks one of them.
+                    <br/><br/>Try:
+                    <ul style="text-align:left;margin-top:8px;line-height:1.7">
+                        <li>Switch to PROXY mode in the Browser app and visit <code>cdn.jsdelivr.net</code> to see if it loads</li>
+                        <li>Check your wifi (open Settings → DNS/proxy)</li>
+                        <li>Wait 30s and click retry — these CDNs flap occasionally</li>
+                    </ul>
+                </div>
+                <button class="btn-primary hover-target" id="games-retry" style="margin-top:18px">Retry</button>
+            </div>`;
         counter.textContent = 'OFFLINE';
+        root.querySelector('#games-retry')?.addEventListener('click', async () => {
+            grid.innerHTML = `<div class="games-empty">REFETCHING…</div>`;
+            counter.textContent = 'LOADING…';
+            const fresh = await loadManifest(true);
+            if (fresh.length) {
+                // Replace the panel content with a fresh build
+                const newPanel = await buildGamesPanel();
+                root.replaceWith(newPanel);
+            } else {
+                // Re-render the error
+                const r = lastError ? lastError.message : 'unknown';
+                grid.innerHTML = `<div class="games-empty"><div style="color:#ef4444">STILL UNREACHABLE</div><div style="font-size:11px;color:var(--text-dim);margin-top:6px">${r}</div></div>`;
+            }
+        });
         return root;
     }
 

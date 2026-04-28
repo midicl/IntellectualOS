@@ -48,10 +48,16 @@ export function initWidget() {
         }, 250);
     }, 5000);
 
-    // Lightweight FPS counter
+    // Lightweight FPS counter — only runs when the tab is visible, and only
+    // touches the DOM once per second.
     let lastT = performance.now();
     let frames = 0;
     function fpsTick(now) {
+        if (document.hidden) {
+            lastT = now; frames = 0;
+            requestAnimationFrame(fpsTick);
+            return;
+        }
         frames++;
         if (now - lastT >= 1000) {
             const fps = Math.round((frames * 1000) / (now - lastT));

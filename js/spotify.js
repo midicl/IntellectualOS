@@ -215,24 +215,53 @@ function renderLogin(body) {
         <div class="sp-body">
             <div class="sp-login">
                 <h2>SIGN IN</h2>
-                <p>Log into Spotify to listen to any music you desire — search, browse playlists, control playback. <strong>Premium</strong> required for in-browser playback (Spotify's rule).</p>
+                <p>Search, browse playlists, control playback. <strong>Premium</strong> required for in-browser playback — Spotify's rule, not mine.</p>
                 <button class="hover-target" id="sp-login-btn" ${!clientId ? 'disabled style="opacity:0.5;cursor:not-allowed"' : ''}>
                     Continue with Spotify
                 </button>
-                <div class="hint">${clientId ? 'You\'ll be redirected to spotify.com to authorize.' : 'NO CLIENT ID CONFIGURED'}</div>
+                <div class="hint">${clientId ? '' : 'NO CLIENT ID CONFIGURED'}</div>
+
+                <div class="config" style="margin-top:24px">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+                        <strong style="color:#fff;font-size:12px">REDIRECT URI</strong>
+                        <span style="font-size:9px;color:#64748b">copy this into your Spotify app's settings</span>
+                    </div>
+                    <div class="redir-row">
+                        <code class="redir-url">${REDIRECT_URI}</code>
+                        <button class="redir-copy hover-target" id="sp-copy">Copy</button>
+                    </div>
+                    <div style="margin-top:16px;font-size:11.5px;color:#94a3a0;line-height:1.6">
+                        <strong style="color:#fff">If "redirect_uri not matching" error:</strong><br/>
+                        <ol style="margin:8px 0 0 18px;padding:0">
+                            <li>Open <a href="https://developer.spotify.com/dashboard" target="_blank" style="color:var(--sp-green-bright,#1ed760)">your Spotify app</a> → Settings → Edit</li>
+                            <li>Under <em>Redirect URIs</em>, paste the URL above (<strong>trailing slash matters</strong>)</li>
+                            <li>Save → come back here → Continue with Spotify</li>
+                        </ol>
+                        <div style="margin-top:10px;padding:8px 10px;background:rgba(245,158,11,0.1);border-left:2px solid #f59e0b;border-radius:4px">
+                            <strong style="color:#fbbf24">ngrok users:</strong> if your URL changes each restart, you'll need to update the redirect URI each time. A reserved ngrok domain ($8/mo) fixes this.
+                        </div>
+                    </div>
+                </div>
+
                 ${clientId ? '' : `
-                <div class="config">
-                    <strong style="color:#fff">Setup (~2 min):</strong><br/><br/>
-                    1. Go to <a href="https://developer.spotify.com/dashboard" target="_blank" style="color:var(--sp-green-bright,#1ed760)">developer.spotify.com/dashboard</a> → Create app<br/>
-                    2. Add Redirect URI: <code style="color:#fff">${REDIRECT_URI}</code><br/>
-                    3. Copy your Client ID, then run in the Terminal app:<br/>
+                <div class="config" style="margin-top:14px">
+                    <strong style="color:#fff">No Client ID set:</strong><br/>
+                    1. <a href="https://developer.spotify.com/dashboard" target="_blank" style="color:var(--sp-green-bright,#1ed760)">developer.spotify.com/dashboard</a> → Create app<br/>
+                    2. Copy the Client ID, then in browser console (F12):<br/>
                     &nbsp;&nbsp;<code style="color:#fff">localStorage.setItem('intellectual.spotifyClientId','YOUR_ID')</code><br/>
-                    4. Reload, click Sign In.
+                    3. Reload Intellectual OS.
                 </div>`}
             </div>
         </div>
     `;
     body.querySelector('#sp-login-btn')?.addEventListener('click', startLogin);
+    const copyBtn = body.querySelector('#sp-copy');
+    copyBtn?.addEventListener('click', async () => {
+        try { await navigator.clipboard.writeText(REDIRECT_URI); }
+        catch { /* fallback below */ }
+        copyBtn.textContent = 'Copied ✓';
+        setTimeout(() => { copyBtn.textContent = 'Copy'; }, 1500);
+    });
 }
 
 async function renderApp(body, win) {

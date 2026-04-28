@@ -1495,14 +1495,48 @@ body.con-scanlines .app-terminal::after {
 }
 .sp-login .config {
     margin-top: 16px;
-    padding: 10px 14px;
+    padding: 14px 16px;
     background: rgba(0,0,0,0.4);
-    border-radius: 8px;
-    font-family: var(--font-mono);
-    font-size: 11px;
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px;
+    font-family: var(--font-sans);
+    font-size: 12px;
     color: #94a3a0;
     text-align: left;
 }
+.sp-login .redir-row {
+    display: flex;
+    gap: 8px;
+    align-items: stretch;
+}
+.sp-login .redir-url {
+    flex: 1;
+    padding: 9px 12px;
+    background: rgba(0,0,0,0.55);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    color: var(--sp-green-bright, #1ed760);
+    overflow-x: auto;
+    white-space: nowrap;
+    user-select: all;
+}
+.sp-login .redir-copy {
+    padding: 8px 14px;
+    background: var(--sp-green);
+    color: #000;
+    border: 0;
+    border-radius: 8px;
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    cursor: none;
+    transition: 0.15s;
+    flex-shrink: 0;
+}
+.sp-login .redir-copy:hover { background: var(--sp-green-bright); }
 
 .sp-player {
     position: absolute;

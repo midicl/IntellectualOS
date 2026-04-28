@@ -117,7 +117,22 @@ export function openAI() {
             typing.remove();
 
             if (!res.ok || !data.content) {
-                addMessage('ai', data.error || data.hint || 'Something went wrong. Try again.');
+                const err = data.error || data.hint || 'Something went wrong. Try again.';
+                // Detect key-related failures and give a clearer message
+                if (/401|invalid.*api.*key|authentication|unauthorized/i.test(err)) {
+                    addMessage('ai',
+                        `**Your API key isn't valid.** Most likely it expired, was revoked, or never got set on the server.\n\n` +
+                        `Fix:\n` +
+                        `\`\`\`\n` +
+                        `// in config.json (gitignored, local only)\n` +
+                        `"anthropicApiKey": "sk-ant-api03-..."\n` +
+                        `\`\`\`\n` +
+                        `Or set \`ANTHROPIC_API_KEY\` as an env var. Then restart \`node index.js\`.\n\n` +
+                        `Get a fresh key at console.anthropic.com → API Keys.`,
+                    );
+                } else {
+                    addMessage('ai', err);
+                }
                 return;
             }
             addMessage('ai', data.content);
