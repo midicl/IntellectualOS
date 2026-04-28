@@ -510,6 +510,113 @@ function serveStatic(req, res) {
   });
 }
 
+// ─── Intellectual AI ──────────────────────────────────────────
+// Provider auto-detected from env vars. Set one of:
+//   ANTHROPIC_API_KEY  → Claude  (model: ANTHROPIC_MODEL, default claude-sonnet-4-5-20250929)
+//   OPENAI_API_KEY     → OpenAI  (model: OPENAI_MODEL, default gpt-4o-mini)
+//   GROQ_API_KEY       → Groq    (model: GROQ_MODEL, default llama-3.3-70b-versatile)
+//   OPENROUTER_API_KEY → OpenRouter (model: OPENROUTER_MODEL, default openai/gpt-4o-mini)
+function aiProviderConfig() {
+  if (process.env.ANTHROPIC_API_KEY) return {
+    name: "anthropic", key: process.env.ANTHROPIC_API_KEY,
+    endpoint: "https://api.anthropic.com/v1/messages",
+    model: process.env.ANTHROPIC_MODEL || "claude-sonnet-4-5-20250929",
+  };
+  if (process.env.GROQ_API_KEY) return {
+    name: "groq", key: process.env.GROQ_API_KEY,
+    endpoint: "https://api.groq.com/openai/v1/chat/completions",
+    model: process.env.GROQ_MODEL || "llama-3.3-70b-versatile",
+  };
+  if (process.env.OPENAI_API_KEY) return {
+    name: "openai", key: process.env.OPENAI_API_KEY,
+    endpoint: "https://api.openai.com/v1/chat/completions",
+    model: process.env.OPENAI_MODEL || "gpt-4o-mini",
+  };
+  if (process.env.OPENROUTER_API_KEY) return {
+    name: "openrouter", key: process.env.OPENROUTER_API_KEY,
+    endpoint: "https://openrouter.ai/api/v1/chat/completions",
+    model: process.env.OPENROUTER_MODEL || "openai/gpt-4o-mini",
+  };
+  return null;
+}
+
+function postJson(endpoint, headers, body) {
+  return new Promise((resolve, reject) => {
+    const u = new URL(endpoint);
+    const payload = JSON.stringify(body);
+    const req = https.request({
+      method: "POST", hostname: u.hostname, port: 443, path: u.pathname + u.search,
+      headers: Object.assign(
+        { "content-type": "application/json", "content-length": Buffer.byteLength(payload), "user-agent": "IntellectualOS-AI/1.1" },
+        headers
+      ),
+      timeout: 60_000,
+    }, (res) => {
+      let buf = "";
+      res.on("data", (c) => { buf += c; });
+      res.on("end", () => {
+        try { const parsed = JSON.parse(buf); resolve({ status: res.statusCode, body: parsed }); }
+        catch (e) { reject(new Error(`non-JSON response: ${buf.slice(0, 200)}`)); }
+      });
+    });
+    req.on("error", reject);
+    req.on("timeout", () => req.destroy(new Error("AI request timeout")));
+    req.end(payload);
+  });
+}
+
+async function callAI(messages) {
+  const cfg = aiProviderConfig();
+  if (!cfg) {
+    return {
+      ok: true,
+      provider: "stub",
+      content:
+        "Intellectual AI isn't connected to a model yet. To enable me:\n\n" +
+        "Set **one** of these env vars on your host (Render → Environment):\n" +
+        "• `ANTHROPIC_API_KEY` for Claude\n" +
+        "• `OPENAI_API_KEY` for GPT\n" +
+        "• `GROQ_API_KEY` for Llama (free tier)\n" +
+        "• `OPENROUTER_API_KEY` for any model via OpenRouter\n\n" +
+        "Groq is free and fast — `console.groq.com/keys` takes 30 seconds to sign up.",
+    };
+  }
+
+  // Extract system prompt; remaining are conversation turns
+  const systemMsg = messages.find((m) => m.role === "system");
+  const convo = messages.filter((m) => m.role !== "system");
+
+  if (cfg.name === "anthropic") {
+    const body = {
+      model: cfg.model,
+      max_tokens: 1024,
+      system: systemMsg?.content || undefined,
+      messages: convo.map((m) => ({ role: m.role === "assistant" ? "assistant" : "user", content: m.content })),
+    };
+    const r = await postJson(cfg.endpoint, {
+      "x-api-key": cfg.key,
+      "anthropic-version": "2023-06-01",
+    }, body);
+    if (r.status >= 400) throw new Error(`Anthropic ${r.status}: ${r.body?.error?.message || JSON.stringify(r.body).slice(0,200)}`);
+    const content = r.body?.content?.[0]?.text || "";
+    return { ok: true, provider: "Claude", model: cfg.model, content };
+  }
+
+  // OpenAI-compatible (OpenAI / Groq / OpenRouter)
+  const body = {
+    model: cfg.model,
+    max_tokens: 1024,
+    messages: [
+      ...(systemMsg ? [{ role: "system", content: systemMsg.content }] : []),
+      ...convo.map((m) => ({ role: m.role, content: m.content })),
+    ],
+  };
+  const r = await postJson(cfg.endpoint, { "authorization": `Bearer ${cfg.key}` }, body);
+  if (r.status >= 400) throw new Error(`${cfg.name} ${r.status}: ${r.body?.error?.message || JSON.stringify(r.body).slice(0,200)}`);
+  const content = r.body?.choices?.[0]?.message?.content || "";
+  return { ok: true, provider: cfg.name, model: cfg.model, content };
+}
+
 // ─── HTTP bridge ──────────────────────────────────────────────
 function sendJson(res, code, body) {
   res.writeHead(code, {
@@ -582,6 +689,19 @@ const server = http.createServer(async (req, res) => {
 
   if (req.method === "GET" && u.pathname === "/online") {
     return sendJson(res, 200, { online: onlineCount(), users: onlineList() });
+  }
+
+  // ── /ai — proxy to the configured AI provider ────────────────
+  if (req.method === "POST" && u.pathname === "/ai") {
+    const body = await readBody(req).catch(() => ({}));
+    const messages = Array.isArray(body.messages) ? body.messages : [];
+    if (!messages.length) return sendJson(res, 400, { ok: false, error: "messages required" });
+    try {
+      const out = await callAI(messages);
+      return sendJson(res, 200, out);
+    } catch (e) {
+      return sendJson(res, 500, { ok: false, error: e.message });
+    }
   }
 
   // ── /proxy?url=<target> — route through rotating Webshare pool ──

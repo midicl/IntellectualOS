@@ -6,7 +6,15 @@ import { loadConfig, saveConfig, getConfig, buildSettingsPanel } from './setting
 import { createWindow, listWindows } from './windows.js';
 import { buildGamesPanel } from './games.js';
 import { openBrowser } from './browser.js';
+import { openTerminal } from './terminal.js';
+import { openAI } from './ai.js';
+import { openSpotify, handleAuthCallback } from './spotify.js';
 import { loginCheck, setEmail, startHeartbeat, sendEvent, fetchOnlineCount } from './app-bus.js';
+
+// If we just came back from a Spotify OAuth redirect, capture the code and
+// reopen Spotify automatically once the desktop is ready.
+let spotifyAuthJustHappened = false;
+handleAuthCallback().then((ok) => { spotifyAuthJustHappened = ok; });
 
 // ── Init config first (paints accent color + cloak) ────────────
 loadConfig();
@@ -81,14 +89,18 @@ function enterDesktop() {
     loginSection.classList.remove('on');
     setTimeout(() => { loginSection.style.display = 'none'; }, 600);
     document.getElementById('desktop').classList.add('on');
+    maybeReopenSpotify();
 }
 
 // Dock wiring — click opens app; active dot reflects any open windows of that app
 document.querySelectorAll('#dock .dock-btn').forEach((btn) => {
     btn.addEventListener('click', () => {
         const app = btn.dataset.app;
-        if (app === 'browser') openBrowser();
-        else if (app === 'games') openGames();
+        if (app === 'browser')      openBrowser();
+        else if (app === 'games')    openGames();
+        else if (app === 'terminal') openTerminal();
+        else if (app === 'ai')       openAI();
+        else if (app === 'spotify')  openSpotify();
         else if (app === 'settings') openSettings();
     });
 });
@@ -121,11 +133,21 @@ function updateDockActive() {
         const has =
             (app === 'games'    && ids.has('games')) ||
             (app === 'settings' && ids.has('settings')) ||
-            (app === 'browser'  && [...ids].some((id) => id.startsWith('browser-')));
+            (app === 'spotify'  && ids.has('spotify')) ||
+            (app === 'ai'       && ids.has('intellectual-ai')) ||
+            (app === 'browser'  && [...ids].some((id) => id.startsWith('browser-'))) ||
+            (app === 'terminal' && [...ids].some((id) => id.startsWith('terminal-')));
         btn.classList.toggle('active', has);
     });
 }
 setInterval(updateDockActive, 500);
+
+// If we returned from a Spotify OAuth redirect mid-session, hop back into Spotify.
+function maybeReopenSpotify() {
+    if (!spotifyAuthJustHappened) return;
+    spotifyAuthJustHappened = false;
+    setTimeout(() => openSpotify(), 600);
+}
 
 // ── Keyboard shortcuts ─────────────────────────────────────────
 document.addEventListener('keydown', (e) => {

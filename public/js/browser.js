@@ -2,16 +2,16 @@
 import { createWindow } from './windows.js';
 import { sendEvent } from './app-bus.js';
 
-// Iframe-friendly URLs (no X-Frame-Options blockers)
+// Iframe-friendly URLs (verified not to send X-Frame-Options: DENY/SAMEORIGIN)
 const QUICK = [
     { name: 'Google',     url: 'https://www.google.com/webhp?igu=1',           icon: '◉' },
     { name: 'Wikipedia',  url: 'https://en.wikipedia.org/wiki/Main_Page',      icon: '📖' },
     { name: 'Maps',       url: 'https://www.openstreetmap.org/',               icon: '◇' },
     { name: 'Archive',    url: 'https://archive.org/',                         icon: '▤' },
-    { name: 'Hacker News',url: 'https://news.ycombinator.com/',                icon: '▲' },
     { name: 'MDN Docs',   url: 'https://developer.mozilla.org/en-US/',         icon: '◈' },
     { name: 'Khan',       url: 'https://www.khanacademy.org/',                 icon: '⟐' },
     { name: 'Quizlet',    url: 'https://quizlet.com/',                         icon: '❖' },
+    { name: 'NYT',        url: 'https://www.nytimes.com/',                     icon: '▣' },
 ];
 
 function normalize(input) {
@@ -60,6 +60,9 @@ export function openBrowser(initialUrl = '') {
             <button class="nav home hover-target" title="Home">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 10l9-7 9 7v11a2 2 0 01-2 2h-4v-7h-6v7H5a2 2 0 01-2-2V10z"/></svg>
             </button>
+            <button class="nav pop hover-target" title="Open in new tab">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M15 3h6v6M10 14L21 3M21 14v5a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h5"/></svg>
+            </button>
 
             <div class="url-wrap">
                 <div class="shield direct" title="Direct">
@@ -84,6 +87,7 @@ export function openBrowser(initialUrl = '') {
     const fwdBtn = body.querySelector('.fwd');
     const reloadBtn = body.querySelector('.reload');
     const homeBtn = body.querySelector('.home');
+    const popBtn = body.querySelector('.pop');
     const modeDirect = body.querySelector('.mode-direct');
     const modeProxy = body.querySelector('.mode-proxy');
 
@@ -162,9 +166,15 @@ export function openBrowser(initialUrl = '') {
             clearTimeout(failTimer);
             status.classList.remove('on');
             setTimeout(() => status.remove(), 300);
+            // Detect iframe that loaded about:blank because the site refuses framing
+            // (X-Frame-Options / frame-ancestors). contentDocument access is same-origin
+            // only; for cross-origin the property throws — that's actually the good sign.
             try {
-                const t = iframe.contentDocument?.title;
-                currentTitle = t || new URL(target).hostname;
+                const doc = iframe.contentDocument;
+                if (doc && doc.location && doc.location.href === 'about:blank') {
+                    return showBlocked(target);
+                }
+                currentTitle = doc?.title || new URL(target).hostname;
             } catch {
                 currentTitle = new URL(target).hostname;
             }
@@ -179,6 +189,29 @@ export function openBrowser(initialUrl = '') {
         }
         updateNav();
         sendEvent('browse', target);
+    }
+
+    function showBlocked(target) {
+        if (iframe) { iframe.remove(); iframe = null; }
+        view.innerHTML = `
+            <div class="browser-error">
+                <h2>FRAMING REFUSED</h2>
+                <div class="detail">${new URL(target).hostname} blocks embedding (X-Frame-Options).</div>
+                <div class="detail">Use PROXY mode, or open in a new tab.</div>
+                <div style="display:flex;gap:8px;margin-top:8px">
+                    <button class="hover-target" data-action="proxy">Try via PROXY</button>
+                    <button class="hover-target" data-action="newtab">New Tab</button>
+                </div>
+            </div>
+        `;
+        setStatus('error');
+        view.querySelector('[data-action="proxy"]').addEventListener('click', () => {
+            setMode('proxy');
+            navigate(target, { pushHistory: false });
+        });
+        view.querySelector('[data-action="newtab"]').addEventListener('click', () => {
+            window.open(target, '_blank', 'noopener,noreferrer');
+        });
     }
 
     function showError(detail, { blockSelf = false } = {}) {
@@ -222,6 +255,10 @@ export function openBrowser(initialUrl = '') {
         else if (urlInput.value) navigate(urlInput.value, { pushHistory: false });
     });
     homeBtn.addEventListener('click', renderEmpty);
+    popBtn.addEventListener('click', () => {
+        const u = urlInput.value.trim();
+        if (u) window.open(u, '_blank', 'noopener,noreferrer');
+    });
     modeDirect.addEventListener('click', () => setMode('direct'));
     modeProxy.addEventListener('click', () => setMode('proxy'));
 
