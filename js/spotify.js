@@ -16,13 +16,20 @@ const SCOPES = [
     'streaming',
 ];
 
-// Client ID is read from <meta name="spotify-client-id" content="..."> in index.html,
-// or from window.SPOTIFY_CLIENT_ID, or from localStorage (Settings can write it).
+// Default Spotify Client ID (PKCE flow — public client IDs are safe to commit).
+// Override via <meta name="spotify-client-id">, window.SPOTIFY_CLIENT_ID, or
+// localStorage('intellectual.spotifyClientId') to point at a different app.
+const DEFAULT_CLIENT_ID = '8bf66c5fcfb14208964e9c82f0100e97';
+
 function getClientId() {
     const meta = document.querySelector('meta[name="spotify-client-id"]');
     if (meta?.content) return meta.content;
     if (window.SPOTIFY_CLIENT_ID) return window.SPOTIFY_CLIENT_ID;
-    try { return localStorage.getItem('intellectual.spotifyClientId') || null; } catch { return null; }
+    try {
+        const stored = localStorage.getItem('intellectual.spotifyClientId');
+        if (stored) return stored;
+    } catch {}
+    return DEFAULT_CLIENT_ID;
 }
 
 const REDIRECT_URI = window.location.origin + '/';

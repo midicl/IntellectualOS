@@ -475,7 +475,14 @@ function parseHttpResponse(sock) {
 }
 
 // ─── Static file server ───────────────────────────────────────
-const PUBLIC_DIR = path.join(__dirname, "public");
+// Frontend assets live in css/ and js/ folders. Backend files (index.js,
+// package.json, config.json, etc.) sit at the root and are NOT served — the
+// static handler only serves index.html plus paths under known asset folders.
+const PUBLIC_DIR = __dirname;
+const ALLOWED_ROOT_FILES = new Set([
+  "/index.html", "/favicon.ico", "/manifest.json", "/robots.txt",
+]);
+const ALLOWED_DIRS = ["/css/", "/js/", "/img/", "/assets/", "/fonts/"];
 const MIME = {
   ".html": "text/html; charset=utf-8",
   ".css":  "text/css; charset=utf-8",
@@ -496,8 +503,11 @@ const MIME = {
 function serveStatic(req, res) {
   let rel = decodeURIComponent(req.url.split("?")[0]);
   if (rel === "/" || rel === "") rel = "/index.html";
-  // prevent path traversal
   if (rel.includes("..")) { res.writeHead(400); return res.end("bad request"); }
+
+  const allowed = ALLOWED_ROOT_FILES.has(rel) || ALLOWED_DIRS.some((d) => rel.startsWith(d));
+  if (!allowed) { res.writeHead(404); return res.end("not found"); }
+
   const file = path.join(PUBLIC_DIR, rel);
   fs.stat(file, (err, stat) => {
     if (err || !stat.isFile()) { res.writeHead(404); return res.end("not found"); }
@@ -516,6 +526,9 @@ function serveStatic(req, res) {
 //   OPENAI_API_KEY     → OpenAI  (model: OPENAI_MODEL, default gpt-4o-mini)
 //   GROQ_API_KEY       → Groq    (model: GROQ_MODEL, default llama-3.3-70b-versatile)
 //   OPENROUTER_API_KEY → OpenRouter (model: OPENROUTER_MODEL, default openai/gpt-4o-mini)
+// Note: hardcoded API keys cannot be committed to GitHub — secret scanning
+// rejects the push, and Anthropic auto-revokes leaked keys. Set the key as
+// an environment variable on your host instead (Render → Environment).
 function aiProviderConfig() {
   if (process.env.ANTHROPIC_API_KEY) return {
     name: "anthropic", key: process.env.ANTHROPIC_API_KEY,
