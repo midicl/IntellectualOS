@@ -12,6 +12,7 @@ import { openSpotify, handleAuthCallback } from './spotify.js';
 import { loginCheck, setEmail, startHeartbeat, sendEvent, fetchOnlineCount } from './app-bus.js';
 import { initDesktop } from './desktop.js';
 import { initWidget } from './widget.js';
+import { initParallax, initDust, initDockMagnification } from './ambient.js';
 
 // If we just came back from a Spotify OAuth redirect, capture the code and
 // reopen Spotify automatically once the desktop is ready.
@@ -96,6 +97,9 @@ function enterDesktop() {
         desktopInitialized = true;
         initDesktop();
         initWidget();
+        initParallax();
+        initDust();
+        initDockMagnification();
     }
     maybeReopenSpotify();
 }

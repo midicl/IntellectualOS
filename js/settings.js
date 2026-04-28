@@ -37,16 +37,23 @@ export const CLOAKS = {
     khan:      { title: 'Khan Academy | Free Online Courses', icon: 'https://cdn.kastatic.org/images/favicon.ico' },
 };
 
-// Curated wallpapers. `preset` maps to a CSS gradient/pattern; `custom` stores a data URL.
+// Curated wallpapers. Most are CSS gradients; the few flagged `live: true`
+// switch to the canvas-based mesh wallpaper engine for animated orbs.
 export const WALLPAPERS = [
+    { id: 'mesh',     name: 'Mesh',      live: true, palette: ['#004cff', '#00a2ff', '#a855f7', '#ec4899', '#22d3ee'],
+      preview: 'conic-gradient(from 30deg at 30% 40%, #004cff, #a855f7, #ec4899, #00a2ff, #004cff)' },
+    { id: 'mesh-warm', name: 'Ember',    live: true, palette: ['#dc2626', '#f97316', '#facc15', '#7c2d12', '#7e22ce'],
+      preview: 'conic-gradient(from 30deg at 60% 50%, #dc2626, #f97316, #facc15, #7c2d12)' },
+    { id: 'mesh-cool', name: 'Glacier',  live: true, palette: ['#0ea5e9', '#22d3ee', '#a78bfa', '#06b6d4', '#0c4a6e'],
+      preview: 'conic-gradient(from 30deg at 50% 40%, #0ea5e9, #22d3ee, #a78bfa, #06b6d4)' },
     { id: 'aurora',   name: 'Aurora',    preview: 'radial-gradient(ellipse at 20% 10%, #004cff33, transparent 55%), radial-gradient(ellipse at 80% 90%, #00a2ff22, transparent 60%), #000105' },
-    { id: 'void',     name: 'Void',      preview: '#000' },
-    { id: 'grid',     name: 'Grid',      preview: 'repeating-linear-gradient(0deg, transparent 0 47px, #004cff22 47px 48px), repeating-linear-gradient(90deg, transparent 0 47px, #004cff22 47px 48px), #000105' },
-    { id: 'cyber',    name: 'Cyber',     preview: 'linear-gradient(180deg, #000 0%, #0a0420 60%, #2b0a4a 100%)' },
     { id: 'nebula',   name: 'Nebula',    preview: 'radial-gradient(ellipse at 30% 70%, #7c3aed55, transparent 50%), radial-gradient(ellipse at 70% 30%, #ec489955, transparent 50%), #0a051a' },
     { id: 'horizon',  name: 'Horizon',   preview: 'linear-gradient(180deg, #000 0%, #001230 50%, #ff006055 90%, #000 100%)' },
-    { id: 'matrix',   name: 'Matrix',    preview: 'radial-gradient(ellipse at center, #00330055, transparent 60%), #000502' },
     { id: 'sunset',   name: 'Sunset',    preview: 'linear-gradient(180deg, #1a0a2e 0%, #4a1040 50%, #c73866 100%)' },
+    { id: 'cyber',    name: 'Cyber',     preview: 'linear-gradient(180deg, #000 0%, #0a0420 60%, #2b0a4a 100%)' },
+    { id: 'matrix',   name: 'Matrix',    preview: 'radial-gradient(ellipse at center, #00330055, transparent 60%), #000502' },
+    { id: 'grid',     name: 'Grid',      preview: 'repeating-linear-gradient(0deg, transparent 0 47px, #004cff22 47px 48px), repeating-linear-gradient(90deg, transparent 0 47px, #004cff22 47px 48px), #000105' },
+    { id: 'void',     name: 'Void',      preview: '#000' },
 ];
 
 // Console / terminal themes — affect boot screen + any .terminal-surface element.
@@ -140,16 +147,36 @@ function applyPalette(hex) {
 }
 
 // ── wallpaper application ───────────────────────────────────
-function applyWallpaper() {
+async function applyWallpaper() {
     const layer = document.getElementById('wallpaper-layer');
     if (!layer) return;
-    layer.classList.remove('wp-aurora','wp-cyber','wp-nebula','wp-horizon','wp-matrix','wp-grid','wp-void','wp-sunset','wp-custom','wp-anim');
+    layer.classList.remove(
+        'wp-aurora','wp-cyber','wp-nebula','wp-horizon','wp-matrix',
+        'wp-grid','wp-void','wp-sunset','wp-custom','wp-anim',
+        'wp-mesh','wp-mesh-warm','wp-mesh-cool'
+    );
+
+    const w = WALLPAPERS.find((x) => x.id === config.wallpaper);
+
+    // Live (canvas) wallpaper — only the mesh-engine ones
+    try {
+        const engine = await import('./wallpaper-engine.js');
+        if (w?.live) {
+            engine.startMeshWallpaper({ palette: w.palette });
+            // Dim the static gradient layer so the canvas isn't fighting it
+            layer.style.background = '#000105';
+            layer.classList.add(`wp-${w.id}`);
+            return;
+        } else {
+            engine.stopMeshWallpaper();
+        }
+    } catch {}
+
     if (config.wallpaper === 'custom' && config.customWallpaper) {
         layer.style.background = `center/cover no-repeat url("${config.customWallpaper}"), #000`;
         layer.classList.add('wp-custom');
         return;
     }
-    const w = WALLPAPERS.find((x) => x.id === config.wallpaper);
     layer.style.background = w ? w.preview : '#000105';
     if (w) layer.classList.add(`wp-${w.id}`);
     if (config.wallpaperAnimated) layer.classList.add('wp-anim');

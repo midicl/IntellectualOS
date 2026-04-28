@@ -18,14 +18,42 @@ function normalize(input) {
     let v = input.trim();
     if (!v) return '';
     if (!v.includes('://')) {
-        // Treat space-containing or non-domain input as a search query
         if (!/^[a-z0-9][a-z0-9-.]*\.[a-z]{2,}/i.test(v) || v.includes(' ')) {
-            // html.duckduckgo.com is the no-JS endpoint — no X-Frame-Options
+            // Search query. Every search engine sends X-Frame-Options now —
+            // navigate() will auto-route this through /proxy to bypass it.
             return `https://html.duckduckgo.com/html/?q=${encodeURIComponent(v)}`;
         }
         v = 'https://' + v;
     }
     return v;
+}
+
+// Sites that consistently block framing — auto-route through our /proxy so
+// the iframe renders. Backend strips X-Frame-Options + frame-ancestors CSP.
+const FORCE_PROXY_PATTERNS = [
+    /(^|\.)duckduckgo\.com/i,
+    /\/search/i,                             // any /search path on any host
+    /(^|\.)google\.com/i,
+    /(^|\.)bing\.com/i,
+    /(^|\.)brave\.com/i,
+    /(^|\.)startpage\.com/i,
+    /(^|\.)ecosia\.org/i,
+    /(^|\.)reddit\.com/i,
+    /(^|\.)twitter\.com/i,
+    /(^|\.)x\.com/i,
+    /(^|\.)instagram\.com/i,
+    /(^|\.)facebook\.com/i,
+    /(^|\.)linkedin\.com/i,
+    /(^|\.)tiktok\.com/i,
+    /(^|\.)news\.ycombinator\.com/i,
+    /(^|\.)github\.com/i,
+];
+function shouldAutoProxy(target) {
+    try {
+        const u = new URL(target);
+        const test = u.hostname + u.pathname;
+        return FORCE_PROXY_PATTERNS.some((re) => re.test(test));
+    } catch { return false; }
 }
 
 // Refuse to load the site inside itself — that's what was causing the "takes you
@@ -138,7 +166,10 @@ export function openBrowser(initialUrl = '') {
         }
 
         urlInput.value = target;
-        const src = mode === 'proxy' ? proxyUrl(target) : target;
+        // Auto-route known frame-blockers through /proxy regardless of mode toggle.
+        const autoProxy = shouldAutoProxy(target);
+        const useProxy = mode === 'proxy' || autoProxy;
+        const src = useProxy ? proxyUrl(target) : target;
 
         if (iframe) { try { iframe.src = 'about:blank'; } catch {} iframe.remove(); iframe = null; }
         view.innerHTML = '';
@@ -152,7 +183,7 @@ export function openBrowser(initialUrl = '') {
         view.appendChild(iframe);
         iframe.src = src;
 
-        setStatus(mode === 'proxy' ? 'proxied' : 'direct');
+        setStatus(useProxy ? 'proxied' : 'direct');
 
         const status = document.createElement('div');
         status.className = 'browser-status on';
