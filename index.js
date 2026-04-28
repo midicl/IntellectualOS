@@ -719,6 +719,14 @@ const server = http.createServer(async (req, res) => {
     return sendJson(res, 200, { online: onlineCount(), users: onlineList() });
   }
 
+  // ── /site-info — public-URL hints (used by Spotify login UX) ──
+  if (req.method === "GET" && u.pathname === "/site-info") {
+    return sendJson(res, 200, {
+      ngrokUrl: data.ngrokUrl || null,
+      port: SITE_PORT,
+    });
+  }
+
   // ── /ai — proxy to the configured AI provider ────────────────
   if (req.method === "POST" && u.pathname === "/ai") {
     const body = await readBody(req).catch(() => ({}));

@@ -222,10 +222,24 @@ export async function openSpotify() {
     return win;
 }
 
-function renderLogin(body) {
+async function renderLogin(body) {
     const clientId = getClientId();
     const isLocalhost = window.location.hostname === 'localhost';
     const isHttp = window.location.protocol === 'http:';
+    const isInsecure = isHttp && window.location.hostname !== '127.0.0.1';
+
+    // Try to fetch a secure alternative URL from the server (live ngrok tunnel)
+    let secureUrl = null;
+    if (isInsecure) {
+        try {
+            const r = await fetch('/site-info');
+            const d = await r.json();
+            if (d?.ngrokUrl) secureUrl = d.ngrokUrl;
+        } catch {}
+    }
+    const port = window.location.port || '3000';
+    // Loopback fallback if no ngrok URL available
+    const loopbackUrl = `http://127.0.0.1:${port}/`;
     const dashLink = clientId
         ? `https://developer.spotify.com/dashboard/${clientId}/settings`
         : 'https://developer.spotify.com/dashboard';
@@ -261,10 +275,25 @@ function renderLogin(body) {
                 </button>
                 <div class="hint">${clientId ? '' : 'NO CLIENT ID CONFIGURED'}</div>
 
-                ${(isLocalhost && isHttp) ? `
-                <div class="sp-warn">
-                    <strong>⚠ Spotify rejects http://localhost</strong><br/>
-                    Spotify's recent rule: HTTP redirects are only allowed for <code>127.0.0.1</code>, NOT <code>localhost</code>. Reopen Intellectual OS at <a href="http://127.0.0.1:${window.location.port || '3000'}/" style="color:#fbbf24"><strong>http://127.0.0.1:${window.location.port || '3000'}/</strong></a> instead.
+                ${isInsecure ? `
+                <div class="sp-switch">
+                    <div class="sp-switch-title">⚠ This URL won't work for Spotify</div>
+                    <div class="sp-switch-detail">
+                        Spotify rejects <code>${window.location.origin}/</code> as "not secure".<br/>
+                        Their rule: redirect URIs must be <strong>HTTPS</strong>, OR plain HTTP only for the <code>127.0.0.1</code> IP literal (not <code>localhost</code>).
+                    </div>
+                    <div class="sp-switch-actions">
+                        ${secureUrl ? `
+                            <a class="sp-switch-btn primary hover-target" href="${secureUrl}">
+                                <span>Switch to ngrok (HTTPS)</span>
+                                <code>${secureUrl}</code>
+                            </a>
+                        ` : ''}
+                        <a class="sp-switch-btn ${secureUrl ? '' : 'primary'} hover-target" href="${loopbackUrl}">
+                            <span>Switch to ${secureUrl ? 'loopback' : '127.0.0.1'}</span>
+                            <code>${loopbackUrl}</code>
+                        </a>
+                    </div>
                 </div>` : ''}
 
                 <div class="config" style="margin-top:24px">
