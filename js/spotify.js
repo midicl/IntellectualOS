@@ -239,11 +239,40 @@ async function renderApp(body, win) {
     body.innerHTML = `
         <div class="sp-header">
             <div class="sp-brand"><span class="sp-mark">♫</span>SPOTIFY</div>
-            <input class="sp-search hover-target" placeholder="Search songs, artists, albums…" />
+            <input class="sp-search hover-target" placeholder="Search songs, artists, albums, playlists…" />
             <div class="sp-user" id="sp-user">…</div>
         </div>
-        <div class="sp-body" id="sp-content">
-            <div class="sp-section"><h3>Loading…</h3></div>
+        <div class="sp-shell">
+            <nav class="sp-sidebar">
+                <button class="sp-nav on hover-target" data-view="home">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 10l9-7 9 7v11a2 2 0 01-2 2h-4v-7h-6v7H5a2 2 0 01-2-2V10z"/></svg>
+                    Home
+                </button>
+                <button class="sp-nav hover-target" data-view="library">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16M4 12h16M4 20h10"/></svg>
+                    Your Library
+                </button>
+                <button class="sp-nav hover-target" data-view="liked">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s-7-4.5-7-11a4 4 0 017-2.6A4 4 0 0119 10c0 6.5-7 11-7 11z"/></svg>
+                    Liked Songs
+                </button>
+                <button class="sp-nav hover-target" data-view="recent">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+                    Recently Played
+                </button>
+                <button class="sp-nav hover-target" data-view="top">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l3 7h7l-5.5 4 2 7-6.5-4.5L5.5 20l2-7L2 9h7z"/></svg>
+                    Top Tracks
+                </button>
+                <div class="sp-sidebar-spacer"></div>
+                <button class="sp-nav danger hover-target" id="sp-logout-btn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16 17l5-5-5-5M21 12H9M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/></svg>
+                    Log out
+                </button>
+            </nav>
+            <div class="sp-body" id="sp-content">
+                <div class="sp-section"><h3>Loading…</h3></div>
+            </div>
         </div>
         <div class="sp-player">
             <div class="now-playing">
@@ -332,6 +361,26 @@ async function renderApp(body, win) {
     body.querySelector('#np-prev').addEventListener('click', () => player?.previousTrack());
     body.querySelector('#np-next').addEventListener('click', () => player?.nextTrack());
 
+    // Sidebar navigation
+    const navs = body.querySelectorAll('.sp-nav[data-view]');
+    function setNav(view) {
+        navs.forEach((n) => n.classList.toggle('on', n.dataset.view === view));
+    }
+    navs.forEach((n) => n.addEventListener('click', () => {
+        const v = n.dataset.view;
+        setNav(v);
+        if (v === 'home')    renderHome();
+        if (v === 'library') renderLibrary();
+        if (v === 'liked')   renderLiked();
+        if (v === 'recent')  renderRecent();
+        if (v === 'top')     renderTop();
+    }));
+    body.querySelector('#sp-logout-btn').addEventListener('click', () => {
+        clearAuth();
+        win.body.innerHTML = '';
+        renderLogin(win.body);
+    });
+
     // Default home view
     renderHome();
 
@@ -341,6 +390,7 @@ async function renderApp(body, win) {
         clearTimeout(searchTimer);
         const q = search.value.trim();
         if (!q) return renderHome();
+        setNav(null);
         searchTimer = setTimeout(() => doSearch(q), 250);
     });
 
@@ -360,10 +410,7 @@ async function renderApp(body, win) {
                 content.appendChild(sectionRows('Your Top Tracks', topTracks.items));
             }
             if (playlists.items?.length) {
-                content.appendChild(sectionCards('Your Playlists', playlists.items.map((p) => ({
-                    name: p.name, sub: p.owner?.display_name || '',
-                    img: p.images?.[0]?.url, uri: p.uri, openUrl: p.external_urls?.spotify,
-                }))));
+                content.appendChild(playlistGrid('Your Playlists', playlists.items));
             }
             if (!content.children.length) {
                 content.innerHTML = `<div class="sp-section"><h3>Welcome</h3><p style="color:#94a3a0">Search for music up top.</p></div>`;
@@ -371,6 +418,157 @@ async function renderApp(body, win) {
         } catch (e) {
             content.innerHTML = `<div class="sp-section"><h3>Error</h3><p style="color:#94a3a0">${e.message}</p></div>`;
         }
+    }
+
+    async function renderLibrary() {
+        content.innerHTML = `<div class="sp-section"><h3>Loading…</h3></div>`;
+        try {
+            let all = [];
+            let url = '/me/playlists?limit=50';
+            while (url) {
+                const data = await spotifyFetch(url);
+                all = all.concat(data.items || []);
+                url = data.next ? data.next.replace('https://api.spotify.com/v1', '') : null;
+                if (all.length >= 200) break;
+            }
+            content.innerHTML = '';
+            content.appendChild(playlistGrid(`Your Playlists (${all.length})`, all));
+        } catch (e) {
+            content.innerHTML = `<div class="sp-section"><h3>Error</h3><p style="color:#94a3a0">${e.message}</p></div>`;
+        }
+    }
+
+    async function renderLiked() {
+        content.innerHTML = `<div class="sp-section"><h3>Loading…</h3></div>`;
+        try {
+            const data = await spotifyFetch('/me/tracks?limit=50');
+            content.innerHTML = '';
+            const sec = document.createElement('div');
+            sec.className = 'sp-detail';
+            sec.innerHTML = `
+                <div class="sp-detail-hero liked-hero">
+                    <div class="hero-art liked"><svg width="60" height="60" viewBox="0 0 24 24" fill="#fff" stroke="none"><path d="M12 21s-7-4.5-7-11a4 4 0 017-2.6A4 4 0 0119 10c0 6.5-7 11-7 11z"/></svg></div>
+                    <div class="hero-meta">
+                        <div class="hero-kind">PLAYLIST</div>
+                        <div class="hero-title">Liked Songs</div>
+                        <div class="hero-sub">${data.total} saved</div>
+                    </div>
+                </div>
+            `;
+            sec.appendChild(buildTrackList(data.items.map((it) => it.track).filter(Boolean)));
+            content.innerHTML = '';
+            content.appendChild(sec);
+        } catch (e) {
+            content.innerHTML = `<div class="sp-section"><h3>Error</h3><p style="color:#94a3a0">${e.message}</p></div>`;
+        }
+    }
+
+    async function renderRecent() {
+        content.innerHTML = `<div class="sp-section"><h3>Loading…</h3></div>`;
+        try {
+            const data = await spotifyFetch('/me/player/recently-played?limit=50');
+            const tracks = data.items.map((it) => it.track).filter(Boolean);
+            content.innerHTML = '';
+            content.appendChild(sectionRows('Recently Played', tracks));
+        } catch (e) {
+            content.innerHTML = `<div class="sp-section"><h3>Error</h3><p style="color:#94a3a0">${e.message}</p></div>`;
+        }
+    }
+
+    async function renderTop() {
+        content.innerHTML = `<div class="sp-section"><h3>Loading…</h3></div>`;
+        try {
+            const [short, mid, long] = await Promise.all([
+                spotifyFetch('/me/top/tracks?limit=20&time_range=short_term').catch(() => ({ items: [] })),
+                spotifyFetch('/me/top/tracks?limit=20&time_range=medium_term').catch(() => ({ items: [] })),
+                spotifyFetch('/me/top/tracks?limit=20&time_range=long_term').catch(() => ({ items: [] })),
+            ]);
+            content.innerHTML = '';
+            if (short.items?.length) content.appendChild(sectionRows('Last 4 Weeks', short.items));
+            if (mid.items?.length)   content.appendChild(sectionRows('Last 6 Months', mid.items));
+            if (long.items?.length)  content.appendChild(sectionRows('All Time', long.items));
+        } catch (e) {
+            content.innerHTML = `<div class="sp-section"><h3>Error</h3><p style="color:#94a3a0">${e.message}</p></div>`;
+        }
+    }
+
+    async function openPlaylist(playlist) {
+        content.innerHTML = `<div class="sp-section"><h3>Loading "${escape(playlist.name)}"…</h3></div>`;
+        try {
+            const data = await spotifyFetch(`/playlists/${playlist.id}/tracks?limit=100`);
+            const tracks = (data.items || []).map((it) => it.track).filter(Boolean);
+            content.innerHTML = '';
+            const sec = document.createElement('div');
+            sec.className = 'sp-detail';
+            const img = playlist.images?.[0]?.url;
+            sec.innerHTML = `
+                <button class="sp-back hover-target">← Back</button>
+                <div class="sp-detail-hero">
+                    <div class="hero-art">${img ? `<img src="${img}">` : ''}</div>
+                    <div class="hero-meta">
+                        <div class="hero-kind">PLAYLIST</div>
+                        <div class="hero-title">${escape(playlist.name)}</div>
+                        <div class="hero-desc">${escape(playlist.description || '')}</div>
+                        <div class="hero-sub">${escape(playlist.owner?.display_name || '')} · ${playlist.tracks?.total ?? tracks.length} tracks</div>
+                        <div class="hero-actions">
+                            <button class="hero-play hover-target">▶ Play</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            sec.appendChild(buildTrackList(tracks, playlist.uri));
+            sec.querySelector('.sp-back').addEventListener('click', renderHome);
+            sec.querySelector('.hero-play').addEventListener('click', () => playUri(playlist.uri, playlist.external_urls?.spotify, true));
+            content.appendChild(sec);
+        } catch (e) {
+            content.innerHTML = `<div class="sp-section"><h3>Error</h3><p style="color:#94a3a0">${e.message}</p></div>`;
+        }
+    }
+
+    function buildTrackList(tracks, contextUri = null) {
+        const list = document.createElement('div');
+        list.className = 'sp-list detail-list';
+        tracks.forEach((t, i) => {
+            const row = document.createElement('div');
+            row.className = 'sp-row hover-target';
+            row.innerHTML = `
+                <div class="art">${t.album?.images?.[2]?.url ? `<img src="${t.album.images[2].url}">` : ''}</div>
+                <div class="info">
+                    <div class="name">${escape(t.name)}</div>
+                    <div class="artist">${escape(t.artists.map((a) => a.name).join(', '))}</div>
+                </div>
+                <div class="duration">${fmtMs(t.duration_ms)}</div>
+                <button class="play-btn hover-target" title="Play"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button>
+            `;
+            const click = (e) => {
+                e?.stopPropagation();
+                if (contextUri) playUri(contextUri, t.external_urls?.spotify, true);
+                else playUri(t.uri, t.external_urls?.spotify);
+            };
+            row.querySelector('.play-btn').addEventListener('click', click);
+            row.addEventListener('dblclick', click);
+            list.appendChild(row);
+        });
+        return list;
+    }
+
+    function playlistGrid(title, items) {
+        const sec = document.createElement('div');
+        sec.className = 'sp-section';
+        sec.innerHTML = `<h3>${title}</h3><div class="sp-grid"></div>`;
+        const grid = sec.querySelector('.sp-grid');
+        items.forEach((p) => {
+            const card = document.createElement('button');
+            card.className = 'sp-card hover-target';
+            card.innerHTML = `
+                <div class="art">${p.images?.[0]?.url ? `<img src="${p.images[0].url}">` : ''}</div>
+                <div class="name">${escape(p.name)}</div>
+                <div class="artist">${escape(p.owner?.display_name || '')}</div>
+            `;
+            card.addEventListener('click', () => openPlaylist(p));
+            grid.appendChild(card);
+        });
+        return sec;
     }
 
     async function doSearch(q) {

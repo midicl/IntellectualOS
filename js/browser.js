@@ -20,7 +20,8 @@ function normalize(input) {
     if (!v.includes('://')) {
         // Treat space-containing or non-domain input as a search query
         if (!/^[a-z0-9][a-z0-9-.]*\.[a-z]{2,}/i.test(v) || v.includes(' ')) {
-            return `https://duckduckgo.com/?q=${encodeURIComponent(v)}&kae=d&kp=-2`;
+            // html.duckduckgo.com is the no-JS endpoint — no X-Frame-Options
+            return `https://html.duckduckgo.com/html/?q=${encodeURIComponent(v)}`;
         }
         v = 'https://' + v;
     }

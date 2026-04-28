@@ -1,9 +1,23 @@
 // Phase 5 — Window manager: drag, resize, snap (ghost preview), minimize/maximize, focus
 // All movement uses rAF via direct transform updates for 60fps.
+// Per-app window state (position + size) persists across reloads.
 
 const layer = document.getElementById('window-layer');
 const ghost = document.getElementById('ghost-preview');
 const topbarH = 34;
+const STATE_KEY = 'intellectual.windows';
+
+function loadState() { try { return JSON.parse(localStorage.getItem(STATE_KEY) || '{}'); } catch { return {}; } }
+function saveState(s) { try { localStorage.setItem(STATE_KEY, JSON.stringify(s)); } catch {} }
+const winState = loadState();
+function persistWindow(id, patch) {
+    if (!id || id.includes('-') && /-\d{10,}/.test(id)) {
+        // Skip windows with timestamp ids — they're per-instance, not worth persisting
+        return;
+    }
+    winState[id] = { ...winState[id], ...patch };
+    saveState(winState);
+}
 
 let zCounter = 100;
 let focused = null;
@@ -57,10 +71,22 @@ export function createWindow({
     if (!id) id = `win-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
     if (windows.has(id)) { focusWindow(id); return windows.get(id); }
 
+    // Restore persisted geometry for stable IDs
+    const saved = winState[id];
+    if (saved) {
+        if (typeof saved.x === 'number') x ??= saved.x;
+        if (typeof saved.y === 'number') y ??= saved.y;
+        if (typeof saved.w === 'number') width  = saved.w;
+        if (typeof saved.h === 'number') height = saved.h;
+    }
+
     // default cascade position
     const count = windows.size;
     x ??= 80 + count * 28;
     y ??= 80 + count * 28;
+    // Constrain to current viewport in case it shrank since last session
+    if (x + width > window.innerWidth)  x = Math.max(20, window.innerWidth  - width - 20);
+    if (y + height > window.innerHeight) y = Math.max(topbarH, window.innerHeight - height - 100);
 
     const el = document.createElement('div');
     el.className = 'win';
@@ -197,6 +223,7 @@ export function createWindow({
         hideSnap();
         drag = null;
         if (snap) applySnap(snap);
+        else persistWindow(id, { x: px, y: py });
     });
     header.addEventListener('pointercancel', () => { drag = null; hideSnap(); });
 
@@ -234,6 +261,7 @@ export function createWindow({
                 if (!rs) return;
                 handle.releasePointerCapture(rs.pid);
                 rs = null;
+                persistWindow(id, { x: px, y: py, w: pw, h: ph });
             });
             handle.addEventListener('pointercancel', () => { rs = null; });
         });

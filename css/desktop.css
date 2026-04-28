@@ -10,6 +10,205 @@
 }
 #desktop.on { opacity: 1; }
 
+/* ── Desktop icons ─────────────────────────────────────────── */
+#desktop-icons {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    pointer-events: none;     /* layer is transparent; icons re-enable */
+}
+#desktop-icons > * { pointer-events: auto; }
+
+.desk-icon {
+    position: absolute;
+    width: 88px;
+    height: 96px;
+    padding: 8px;
+    border-radius: 12px;
+    background: transparent;
+    border: 1px solid transparent;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    transition: background 0.15s, border-color 0.15s, transform 0.15s var(--bezier);
+    cursor: none;
+    will-change: transform;
+}
+.desk-icon:hover {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+.desk-icon.selected {
+    background: var(--accent-faint);
+    border-color: var(--intel-blue);
+    box-shadow: 0 0 18px var(--accent-soft);
+}
+.desk-glyph {
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    background:
+        linear-gradient(180deg, rgba(255,255,255,0.06) 0%, transparent 50%),
+        linear-gradient(180deg, var(--accent-soft), rgba(0,0,0,0.4));
+    border: 1px solid var(--border);
+    color: var(--intel-blue);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    font-weight: 500;
+    box-shadow:
+        0 6px 16px rgba(0,0,0,0.45),
+        inset 0 1px 0 rgba(255,255,255,0.06);
+    transition: 0.2s var(--bezier);
+}
+.desk-icon:hover .desk-glyph {
+    transform: scale(1.08) translateY(-2px);
+    border-color: var(--intel-blue);
+    box-shadow:
+        0 12px 26px rgba(0,0,0,0.55),
+        0 0 22px var(--accent-soft),
+        inset 0 1px 0 rgba(255,255,255,0.1);
+    color: #fff;
+}
+.desk-label {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    color: #fff;
+    text-align: center;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.7);
+    line-height: 1.25;
+    letter-spacing: 0.2px;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    user-select: none;
+}
+
+/* ── System widget ─────────────────────────────────────────── */
+#sys-widget {
+    position: absolute;
+    top: 56px;
+    right: 22px;
+    width: 220px;
+    padding: 14px 16px;
+    z-index: 20;
+    background: rgba(0, 5, 15, 0.55);
+    backdrop-filter: blur(22px) saturate(140%);
+    -webkit-backdrop-filter: blur(22px) saturate(140%);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: 0 12px 36px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.04);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text);
+    user-select: none;
+}
+#sys-widget .sw-clock-wrap { text-align: center; padding: 4px 0 8px; }
+#sys-widget .sw-time {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    color: #fff;
+    text-shadow: 0 0 18px var(--accent-soft);
+    font-variant-numeric: tabular-nums;
+}
+#sys-widget .sw-date {
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-top: 2px;
+}
+#sys-widget .sw-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border-strong), transparent);
+    margin: 4px 0 10px;
+}
+#sys-widget .sw-stats { display: flex; flex-direction: column; gap: 6px; }
+#sys-widget .sw-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 10.5px;
+    letter-spacing: 1px;
+}
+#sys-widget .sw-key { color: var(--text-dim); }
+#sys-widget .sw-val { color: var(--intel-blue); font-weight: 600; }
+#sys-widget .sw-fact {
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--border);
+    font-size: 9.5px;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+    text-align: center;
+    transition: opacity 0.25s;
+    text-transform: uppercase;
+}
+
+/* ── Context menu ──────────────────────────────────────────── */
+.ctx-menu {
+    position: fixed;
+    z-index: 200000;
+    min-width: 200px;
+    padding: 6px;
+    background: rgba(8, 12, 20, 0.92);
+    backdrop-filter: blur(28px) saturate(140%);
+    -webkit-backdrop-filter: blur(28px) saturate(140%);
+    border: 1px solid var(--border-strong);
+    border-radius: 10px;
+    box-shadow:
+        0 6px 16px rgba(0,0,0,0.55),
+        0 30px 60px rgba(0,0,0,0.65),
+        inset 0 1px 0 rgba(255,255,255,0.05);
+    font-family: var(--font-sans);
+    font-size: 12.5px;
+    color: var(--text);
+    transform-origin: top left;
+    animation: ctxIn 0.13s var(--bezier);
+}
+.ctx-menu.opening { transform: scale(0.96); opacity: 0.6; }
+.ctx-menu.closing { animation: ctxOut 0.12s ease forwards; }
+@keyframes ctxIn  { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+@keyframes ctxOut { to   { transform: scale(0.97); opacity: 0; } }
+
+.ctx-item {
+    display: grid;
+    grid-template-columns: 22px 1fr auto;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 7px 10px;
+    border-radius: 6px;
+    background: transparent;
+    border: 0;
+    color: var(--text);
+    text-align: left;
+    cursor: none;
+    font-size: 12.5px;
+    transition: background 0.1s, color 0.1s;
+}
+.ctx-item:hover { background: var(--accent); color: #fff; }
+.ctx-item.danger:hover { background: rgba(239, 68, 68, 0.85); }
+.ctx-item.disabled { opacity: 0.4; cursor: not-allowed; }
+.ctx-icon { color: var(--intel-blue); text-align: center; font-size: 13px; }
+.ctx-item:hover .ctx-icon { color: #fff; }
+.ctx-key {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 0.5px;
+}
+.ctx-item:hover .ctx-key { color: rgba(255,255,255,0.75); }
+.ctx-sep {
+    height: 1px;
+    background: var(--border);
+    margin: 4px 6px;
+}
+
 /* ── Topbar ──────────────────────────────────────────────────── */
 #topbar {
     position: absolute;
@@ -167,11 +366,13 @@
         0 0 0 1px rgba(255, 255, 255, 0.03),
         inset 0 1px 0 rgba(255, 255, 255, 0.05);
     will-change: transform;
-    animation: winOpen 0.35s var(--bezier);
+    animation: winOpen 0.42s var(--bezier);
 }
 @keyframes winOpen {
-    from { opacity: 0; transform: translate(var(--ox, 0), var(--oy, 0)) scale(0.96); }
-    to   { opacity: 1; }
+    0%   { opacity: 0; filter: blur(6px) brightness(1.4);
+           transform: translate(var(--win-x, 0), var(--win-y, 0)) scale(0.85) rotateX(8deg); }
+    60%  { opacity: 1; filter: blur(0) brightness(1.05); }
+    100% { opacity: 1; filter: none; }
 }
 .win.focused {
     border-color: var(--border-strong);

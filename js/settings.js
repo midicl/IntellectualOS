@@ -71,9 +71,14 @@ const DEFAULTS = {
     email: '',
     wallpaper: 'aurora',
     customWallpaper: null,
+    wallpaperAnimated: true,
     consoleTheme: 'intel',
     consoleFont: 'JetBrains Mono',
     consoleScanlines: true,
+    // Effects overlay
+    effectMode: 'rain',          // 'rain' | 'snow' | 'off'
+    effectColor: '#003366',
+    effectIntensity: 1.0,
 };
 
 let config = { ...DEFAULTS };
@@ -138,12 +143,26 @@ function applyPalette(hex) {
 function applyWallpaper() {
     const layer = document.getElementById('wallpaper-layer');
     if (!layer) return;
+    layer.classList.remove('wp-aurora','wp-cyber','wp-nebula','wp-horizon','wp-matrix','wp-grid','wp-void','wp-sunset','wp-custom','wp-anim');
     if (config.wallpaper === 'custom' && config.customWallpaper) {
         layer.style.background = `center/cover no-repeat url("${config.customWallpaper}"), #000`;
+        layer.classList.add('wp-custom');
         return;
     }
     const w = WALLPAPERS.find((x) => x.id === config.wallpaper);
     layer.style.background = w ? w.preview : '#000105';
+    if (w) layer.classList.add(`wp-${w.id}`);
+    if (config.wallpaperAnimated) layer.classList.add('wp-anim');
+}
+
+// ── effects (rain / snow) ───────────────────────────────────
+async function applyEffect() {
+    try {
+        const r = await import('./rain.js');
+        r.setEffectColor(config.effectColor);
+        r.setEffectIntensity(config.effectIntensity);
+        r.setEffectMode(config.effectMode);
+    } catch {}
 }
 
 function applyConsole() {
@@ -163,6 +182,7 @@ function applyConfig() {
     applyPalette(config.accent);
     applyWallpaper();
     applyConsole();
+    applyEffect();
 
     const cloak = CLOAKS[config.cloak] || CLOAKS.off;
     document.getElementById('page-title').textContent = cloak.title;
@@ -183,8 +203,9 @@ export function buildSettingsPanel() {
     root.innerHTML = `
         <nav class="settings-nav">
             <button class="tab on hover-target" data-tab="stealth">Stealth</button>
-            <button class="tab hover-target" data-tab="appearance">Appearance</button>
+            <button class="tab hover-target" data-tab="appearance">Accent</button>
             <button class="tab hover-target" data-tab="wallpaper">Wallpaper</button>
+            <button class="tab hover-target" data-tab="effects">Effects</button>
             <button class="tab hover-target" data-tab="console">Console</button>
             <button class="tab hover-target" data-tab="persistence">Data</button>
             <button class="tab hover-target" data-tab="about">About</button>
@@ -238,6 +259,43 @@ export function buildSettingsPanel() {
                     <button class="btn-primary hover-target" id="wallpaper-upload">Choose Image</button>
                 </div>
                 <input type="file" id="wallpaper-file" accept="image/*" style="display:none" />
+            </div>
+
+            <div data-panel="effects" hidden>
+                <h3>Atmospheric Effects</h3>
+                <p>The stuff falling from the top of your screen. Rain by default, snow if you're feeling festive, or off if you want quiet.</p>
+                <div class="row">
+                    <div>
+                        <div class="label">Mode</div>
+                        <div class="desc">Pick what's drifting through the air.</div>
+                    </div>
+                    <div class="seg-toggle">
+                        <button data-mode="rain">Rain</button>
+                        <button data-mode="snow">Snow</button>
+                        <button data-mode="off">Off</button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div>
+                        <div class="label">Color</div>
+                        <div class="desc">Tint of the falling particles. Snow looks best in light tones; rain in dark blues or greens.</div>
+                    </div>
+                    <input type="color" id="fx-color" class="hover-target" style="width:42px;height:42px;border:1px solid var(--border);border-radius:10px;background:transparent;padding:0;cursor:none" />
+                </div>
+                <div class="row">
+                    <div>
+                        <div class="label">Intensity</div>
+                        <div class="desc">How heavy the storm is. Lower if your battery hates you.</div>
+                    </div>
+                    <input type="range" id="fx-int" min="0.3" max="2.5" step="0.1" class="hover-target" style="width:160px;accent-color:var(--accent)" />
+                </div>
+                <div class="row">
+                    <div>
+                        <div class="label">Animated wallpaper</div>
+                        <div class="desc">Slow ambient motion on the desktop background.</div>
+                    </div>
+                    <button class="toggle hover-target" id="wp-anim"></button>
+                </div>
             </div>
 
             <div data-panel="console" hidden>
@@ -387,6 +445,30 @@ export function buildSettingsPanel() {
             });
         };
         r.readAsDataURL(f);
+    });
+
+    // Effects
+    const fxColor = root.querySelector('#fx-color');
+    const fxInt = root.querySelector('#fx-int');
+    const wpAnim = root.querySelector('#wp-anim');
+    const segs = root.querySelectorAll('.seg-toggle [data-mode]');
+    function paintEffectsTab() {
+        segs.forEach((b) => b.classList.toggle('on', b.dataset.mode === config.effectMode));
+        fxColor.value = config.effectColor;
+        fxInt.value = config.effectIntensity;
+        wpAnim.classList.toggle('on', !!config.wallpaperAnimated);
+    }
+    paintEffectsTab();
+    segs.forEach((b) => b.addEventListener('click', () => {
+        saveConfig({ effectMode: b.dataset.mode });
+        paintEffectsTab();
+    }));
+    fxColor.addEventListener('input', () => saveConfig({ effectColor: fxColor.value }));
+    fxInt.addEventListener('input', () => saveConfig({ effectIntensity: Number(fxInt.value) }));
+    wpAnim.addEventListener('click', () => {
+        const on = !wpAnim.classList.contains('on');
+        saveConfig({ wallpaperAnimated: on });
+        paintEffectsTab();
     });
 
     // Console theme

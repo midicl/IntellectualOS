@@ -10,6 +10,8 @@ import { openTerminal } from './terminal.js';
 import { openAI } from './ai.js';
 import { openSpotify, handleAuthCallback } from './spotify.js';
 import { loginCheck, setEmail, startHeartbeat, sendEvent, fetchOnlineCount } from './app-bus.js';
+import { initDesktop } from './desktop.js';
+import { initWidget } from './widget.js';
 
 // If we just came back from a Spotify OAuth redirect, capture the code and
 // reopen Spotify automatically once the desktop is ready.
@@ -85,10 +87,16 @@ loginBtn.addEventListener('click', attemptLogin);
 emailInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') attemptLogin(); });
 
 // ── Desktop ────────────────────────────────────────────────────
+let desktopInitialized = false;
 function enterDesktop() {
     loginSection.classList.remove('on');
     setTimeout(() => { loginSection.style.display = 'none'; }, 600);
     document.getElementById('desktop').classList.add('on');
+    if (!desktopInitialized) {
+        desktopInitialized = true;
+        initDesktop();
+        initWidget();
+    }
     maybeReopenSpotify();
 }
 

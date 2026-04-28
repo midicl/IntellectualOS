@@ -692,6 +692,34 @@
 
 .hstack { display: flex; gap: 10px; flex-wrap: wrap; }
 
+/* Segmented toggle (Effects mode) */
+.seg-toggle {
+    display: inline-flex;
+    padding: 3px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: rgba(0,0,0,0.4);
+}
+.seg-toggle button {
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: transparent;
+    border: 0;
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    cursor: none;
+    transition: 0.2s var(--bezier);
+}
+.seg-toggle button:hover { color: #fff; }
+.seg-toggle button.on {
+    background: var(--accent);
+    color: #fff;
+    box-shadow: 0 0 14px var(--accent-soft), inset 0 1px 0 rgba(255,255,255,0.15);
+}
+
 /* ── Wallpaper picker ───────────────────────────────────────── */
 .wallpaper-grid {
     display: grid;
@@ -845,11 +873,24 @@ body.con-scanlines .console-preview::after {
     display: flex;
     flex-direction: column;
     height: 100%;
-    background: var(--con-bg, rgba(0, 2, 8, 0.94));
+    background:
+        radial-gradient(ellipse at 50% 0%, color-mix(in srgb, var(--con-accent, var(--intel-blue)) 12%, transparent) 0%, transparent 70%),
+        var(--con-bg, rgba(0, 2, 8, 0.94));
     font-family: var(--con-font, 'JetBrains Mono', monospace);
     color: var(--con-fg, #cbd5e1);
     position: relative;
     overflow: hidden;
+    box-shadow: inset 0 0 80px rgba(0,0,0,0.35);
+}
+/* Soft scanline by default in terminal even without con-scanlines on body */
+.app-terminal::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(0deg, transparent 0 2px, rgba(0,0,0,0.05) 3px, transparent 4px);
+    pointer-events: none;
+    z-index: 4;
+    mix-blend-mode: overlay;
 }
 body.con-scanlines .app-terminal::after {
     content: '';
@@ -957,7 +998,23 @@ body.con-scanlines .app-terminal::after {
     height: 100%;
     border: 0;
     outline: none;
-    caret-color: var(--con-accent, var(--intel-blue));
+    caret-color: transparent;       /* we use a fake blinking block caret */
+    position: relative;
+}
+/* Faux block caret that blinks when the input is focused */
+.term-prompt::after {
+    content: '';
+    width: 8px;
+    height: 14px;
+    background: var(--con-accent, var(--intel-blue));
+    margin-left: 2px;
+    animation: caretBlink 1.05s steps(2, end) infinite;
+    box-shadow: 0 0 6px var(--con-accent, var(--intel-blue));
+    align-self: center;
+}
+@keyframes caretBlink {
+    0%, 50%   { opacity: 1; }
+    50.01%, 100% { opacity: 0; }
 }
 
 /* ── Intellectual AI ──────────────────────────────────────── */
@@ -1196,11 +1253,137 @@ body.con-scanlines .app-terminal::after {
 }
 .sp-user { font-family: var(--font-mono); font-size: 10px; letter-spacing: 1px; color: #94a3a0; }
 
+.sp-shell {
+    flex: 1;
+    display: flex;
+    min-height: 0;
+}
+.sp-sidebar {
+    width: 200px;
+    flex-shrink: 0;
+    padding: 14px 10px 90px;
+    background: rgba(0,0,0,0.35);
+    border-right: 1px solid rgba(255,255,255,0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    overflow-y: auto;
+}
+.sp-sidebar .sp-nav {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border: 0;
+    background: transparent;
+    color: #94a3a0;
+    border-radius: 8px;
+    font-family: var(--font-sans);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: none;
+    text-align: left;
+    transition: 0.15s;
+}
+.sp-sidebar .sp-nav:hover { color: #fff; background: rgba(255,255,255,0.06); }
+.sp-sidebar .sp-nav.on   { color: #fff; background: rgba(255,255,255,0.1); }
+.sp-sidebar .sp-nav.danger:hover { background: rgba(239, 68, 68, 0.25); color: #fecaca; }
+.sp-sidebar-spacer { flex: 1; min-height: 12px; }
+
 .sp-body {
     flex: 1;
     overflow-y: auto;
-    padding: 18px 22px 100px;
+    padding: 18px 22px 110px;
+    min-width: 0;
 }
+
+/* ── Spotify playlist detail view ──────────────────────────── */
+.sp-detail .sp-back {
+    background: transparent;
+    border: 0;
+    color: #94a3a0;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 1px;
+    padding: 6px 0 14px;
+    cursor: none;
+    transition: color 0.15s;
+}
+.sp-detail .sp-back:hover { color: #fff; }
+.sp-detail-hero {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 28px;
+    padding: 18px 0 22px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    align-items: flex-end;
+}
+.sp-detail-hero .hero-art {
+    width: 200px; height: 200px;
+    border-radius: 8px;
+    overflow: hidden;
+    flex-shrink: 0;
+    background: linear-gradient(135deg, var(--sp-green), #064e30);
+    box-shadow: 0 16px 40px rgba(0,0,0,0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.sp-detail-hero .hero-art img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.sp-detail-hero .liked {
+    background: linear-gradient(135deg, #5038a0, #7e22ce 50%, #f5d0fe);
+}
+.sp-detail-hero.liked-hero .hero-art { background: linear-gradient(135deg, #5038a0, #7e22ce 50%, #f5d0fe); }
+.sp-detail-hero .hero-meta { min-width: 0; flex: 1; padding-bottom: 8px; }
+.sp-detail-hero .hero-kind {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: #94a3a0;
+    text-transform: uppercase;
+}
+.sp-detail-hero .hero-title {
+    font-family: var(--font-display);
+    font-size: 44px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.05;
+    margin: 6px 0 12px;
+    word-break: break-word;
+}
+.sp-detail-hero .hero-desc {
+    font-size: 13px;
+    color: #94a3a0;
+    margin-bottom: 8px;
+    line-height: 1.45;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+.sp-detail-hero .hero-sub {
+    font-size: 12px;
+    color: var(--text);
+    letter-spacing: 0.4px;
+}
+.sp-detail-hero .hero-actions { margin-top: 14px; }
+.sp-detail-hero .hero-play {
+    background: var(--sp-green);
+    color: #000;
+    font-weight: 700;
+    border: 0;
+    padding: 10px 28px;
+    border-radius: 999px;
+    font-family: var(--font-sans);
+    font-size: 13px;
+    letter-spacing: 1px;
+    cursor: none;
+    transition: 0.15s;
+    box-shadow: 0 8px 22px rgba(29,185,84,0.3);
+}
+.sp-detail-hero .hero-play:hover { background: var(--sp-green-bright); transform: scale(1.04); box-shadow: 0 12px 30px rgba(29,185,84,0.5); }
+.sp-list.detail-list { gap: 0; }
 
 .sp-section { margin-bottom: 28px; }
 .sp-section h3 {
