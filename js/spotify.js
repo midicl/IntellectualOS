@@ -78,9 +78,25 @@ async function startLogin() {
     window.location.href = `https://accounts.spotify.com/authorize?${params}`;
 }
 
+// Captured if Spotify redirected back with ?error=... (e.g. redirect_uri_mismatch)
+let lastAuthError = null;
+export function getLastSpotifyAuthError() { return lastAuthError; }
+
 // On page load, check if Spotify just redirected back with ?code=...
 export async function handleAuthCallback() {
     const url = new URL(window.location.href);
+    const err = url.searchParams.get('error');
+    if (err) {
+        lastAuthError = {
+            code: err,
+            description: url.searchParams.get('error_description') || '',
+        };
+        // Clean the URL so the error doesn't repeat on refresh
+        url.searchParams.delete('error');
+        url.searchParams.delete('error_description');
+        url.searchParams.delete('state');
+        window.history.replaceState({}, '', url.pathname + (url.search || ''));
+    }
     const code = url.searchParams.get('code');
     if (!code) return false;
     const verifier = sessionStorage.getItem('intellectual.spotifyVerifier');
@@ -208,12 +224,36 @@ export async function openSpotify() {
 
 function renderLogin(body) {
     const clientId = getClientId();
+    const isLocalhost = window.location.hostname === 'localhost';
+    const isHttp = window.location.protocol === 'http:';
+    const dashLink = clientId
+        ? `https://developer.spotify.com/dashboard/${clientId}/settings`
+        : 'https://developer.spotify.com/dashboard';
+
+    // If Spotify redirected back with an error, surface it loudly at the top
+    const err = getLastSpotifyAuthError();
+    let errorBanner = '';
+    if (err) {
+        const isUriMismatch = /redirect_uri/i.test(err.code) || /redirect_uri/i.test(err.description);
+        errorBanner = `
+            <div class="sp-error-banner">
+                <div class="sp-error-title">${isUriMismatch ? 'Redirect URI not registered' : err.code}</div>
+                <div class="sp-error-detail">${err.description || err.code}</div>
+                ${isUriMismatch ? `
+                <div class="sp-error-fix">
+                    <strong>Fix:</strong> Open the dashboard link below → Settings → Edit → add this exact URL to <em>Redirect URIs</em> (including the trailing <code>/</code>) → Save.
+                </div>` : ''}
+            </div>
+        `;
+    }
+
     body.innerHTML = `
         <div class="sp-header">
             <div class="sp-brand"><span class="sp-mark">♫</span>SPOTIFY</div>
         </div>
         <div class="sp-body">
             <div class="sp-login">
+                ${errorBanner}
                 <h2>SIGN IN</h2>
                 <p>Search, browse playlists, control playback. <strong>Premium</strong> required for in-browser playback — Spotify's rule, not mine.</p>
                 <button class="hover-target" id="sp-login-btn" ${!clientId ? 'disabled style="opacity:0.5;cursor:not-allowed"' : ''}>
@@ -221,24 +261,44 @@ function renderLogin(body) {
                 </button>
                 <div class="hint">${clientId ? '' : 'NO CLIENT ID CONFIGURED'}</div>
 
+                ${(isLocalhost && isHttp) ? `
+                <div class="sp-warn">
+                    <strong>⚠ Spotify rejects http://localhost</strong><br/>
+                    Spotify's recent rule: HTTP redirects are only allowed for <code>127.0.0.1</code>, NOT <code>localhost</code>. Reopen Intellectual OS at <a href="http://127.0.0.1:${window.location.port || '3000'}/" style="color:#fbbf24"><strong>http://127.0.0.1:${window.location.port || '3000'}/</strong></a> instead.
+                </div>` : ''}
+
                 <div class="config" style="margin-top:24px">
                     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-                        <strong style="color:#fff;font-size:12px">REDIRECT URI</strong>
-                        <span style="font-size:9px;color:#64748b">copy this into your Spotify app's settings</span>
+                        <strong style="color:#fff;font-size:12px">REGISTER THIS REDIRECT URI</strong>
+                        <span style="font-size:9px;color:#64748b">paste it in your Spotify app</span>
                     </div>
                     <div class="redir-row">
-                        <code class="redir-url">${REDIRECT_URI}</code>
+                        <code class="redir-url" id="sp-redir">${REDIRECT_URI}</code>
                         <button class="redir-copy hover-target" id="sp-copy">Copy</button>
                     </div>
-                    <div style="margin-top:16px;font-size:11.5px;color:#94a3a0;line-height:1.6">
-                        <strong style="color:#fff">If "redirect_uri not matching" error:</strong><br/>
+
+                    ${clientId ? `
+                    <div style="margin-top:14px">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+                            <strong style="color:#fff;font-size:12px">CLIENT ID IN USE</strong>
+                            <a href="${dashLink}" target="_blank" style="font-size:10px;color:var(--sp-green-bright,#1ed760)">open this app's settings →</a>
+                        </div>
+                        <code class="redir-url" style="display:block">${clientId}</code>
+                    </div>
+                    ` : ''}
+
+                    <div style="margin-top:18px;font-size:12px;color:#94a3a0;line-height:1.7">
+                        <strong style="color:#fff">Step-by-step:</strong>
                         <ol style="margin:8px 0 0 18px;padding:0">
-                            <li>Open <a href="https://developer.spotify.com/dashboard" target="_blank" style="color:var(--sp-green-bright,#1ed760)">your Spotify app</a> → Settings → Edit</li>
-                            <li>Under <em>Redirect URIs</em>, paste the URL above (<strong>trailing slash matters</strong>)</li>
-                            <li>Save → come back here → Continue with Spotify</li>
+                            <li>Open <a href="${dashLink}" target="_blank" style="color:var(--sp-green-bright,#1ed760)">${clientId ? 'your app\'s settings' : 'the Spotify dashboard'}</a></li>
+                            <li>Click <strong>Edit</strong> on the settings page</li>
+                            <li>Scroll to <strong>Redirect URIs</strong> → paste the URL above</li>
+                            <li><strong>Trailing slash matters</strong> — the URL must end with <code>/</code></li>
+                            <li>Click <strong>Add</strong>, then scroll to bottom and click <strong>Save</strong></li>
+                            <li>Come back here → Continue with Spotify</li>
                         </ol>
-                        <div style="margin-top:10px;padding:8px 10px;background:rgba(245,158,11,0.1);border-left:2px solid #f59e0b;border-radius:4px">
-                            <strong style="color:#fbbf24">ngrok users:</strong> if your URL changes each restart, you'll need to update the redirect URI each time. A reserved ngrok domain ($8/mo) fixes this.
+                        <div class="sp-warn" style="margin-top:14px;background:rgba(245,158,11,0.1);border-color:#f59e0b;color:#fbbf24">
+                            <strong>ngrok users:</strong> when your tunnel URL changes (free tier), you have to update the redirect URI each restart. Reserve a static ngrok domain to skip this.
                         </div>
                     </div>
                 </div>
@@ -258,7 +318,18 @@ function renderLogin(body) {
     const copyBtn = body.querySelector('#sp-copy');
     copyBtn?.addEventListener('click', async () => {
         try { await navigator.clipboard.writeText(REDIRECT_URI); }
-        catch { /* fallback below */ }
+        catch {
+            // Fallback for clipboard API unavailable (older browsers / non-https)
+            const code = body.querySelector('#sp-redir');
+            if (code) {
+                const range = document.createRange();
+                range.selectNode(code);
+                window.getSelection().removeAllRanges();
+                window.getSelection().addRange(range);
+                try { document.execCommand('copy'); } catch {}
+                window.getSelection().removeAllRanges();
+            }
+        }
         copyBtn.textContent = 'Copied ✓';
         setTimeout(() => { copyBtn.textContent = 'Copy'; }, 1500);
     });
